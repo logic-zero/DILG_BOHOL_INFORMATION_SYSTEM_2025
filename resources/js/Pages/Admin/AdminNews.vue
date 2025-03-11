@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useForm, usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -7,8 +7,9 @@ defineOptions({
     layout: AuthenticatedLayout,
 });
 
-const pagination = ref(usePage().props.news);
-const newsList = ref(usePage().props.news.data ?? []);
+const pageProps = usePage().props;
+const pagination = ref(pageProps.news);
+const newsList = ref(pageProps.news.data ?? []);
 
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
@@ -19,46 +20,50 @@ const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
 
+const filters = ref({
+    search: pageProps.filters?.search ?? "",
+    status: pageProps.filters?.status ?? "",
+});
+
+const handleSearchEnter = (event) => {
+    if (event.key === "Enter") {
+        applyFilters();
+    }
+};
+
+watch(
+    () => filters.value.search,
+    (newSearch) => {
+        if (newSearch === "") {
+            applyFilters();
+        }
+    }
+);
+
+const applyFilters = () => {
+    router.get("/adminNews", filters.value, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ["news", "filters"],
+        onSuccess: (page) => {
+            pagination.value = page.props.news;
+            newsList.value = page.props.news.data;
+        },
+    });
+};
+
 const goToPage = (url) => {
     if (!url) return;
     router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
-        only: ['news', 'filters'],
+        only: ["news", "filters"],
         onSuccess: (page) => {
             pagination.value = page.props.news;
             newsList.value = page.props.news.data;
-        }
+        },
     });
 };
-
-
-
-const filters = ref({
-    search: usePage().props.filters?.search ?? "",
-    status: usePage().props.filters?.status ?? "",
-});
-
-const applyFilters = () => {
-    router.get('/adminNews', filters.value, {
-        preserveState: true,
-        preserveScroll: true,
-        only: ['news', 'filters'],
-        onSuccess: (page) => {
-            pagination.value = page.props.news;
-            newsList.value = page.props.news.data;
-        }
-    });
-};
-
-
-const resetSearch = () => {
-    if (filters.value.search === "") {
-        applyFilters();
-    }
-};
-
-
 
 const form = useForm({
     id: null,
@@ -92,7 +97,6 @@ const closeModal = () => {
 const showSuccessMessage = (message) => {
     successMessage.value = message;
     showSuccess.value = true;
-
     setTimeout(() => {
         showSuccess.value = false;
     }, 3000);
@@ -106,15 +110,12 @@ const submitNews = () => {
 
     if (!title) return (errorMessage.value = "Title is required.");
     if (!caption) return (errorMessage.value = "Caption is required.");
-    if (!isEditMode.value && form.images.length === 0) {
+    if (!isEditMode.value && form.images.length === 0)
         return (errorMessage.value = "Please upload at least one image.");
-    }
-    if (form.images.length > 5) {
+    if (form.images.length > 5)
         return (errorMessage.value = "You can upload a maximum of 5 images.");
-    }
-    if (form.images.some(image => image.size > 5 * 1024 * 1024)) {
+    if (form.images.some((image) => image.size > 5 * 1024 * 1024))
         return (errorMessage.value = "Each image must not exceed 5MB.");
-    }
 
     const formData = new FormData();
     formData.append("title", title);
@@ -122,67 +123,66 @@ const submitNews = () => {
 
     if (isEditMode.value) {
         if (form.images.length === 0 && editingNews.value.images) {
-            formData.append("existing_images", JSON.stringify(editingNews.value.images));
+            formData.append(
+                "existing_images",
+                JSON.stringify(editingNews.value.images)
+            );
         } else {
-            form.images.forEach(image => formData.append("images[]", image));
+            form.images.forEach((image) => formData.append("images[]", image));
         }
     } else {
-        form.images.forEach(image => formData.append("images[]", image));
+        form.images.forEach((image) => formData.append("images[]", image));
     }
 
     const onSuccess = (page) => {
-        const updatedNews = page.props.news.data;
-
         if (isEditMode.value) {
-            // Find the index of the updated news item and replace it
-            const index = newsList.value.findIndex(n => n.id === form.id);
-            if (index !== -1) {
-                newsList.value[index] = updatedNews.find(n => n.id === form.id);
+            const updatedNews = page.props.news.data.find((n) => n.id === form.id);
+
+            if (updatedNews) {
+                const index = newsList.value.findIndex((n) => n.id === form.id);
+                if (index !== -1) {
+                    newsList.value[index] = updatedNews;
+                }
+            } else {
+                router.get(
+                    "/adminNews",
+                    { page: pagination.value.current_page, ...filters.value },
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                        only: ["news", "filters"],
+                        onSuccess: (page) => {
+                            pagination.value = page.props.news;
+                            newsList.value = page.props.news.data;
+                        },
+                    }
+                );
             }
         } else {
-            if (!isEditMode.value) {
-                // Always reload the first page after adding a new item
-                router.get('/adminNews', { page: 1, ...filters.value }, {
-                    preserveState: true,
-                    preserveScroll: true,
-                    only: ['news', 'filters'],
-                    onSuccess: (page) => {
-                        pagination.value = page.props.news;
-                        newsList.value = page.props.news.data;
-                    }
-                });
-            }
-
+            newsList.value.unshift(page.props.news.data[0]);
+            pagination.value = page.props.news;
         }
 
-        closeModal();
         showSuccessMessage(isEditMode.value ? "News updated successfully!" : "News added successfully!");
+        closeModal();
     };
 
     const onError = (errors) => {
-        errorMessage.value = errors.title?.[0] || errors.caption?.[0] || errors.images?.[0] || "An error occurred.";
+        errorMessage.value =
+            errors.title?.[0] ||
+            errors.caption?.[0] ||
+            errors.images?.[0] ||
+            "An error occurred.";
     };
 
-    if (isEditMode.value) {
-        router.post(`/news/${form.id}`, formData, {
-            preserveScroll: true,
-            preserveState: true,
-            headers: { "Content-Type": "multipart/form-data" },
-            onSuccess,
-            onError,
-        });
-    } else {
-        router.post("/news", formData, {
-            preserveScroll: true,
-            preserveState: true,
-            headers: { "Content-Type": "multipart/form-data" },
-            onSuccess,
-            onError,
-        });
-    }
+    router.post(isEditMode.value ? `/news/${form.id}` : "/news", formData, {
+        preserveScroll: true,
+        preserveState: true,
+        headers: { "Content-Type": "multipart/form-data" },
+        onSuccess,
+        onError,
+    });
 };
-
-
 
 const openDeleteModal = (news) => {
     newsToDelete.value = news;
@@ -198,11 +198,34 @@ const deleteNews = () => {
     if (!newsToDelete.value) return;
 
     form.delete(`/news/${newsToDelete.value.id}`, {
-        onSuccess: () => {
-            newsList.value = newsList.value.filter(n => n.id !== newsToDelete.value.id);
-            if (newsList.value.length === 0) {
-                router.get('/adminNews', filters.value, { preserveState: true, preserveScroll: true });
+        onSuccess: (page) => {
+            newsList.value = newsList.value.filter(
+                (n) => n.id !== newsToDelete.value.id
+            );
+            pagination.value = page.props.news;
+
+            if (
+                newsList.value.length === 0 &&
+                pagination.value.current_page > 1
+            ) {
+                router.get(
+                    "/adminNews",
+                    {
+                        page: pagination.value.current_page - 1,
+                        ...filters.value,
+                    },
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                        only: ["news", "filters"],
+                        onSuccess: (page) => {
+                            pagination.value = page.props.news;
+                            newsList.value = page.props.news.data;
+                        },
+                    }
+                );
             }
+
             showSuccessMessage("News deleted successfully!");
             closeDeleteModal();
         },
@@ -214,12 +237,10 @@ const toggleStatus = (id) => {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
-            // Find the toggled item and update its status
-            const index = newsList.value.findIndex(n => n.id === id);
+            const index = newsList.value.findIndex((n) => n.id === id);
             if (index !== -1) {
                 newsList.value[index].status = !newsList.value[index].status;
             }
-
             showSuccessMessage("Status updated successfully!");
         },
     });
@@ -247,7 +268,7 @@ const toggleStatus = (id) => {
                 <input v-model="filters.search" @keyup.enter="applyFilters" @input="resetSearch" type="text"
                     placeholder="Search news..." class="border p-2 pl-4 pr-12 rounded w-full" />
                 <button @click="applyFilters"
-                    class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                    class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded hover:bg-gray-100">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
@@ -258,7 +279,6 @@ const toggleStatus = (id) => {
                 <option value="pending">Pending</option>
             </select>
         </div>
-
 
         <div class="overflow-x-auto hidden md:block">
             <table class="w-full border-collapse">
@@ -280,18 +300,23 @@ const toggleStatus = (id) => {
                         <td class="p-3 text-gray-600 break-words" :title="news.caption">
                             <div class="line-clamp-3">{{ news.caption }}</div>
                         </td>
-                        <td class="p-3 text-gray-700 font-bold truncate">{{ news.user.name }}</td>
+                        <td class="p-3 text-gray-700 font-bold truncate">
+                            {{ news.user.name }}
+                        </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center flex-wrap gap-1 max-w-[160px]">
-                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index"
-                                    :src="`/storage/${image}`" alt="News Image"
+                                <img v-for="(image, index) in news.images.slice(
+                                    0,
+                                    5
+                                )" :key="index" :src="`/storage/${image}`" alt="News Image"
                                     class="w-12 h-12 object-cover border border-gray-300" />
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="toggleStatus(news.id)"
-                                :class="news.status ? 'bg-green-500' : 'bg-orange-400'"
-                                class="px-3 py-1 text-white rounded text-sm transition">
+                            <button @click="toggleStatus(news.id)" :class="news.status
+                                ? 'bg-green-500'
+                                : 'bg-orange-400'
+                                " class="px-3 py-1 text-white rounded text-sm transition">
                                 {{ news.status ? "Approved" : "Pending" }}
                             </button>
                         </td>
@@ -311,14 +336,6 @@ const toggleStatus = (id) => {
                 </tbody>
             </table>
         </div>
-
-        <div class="flex justify-center mt-4 space-x-2">
-            <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
-                v-html="link.label" :class="{ 'font-bold text-blue-600': link.active, 'text-gray-500': !link.url }"
-                class="px-3 py-1 border rounded cursor-pointer" :disabled="!link.url">
-            </button>
-        </div>
-
 
         <div class="block md:hidden space-y-4">
             <div v-for="news in newsList" :key="news.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
@@ -364,6 +381,14 @@ const toggleStatus = (id) => {
             </div>
         </div>
 
+        <div class="flex justify-center mt-4 space-x-2">
+            <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+                v-html="link.label" :class="{
+                    'font-bold text-blue-600': link.active,
+                    'text-gray-500': !link.url,
+                }" class="px-3 py-1 border rounded cursor-pointer" :disabled="!link.url"></button>
+        </div>
+
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
                 <h2 class="text-xl mb-4">
@@ -382,7 +407,9 @@ const toggleStatus = (id) => {
                 <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2"></textarea>
 
                 <label class="block text-gray-700">Upload Images</label>
-                <p class="text-sm text-gray-500">Max 5 images, each up to 5MB</p>
+                <p class="text-sm text-gray-500">
+                    Max 5 images, each up to 5MB
+                </p>
                 <input type="file" multiple @change="form.images = [...$event.target.files]"
                     class="border p-2 w-full my-2" />
 
