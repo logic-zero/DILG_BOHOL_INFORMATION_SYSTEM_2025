@@ -15,28 +15,30 @@ class NewsController extends Controller
     {
         $query = News::with('user')->latest();
 
-        // Search filter
-        if ($request->has('search') && !empty($request->search)) {
+        // Apply search filter
+        if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%')
                 ->orWhere('caption', 'like', '%' . $request->search . '%');
         }
 
-        // Status filter (approved, pending, or both)
+        // Apply status filter
         if ($request->has('status') && in_array($request->status, ['approved', 'pending'])) {
             $status = $request->status === 'approved' ? 1 : 0;
             $query->where('status', $status);
         }
 
-        $news = $query->get()->map(function ($news) {
+        // Paginate results
+        $news = $query->paginate(10)->withQueryString()->through(function ($news) {
             $news->images = json_decode($news->images);
             return $news;
         });
 
         return Inertia::render('Admin/AdminNews', [
             'news' => $news,
-            'filters' => $request->only(['search', 'status']) // Persist filters
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
+
 
 
     // Store a new news post

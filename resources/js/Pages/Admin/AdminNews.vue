@@ -7,7 +7,9 @@ defineOptions({
     layout: AuthenticatedLayout,
 });
 
-const newsList = ref(usePage().props.news ?? []);
+const pagination = ref(usePage().props.news);
+const newsList = ref(usePage().props.news.data ?? []);
+
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const editingNews = ref(null);
@@ -16,6 +18,21 @@ const showSuccess = ref(false);
 const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
+
+const goToPage = (url) => {
+    if (!url) return;
+    router.get(url, filters.value, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['news', 'filters'],
+        onSuccess: (page) => {
+            pagination.value = page.props.news;
+            newsList.value = page.props.news.data;
+        }
+    });
+};
+
+
 
 const filters = ref({
     search: usePage().props.filters?.search ?? "",
@@ -28,16 +45,19 @@ const applyFilters = () => {
         preserveScroll: true,
         only: ['news', 'filters'],
         onSuccess: (page) => {
-            newsList.value = page.props.news;
+            pagination.value = page.props.news;
+            newsList.value = page.props.news.data;
         }
     });
 };
+
 
 const resetSearch = () => {
     if (filters.value.search === "") {
         applyFilters();
     }
 };
+
 
 
 const form = useForm({
@@ -110,14 +130,29 @@ const submitNews = () => {
         form.images.forEach(image => formData.append("images[]", image));
     }
 
-    const onSuccess = (response) => {
+    const onSuccess = (page) => {
+        const updatedNews = page.props.news.data;
+
         if (isEditMode.value) {
+            // Find the index of the updated news item and replace it
             const index = newsList.value.findIndex(n => n.id === form.id);
             if (index !== -1) {
-                newsList.value[index] = response.props.news.find(n => n.id === form.id);
+                newsList.value[index] = updatedNews.find(n => n.id === form.id);
             }
         } else {
-            newsList.value.unshift(response.props.news[0]);
+            if (!isEditMode.value) {
+                // Always reload the first page after adding a new item
+                router.get('/adminNews', { page: 1, ...filters.value }, {
+                    preserveState: true,
+                    preserveScroll: true,
+                    only: ['news', 'filters'],
+                    onSuccess: (page) => {
+                        pagination.value = page.props.news;
+                        newsList.value = page.props.news.data;
+                    }
+                });
+            }
+
         }
 
         closeModal();
@@ -147,6 +182,8 @@ const submitNews = () => {
     }
 };
 
+
+
 const openDeleteModal = (news) => {
     newsToDelete.value = news;
     isDeleteModalOpen.value = true;
@@ -162,7 +199,10 @@ const deleteNews = () => {
 
     form.delete(`/news/${newsToDelete.value.id}`, {
         onSuccess: () => {
-            newsList.value = usePage().props.news;
+            newsList.value = newsList.value.filter(n => n.id !== newsToDelete.value.id);
+            if (newsList.value.length === 0) {
+                router.get('/adminNews', filters.value, { preserveState: true, preserveScroll: true });
+            }
             showSuccessMessage("News deleted successfully!");
             closeDeleteModal();
         },
@@ -171,8 +211,15 @@ const deleteNews = () => {
 
 const toggleStatus = (id) => {
     form.patch(`/news/${id}/toggle-status`, {
+        preserveScroll: true,
+        preserveState: true,
         onSuccess: () => {
-            newsList.value = usePage().props.news;
+            // Find the toggled item and update its status
+            const index = newsList.value.findIndex(n => n.id === id);
+            if (index !== -1) {
+                newsList.value[index].status = !newsList.value[index].status;
+            }
+
             showSuccessMessage("Status updated successfully!");
         },
     });
@@ -263,6 +310,13 @@ const toggleStatus = (id) => {
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="flex justify-center mt-4 space-x-2">
+            <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+                v-html="link.label" :class="{ 'font-bold text-blue-600': link.active, 'text-gray-500': !link.url }"
+                class="px-3 py-1 border rounded cursor-pointer" :disabled="!link.url">
+            </button>
         </div>
 
 
