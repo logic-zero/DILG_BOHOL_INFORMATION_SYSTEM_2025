@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::inertia('/adminNews', 'Admin/AdminNews')->name('AdminNews');
+    Route::get('/adminNews', [NewsController::class, 'index'])->name('AdminNews');
+    Route::post('/news', [NewsController::class, 'store']);
+    Route::post('/news/{news}', [NewsController::class, 'update'])->name('news.update');
+    Route::delete('/news/{news}', [NewsController::class, 'destroy']);
+    Route::patch('/news/{news}/toggle-status', [NewsController::class, 'toggleStatus']);
+
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
     Route::inertia('/adminLGUs', 'Admin/AdminLGUs')->name('AdminLGUs');
     Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
