@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class GuestNewsController extends Controller
@@ -34,6 +35,26 @@ class GuestNewsController extends Controller
         return Inertia::render('Guest/News', [
             'news' => $news,
             'filters' => $request->only(['search', 'from_date', 'to_date']),
+        ]);
+    }
+
+    public function homeIndex()
+    {
+        $news = News::where('status', 1)
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($news) {
+                $news->images = json_decode($news->images);
+                return $news;
+            });
+
+        return Inertia::render('Guest/Home', [
+            'news' => $news,
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
+            'phpVersion' => PHP_VERSION,
         ]);
     }
 }

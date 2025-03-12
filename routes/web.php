@@ -8,15 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 //Guest Routes
-Route::get('/', function () {
-    return Inertia::render('Guest/Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
+Route::get('/', [GuestNewsController::class, 'homeIndex'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
 Route::inertia('/LGUs', 'Guest/LGUs')->name('LGUs');
 Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');

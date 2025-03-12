@@ -17,7 +17,7 @@
             <!-- Scrollable Content -->
             <div class="p-4 overflow-y-auto flex-grow">
                 <h5 class="text-xl text-blue-900 font-black mb-5">{{ newsItem.title }}</h5>
-                <p class="text-gray-500 text-md">{{ newsItem.caption }}</p>
+                <p class="text-gray-500 text-md whitespace-pre-line">{{ newsItem.caption }}</p>
                 <div v-if="newsItem.images.length" class="mt-4 space-y-4">
                     <img v-for="(image, index) in newsItem.images" :key="index" :src="`/storage/${image}`"
                         class="p-1 bg-white shadow-lg shadow-black/50 w-full h-auto object-cover" alt="News Image">
