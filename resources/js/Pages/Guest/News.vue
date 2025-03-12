@@ -8,6 +8,7 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Pagination, Autoplay } from "swiper/modules";
 import { debounce } from "lodash";
+const isFirstLoad = ref(true);
 
 defineOptions({ layout: GuestLayout });
 
@@ -27,44 +28,47 @@ const paginationInfo = computed(() => {
 });
 
 watch([() => filters.value.from_date, () => filters.value.to_date], () => {
+    if (isFirstLoad.value) {
+        isFirstLoad.value = false;
+        return;
+    }
     if (filters.value.from_date && filters.value.to_date) {
         applyFilters();
     }
 });
 
 const debouncedSearch = debounce(() => {
-    if (filters.value.search === "") {
-        applyFilters();
-    }
+    applyFilters();
 }, 500);
+
 
 watch(() => filters.value.search, debouncedSearch);
 
 const applyFilters = () => {
     router.get("/guestNews", {
-        search: filters.value.search || null,
+        search: filters.value.search || null,  // Ensures empty search resets data
         from_date: filters.value.from_date || null,
         to_date: filters.value.to_date || null,
     }, {
         preserveState: true,
         preserveScroll: true,
         only: ["news", "filters"],
-        onSuccess: (page) => {
-            pagination.value = page.props.news;
-            newsList.value = page.props.news.data;
+        onSuccess: ({ props }) => {
+            pagination.value = props.news;
+            newsList.value = props.news.data;
         },
     });
 };
 
 const goToPage = (url) => {
     if (!url) return;
-    router.get(url, filters.value, {
+    router.get(url, { ...filters.value }, {
         preserveState: true,
-        preserveScroll: false,
+        preserveScroll: true,
         only: ["news", "filters"],
-        onSuccess: (page) => {
-            pagination.value = page.props.news;
-            newsList.value = page.props.news.data;
+        onSuccess: ({ props }) => {
+            Object.assign(pagination.value, props.news);
+            newsList.value = props.news.data;
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
@@ -144,8 +148,10 @@ const goToPage = (url) => {
                 <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
-                        'text-gray-400 cursor-not-allowed': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
+                        'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
+                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                </button>
+
             </div>
         </div>
 
