@@ -8,9 +8,34 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Pagination, Autoplay } from "swiper/modules";
 import { debounce } from "lodash";
+import NewsModal from "@/Components/NewsModal.vue";
 const isFirstLoad = ref(true);
 
 defineOptions({ layout: GuestLayout });
+
+const selectedNews = ref(null);
+const isModalOpen = ref(false);
+
+const openModal = (news) => {
+    selectedNews.value = news;
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+};
+
+const formatDate = (dateString) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(dateString));
+};
 
 const pageProps = usePage().props;
 const pagination = ref(pageProps.news);
@@ -46,7 +71,7 @@ watch(() => filters.value.search, debouncedSearch);
 
 const applyFilters = () => {
     router.get("/guestNews", {
-        search: filters.value.search || null,  // Ensures empty search resets data
+        search: filters.value.search || null,
         from_date: filters.value.from_date || null,
         to_date: filters.value.to_date || null,
     }, {
@@ -111,10 +136,11 @@ const goToPage = (url) => {
 
         <div v-if="newsList.length > 0" class="space-y-6 md:px-12">
             <div v-for="news in newsList" :key="news.id"
-                class="border border-gray-300 bg-white p-6 shadow-lg flex flex-col md:flex-row gap-6 rounded">
+                class="border border-gray-300 bg-white p-6 shadow-lg shadow-black/50 flex flex-col md:flex-row gap-6 rounded cursor-pointer"
+                @click="openModal(news)">
                 <div class="w-full md:w-3/5">
-                    <p class="text-sm font-extrabold text-gray-500 mb-8">
-                        {{ new Date(news.created_at).toLocaleDateString() }}
+                    <p class="text-sm uppercase font-black text-gray-700 mb-8">
+                        {{ formatDate(news.created_at) }}
                     </p>
                     <h2 class="text-lg md:text-xl font-bold text-blue-900 mt-2 line-clamp-2">
                         {{ news.title }}
@@ -125,9 +151,11 @@ const goToPage = (url) => {
                 </div>
 
                 <div v-if="news.images.length" class="w-full md:w-2/5 flex justify-center">
-                    <swiper :modules="[Pagination, Autoplay]" :pagination="{ clickable: true }"
-                        :autoplay="{ delay: 3000, disableOnInteraction: false }" class="w-full max-w-[400px]">
-                        <swiper-slide v-for="(image, index) in news.images" :key="index" class="px-2">
+                    <swiper :modules="[Pagination, Autoplay]" :pagination="{ clickable: false }"
+                        :allowTouchMove="false" :autoplay="{ delay: 3000, disableOnInteraction: false }"
+                        class="w-full max-w-[400px] shadow-lg shadow-black/50">
+                        <swiper-slide v-for="(image, index) in news.images" :key="index"
+                            class="p-2 border border-gray-300">
                             <div class="relative flex justify-center items-center h-[250px] w-full overflow-hidden">
                                 <div class="absolute inset-0 bg-cover bg-center blur-lg scale-110"
                                     :style="{ backgroundImage: `url(/storage/${image})` }"></div>
@@ -154,6 +182,6 @@ const goToPage = (url) => {
 
             </div>
         </div>
-
+        <NewsModal v-if="isModalOpen" :newsItem="selectedNews" :isOpen="isModalOpen" @close="closeModal" />
     </div>
 </template>
