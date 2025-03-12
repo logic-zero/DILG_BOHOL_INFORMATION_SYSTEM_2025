@@ -1,10 +1,8 @@
 <template>
-    <!-- Tailwind Modal -->
     <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
         @click.self="closeModal">
         <div
             class="bg-white shadow-lg w-full sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] h-[95vh] max-h-[95vh] flex flex-col">
-            <!-- Close Button (Top) -->
             <div class="px-4 py-3 border-b flex justify-between items-center">
                 <p class="text-sm uppercase text-gray-700 font-black">
                     {{ formattedDate }}
@@ -14,7 +12,6 @@
                 </button>
             </div>
 
-            <!-- Scrollable Content -->
             <div class="p-4 overflow-y-auto flex-grow">
                 <h5 class="text-xl text-blue-900 font-black mb-5">{{ newsItem.title }}</h5>
                 <p class="text-gray-500 text-md whitespace-pre-line">{{ newsItem.caption }}</p>
