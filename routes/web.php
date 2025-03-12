@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\NewsController;
+use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::inertia('/news', 'Guest/News')->name('news');
+Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
 Route::inertia('/LGUs', 'Guest/LGUs')->name('LGUs');
 Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
@@ -42,11 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/adminNews', [NewsController::class, 'index'])->name('AdminNews');
-    Route::post('/news', [NewsController::class, 'store']);
-    Route::post('/news/{news}', [NewsController::class, 'update'])->name('news.update');
-    Route::delete('/news/{news}', [NewsController::class, 'destroy']);
-    Route::patch('/news/{news}/toggle-status', [NewsController::class, 'toggleStatus']);
+    //News Admin Routes
+    Route::get('/adminNews', [AdminNewsController::class, 'index'])->name('AdminNews');
+    Route::post('/news', [AdminNewsController::class, 'store'])->name('news.store');
+    Route::post('/news/{news}', [AdminNewsController::class, 'update'])->name('news.update');
+    Route::delete('/news/{news}', [AdminNewsController::class, 'destroy'])->name('news.destroy');
+    Route::patch('/news/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('news.toggle-status');
 
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
     Route::inertia('/adminLGUs', 'Admin/AdminLGUs')->name('AdminLGUs');

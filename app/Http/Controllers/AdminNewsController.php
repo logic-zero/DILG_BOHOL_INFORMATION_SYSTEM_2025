@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class NewsController extends Controller
+class AdminNewsController extends Controller
 {
     public function index(Request $request)
     {

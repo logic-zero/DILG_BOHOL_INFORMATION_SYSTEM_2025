@@ -249,6 +249,9 @@ const toggleStatus = (id) => {
 
 <template>
     <div class="p-4">
+        <h1 class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 dark:text-white border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
+            NEWS & UPDATES
+        </h1>
         <transition name="fade">
             <div v-if="showSuccess"
                 class="fixed top-20 right-5 bg-green-500 text-white p-3 rounded shadow-lg z-50 flex items-center gap-2">
@@ -344,7 +347,7 @@ const toggleStatus = (id) => {
                         <h2 class="text-lg font-semibold text-gray-900">
                             {{ news.title }}
                         </h2>
-                        <p class="text-sm text-gray-600 truncate" :title="news.caption">
+                        <p class="text-sm text-gray-600 line-clamp-4" :title="news.caption">
                             {{ news.caption }}
                         </p>
                         <p class="text-xs text-gray-500 mt-1">
