@@ -1,5 +1,10 @@
 <template>
     <div>
+        <div class="w-full p-6">
+            <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
+                News & Updates
+            </h1>
+        </div>
         <div class="container mx-auto px-4 py-6 max-w-[1400px]">
             <div class="flex flex-col md:flex-row gap-4">
                 <!-- Left Column: Google Map & YouTube (Fills Remaining Space) -->

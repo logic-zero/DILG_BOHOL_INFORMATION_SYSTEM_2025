@@ -138,16 +138,16 @@ const goToPage = (url) => {
 
         <p v-else class="text-center text-gray-500 mt-4">No news found.</p>
 
-        <div class="flex justify-between items-center mt-6 text-gray-700">
+        <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
-            <div class="flex space-x-2">
+            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
                 <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition"
-                    :disabled="!link.url"></button>
+                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
             </div>
         </div>
+
     </div>
 </template>
