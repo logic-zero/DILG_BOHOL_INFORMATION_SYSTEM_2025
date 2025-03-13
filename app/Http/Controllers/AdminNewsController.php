@@ -15,8 +15,10 @@ class AdminNewsController extends Controller
         $query = News::with('user')->latest();
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%')
-                ->orWhere('caption', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('caption', 'like', '%' . $request->search . '%');
+            });
         }
 
         if ($request->has('status') && in_array($request->status, ['approved', 'pending'])) {
@@ -34,6 +36,7 @@ class AdminNewsController extends Controller
             'filters' => $request->only(['search', 'status']),
         ]);
     }
+
 
     public function store(Request $request)
     {
