@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { useForm, usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { debounce } from "lodash";
 
 defineOptions({
     layout: AuthenticatedLayout,
@@ -25,45 +26,29 @@ const filters = ref({
     status: pageProps.filters?.status ?? "",
 });
 
-const handleSearchEnter = (event) => {
-    if (event.key === "Enter") {
-        applyFilters();
-    }
-};
-
 watch(
     () => filters.value.search,
-    (newSearch) => {
-        if (newSearch === "") {
-            applyFilters();
-        }
-    }
+    debounce(() => {
+        applyFilters();
+    }, 500)
 );
 
-const applyFilters = () => {
-    router.get("/adminNews", filters.value, {
-        preserveState: true,
-        preserveScroll: true,
-        only: ["news", "filters"],
-        onSuccess: (page) => {
-            pagination.value = page.props.news;
-            newsList.value = page.props.news.data;
-        },
-    });
-};
-
-const goToPage = (url) => {
-    if (!url) return;
+const fetchNews = (url = "/adminNews") => {
     router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["news", "filters"],
-        onSuccess: (page) => {
-            pagination.value = page.props.news;
-            newsList.value = page.props.news.data;
+        onSuccess: ({ props }) => {
+            pagination.value = props.news;
+            newsList.value = props.news.data;
+            window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
 };
+
+const applyFilters = () => fetchNews();
+const goToPage = (url) => url && fetchNews(url);
+
 
 const form = useForm({
     id: null,
@@ -121,47 +106,15 @@ const submitNews = () => {
     formData.append("title", title);
     formData.append("caption", caption);
 
-    if (isEditMode.value) {
-        if (form.images.length === 0 && editingNews.value.images) {
-            formData.append(
-                "existing_images",
-                JSON.stringify(editingNews.value.images)
-            );
-        } else {
-            form.images.forEach((image) => formData.append("images[]", image));
-        }
-    } else {
-        form.images.forEach((image) => formData.append("images[]", image));
-    }
+    if (form.images.length) {
+    form.images.forEach((image) => formData.append("images[]", image));
+} else if (isEditMode.value && editingNews.value.images) {
+    formData.append("existing_images", JSON.stringify(editingNews.value.images));
+}
 
     const onSuccess = (page) => {
-        if (isEditMode.value) {
-            const updatedNews = page.props.news.data.find((n) => n.id === form.id);
-
-            if (updatedNews) {
-                const index = newsList.value.findIndex((n) => n.id === form.id);
-                if (index !== -1) {
-                    newsList.value[index] = updatedNews;
-                }
-            } else {
-                router.get(
-                    "/adminNews",
-                    { page: pagination.value.current_page, ...filters.value },
-                    {
-                        preserveState: true,
-                        preserveScroll: true,
-                        only: ["news", "filters"],
-                        onSuccess: (page) => {
-                            pagination.value = page.props.news;
-                            newsList.value = page.props.news.data;
-                        },
-                    }
-                );
-            }
-        } else {
-            newsList.value.unshift(page.props.news.data[0]);
-            pagination.value = page.props.news;
-        }
+        pagination.value = page.props.news;
+        newsList.value = [...page.props.news.data]; // Ensure a fresh list
 
         showSuccessMessage(isEditMode.value ? "News updated successfully!" : "News added successfully!");
         closeModal();
@@ -194,57 +147,35 @@ const closeDeleteModal = () => {
     isDeleteModalOpen.value = false;
 };
 
-const deleteNews = () => {
+const deleteNews = async () => {
     if (!newsToDelete.value) return;
 
-    form.delete(`/news/${newsToDelete.value.id}`, {
-        onSuccess: (page) => {
-            newsList.value = newsList.value.filter(
-                (n) => n.id !== newsToDelete.value.id
-            );
-            pagination.value = page.props.news;
+    try {
+        await form.delete(`/news/${newsToDelete.value.id}`);
+        newsList.value = newsList.value.filter((n) => n.id !== newsToDelete.value.id);
+        showSuccessMessage("News deleted successfully!");
+        closeDeleteModal();
 
-            if (
-                newsList.value.length === 0 &&
-                pagination.value.current_page > 1
-            ) {
-                router.get(
-                    "/adminNews",
-                    {
-                        page: pagination.value.current_page - 1,
-                        ...filters.value,
-                    },
-                    {
-                        preserveState: true,
-                        preserveScroll: true,
-                        only: ["news", "filters"],
-                        onSuccess: (page) => {
-                            pagination.value = page.props.news;
-                            newsList.value = page.props.news.data;
-                        },
-                    }
-                );
-            }
-
-            showSuccessMessage("News deleted successfully!");
-            closeDeleteModal();
-        },
-    });
+        if (newsList.value.length === 0 && pagination.value.current_page > 1) {
+            goToPage(`/adminNews?page=${pagination.value.current_page - 1}`);
+        }
+    } catch (error) {
+        errorMessage.value = "Failed to delete news.";
+    }
 };
 
-const toggleStatus = (id) => {
-    form.patch(`/news/${id}/toggle-status`, {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-            const index = newsList.value.findIndex((n) => n.id === id);
-            if (index !== -1) {
-                newsList.value[index].status = !newsList.value[index].status;
-            }
-            showSuccessMessage("Status updated successfully!");
-        },
-    });
+
+const toggleStatus = async (id) => {
+    try {
+        await router.patch(`/news/${id}/toggle-status`, {}, { preserveState: true, preserveScroll: true });
+        const newsItem = newsList.value.find((n) => n.id === id);
+        if (newsItem) newsItem.status = !newsItem.status;
+        showSuccessMessage("Status updated successfully!");
+    } catch (error) {
+        errorMessage.value = "Failed to update status.";
+    }
 };
+
 </script>
 
 <template>
@@ -262,13 +193,13 @@ const toggleStatus = (id) => {
 
         <div class="flex flex-col md:flex-row md:items-center gap-2 mb-4">
             <button @click="openModal()"
-                class="bg-teal-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-teal-600 w-full md:w-auto">
+                class="bg-blue-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-900 w-full md:w-auto">
                 <i class="fas fa-plus-circle"></i>
                 Add News
             </button>
 
             <div class="relative flex-1 w-full md:w-auto">
-                <input v-model="filters.search" @keyup.enter="applyFilters" @input="resetSearch" type="text"
+                <input v-model="filters.search" @keyup.enter="applyFilters" type="text"
                     placeholder="Search news..." class="border p-2 pl-4 pr-12 rounded w-full" />
                 <button @click="applyFilters"
                     class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded hover:bg-gray-100">
@@ -326,7 +257,7 @@ const toggleStatus = (id) => {
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-1">
                                 <button @click="openModal(news)"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition">
+                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
                                     Edit
                                 </button>
                                 <button @click="openDeleteModal(news)"
@@ -373,7 +304,7 @@ const toggleStatus = (id) => {
 
                 <div class="mt-3 flex gap-2">
                     <button @click="openModal(news)"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded transition">
+                        class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
                         <i class="fas fa-edit"></i> Edit
                     </button>
                     <button @click="openDeleteModal(news)"
@@ -387,7 +318,7 @@ const toggleStatus = (id) => {
         <div class="flex justify-center mt-4 space-x-2">
             <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
                 v-html="link.label" :class="{
-                    'font-bold text-blue-600': link.active,
+                    'font-bold bg-blue-300': link.active,
                     'text-gray-500': !link.url,
                 }" class="px-3 py-1 border rounded cursor-pointer" :disabled="!link.url"></button>
         </div>
