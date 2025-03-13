@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useForm, usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { debounce } from "lodash";
@@ -20,6 +20,11 @@ const showSuccess = ref(false);
 const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
+
+const paginationInfo = computed(() => {
+    const { from, to, total } = pagination.value;
+    return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
+});
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",
@@ -315,13 +320,18 @@ const toggleStatus = async (id) => {
             </div>
         </div>
 
-        <div class="flex justify-center mt-4 space-x-2">
-            <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
-                v-html="link.label" :class="{
-                    'font-bold bg-blue-300': link.active,
-                    'text-gray-500': !link.url,
-                }" class="px-3 py-1 border rounded cursor-pointer" :disabled="!link.url"></button>
-        </div>
+        <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
+    <span>{{ paginationInfo }}</span>
+    <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
+        <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+            v-html="link.label" :class="{
+                'font-bold bg-blue-300 text-gray-900': link.active,
+                'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
+            }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+        </button>
+    </div>
+</div>
+
 
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
