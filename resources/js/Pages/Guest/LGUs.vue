@@ -21,6 +21,9 @@ const getSbMembers = (lgu) => {
 <template>
     <div>
         <div class="container mx-auto p-6">
+            <div class="flex justify-center items-center mt-2 mb-4">
+                <img src="/img/bohol_seal.png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-[#3B6790]">
                 <div>
                     <p class="font-medium text-lg">EXECUTIVE BRIEF</p>
@@ -35,10 +38,35 @@ const getSbMembers = (lgu) => {
                     <p>City: 92,297 (2007 Census)</p>
                     <p>Language/Dialects: Boholano, English, Tagalog, Chinese</p>
                 </div>
-                <div class="text-gray-600">
+
+                <div class="text-[#727D73]">
                     <p class="text-justify">
                         THE Province of Bohol is an island haven tucked away in the Filipino region of Visayas.
-                        This is one of the largest of more than 7,000 islands that comprise the Philippines...
+                        This is one of the largest of more than 7,000 islands that comprise the Philippines, and it
+                        consistently draws tourists with its natural beauty, hilly interior and long stretches of white,
+                        sandy beaches.
+                        Nested as it is in the midst of Visayas, Bohol has long been a protected center of culture and
+                        politics. Locals proudly refer to the island as the ‘Republic of Bohol’.
+                    </p>
+                    <p class="text-justify mt-4">
+                        <span class="font-medium">Vision:</span> Bohol is a prime eco-cultural tourism destination and a
+                        strong, balanced agro-industrial
+                        province, with a well-educated, God-loving and law-abiding citizenry, proud of their cultural
+                        heritage, enjoying a state of well-being and committed to sound environment management.
+                    </p>
+                    <p class="text-justify mt-4">
+                        <span class="font-medium">Mission:</span> To enrich Bohol’s social, economic, cultural,
+                        political and environmental resources through
+                        good governance and effective partnerships with stakeholders for increased global
+                        competitiveness.
+                    </p>
+                    <p class="text-justify mt-4">
+                        <span class="font-medium">Goal:</span><br>
+                        1. Environmental Protection and Management;<br>
+                        2. Social Equity;<br>
+                        3. Delivering quality services;<br>
+                        4. Local/Regional Economic Development and Strategic Wealth Generation;<br>
+                        5. Responsive, Transparent and Accountable Governance.
                     </p>
                 </div>
             </div>
@@ -53,7 +81,7 @@ const getSbMembers = (lgu) => {
                     class="bg-white shadow-md rounded p-4 border flex flex-col sm:flex-row">
                     <div class="flex-1 pr-4">
                         <p class="text-center text-red-600 font-semibold text-xl mb-4">{{ lgu.municipality.municipality
-                            }}</p>
+                        }}</p>
                         <div class="space-y-2">
                             <p class="text-sm text-gray-600">
                                 <span class="font-bold block">Mayor:</span> {{ lgu.mayor }}
