@@ -162,7 +162,7 @@ const deleteNews = async () => {
         closeDeleteModal();
 
         if (newsList.value.length === 0 && pagination.value.current_page > 1) {
-            goToPage(`/adminNews?page=${pagination.value.current_page - 1}`);
+            goToPage(`/admin/news?page=${pagination.value.current_page - 1}`);
         }
     } catch (error) {
         errorMessage.value = "Failed to delete news.";
