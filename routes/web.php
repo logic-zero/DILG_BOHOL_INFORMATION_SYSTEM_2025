@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\ProfileController;
@@ -36,14 +37,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //News Admin Routes
-    Route::get('/adminNews', [AdminNewsController::class, 'index'])->name('AdminNews');
-    Route::post('/news', [AdminNewsController::class, 'store'])->name('news.store');
-    Route::post('/news/{news}', [AdminNewsController::class, 'update'])->name('news.update');
-    Route::delete('/news/{news}', [AdminNewsController::class, 'destroy'])->name('news.destroy');
-    Route::patch('/news/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('news.toggle-status');
+    Route::get('/admin/news', [AdminNewsController::class, 'index'])->name('AdminNews');
+    Route::post('/admin/news', [AdminNewsController::class, 'store'])->name('news.store');
+    Route::post('/admin/news/{news}', [AdminNewsController::class, 'update'])->name('news.update');
+    Route::delete('/admin/news/{news}', [AdminNewsController::class, 'destroy'])->name('news.destroy');
+    Route::patch('/admin/news/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('news.toggle-status');
+
+    Route::get('/admin/lgus', [AdminLguController::class, 'index'])->name('AdminLGUs');
+    Route::post('/admin/lgus', [AdminLguController::class, 'store'])->name('lgu.store');
+    Route::post('/admin/lgus/{lgu}', [AdminLguController::class, 'update'])->name('lgu.update');
+    Route::delete('/admin/lgus/{lgu}', [AdminLguController::class, 'destroy'])->name('lgu.destroy');
+
 
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
-    Route::inertia('/adminLGUs', 'Admin/AdminLGUs')->name('AdminLGUs');
+    // Route::inertia('/adminLGUs', 'Admin/AdminLGUs')->name('AdminLGUs');
     Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
     Route::inertia('/adminIssuances', 'Admin/AdminIssuances')->name('AdminIssuances');
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');

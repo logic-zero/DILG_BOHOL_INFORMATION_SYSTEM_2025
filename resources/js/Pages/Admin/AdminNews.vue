@@ -38,7 +38,7 @@ watch(
     }, 500)
 );
 
-const fetchNews = (url = "/adminNews") => {
+const fetchNews = (url = "/admin/news") => {
     router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
@@ -119,7 +119,7 @@ const submitNews = () => {
 
     const onSuccess = (page) => {
         pagination.value = page.props.news;
-        newsList.value = [...page.props.news.data]; // Ensure a fresh list
+        newsList.value = [...page.props.news.data];
 
         showSuccessMessage(isEditMode.value ? "News updated successfully!" : "News added successfully!");
         closeModal();
@@ -133,7 +133,7 @@ const submitNews = () => {
             "An error occurred.";
     };
 
-    router.post(isEditMode.value ? `/news/${form.id}` : "/news", formData, {
+    router.post(isEditMode.value ? `/admin/news/${form.id}` : "/admin/news", formData, {
         preserveScroll: true,
         preserveState: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -156,7 +156,7 @@ const deleteNews = async () => {
     if (!newsToDelete.value) return;
 
     try {
-        await form.delete(`/news/${newsToDelete.value.id}`);
+        await form.delete(`/admin/news/${newsToDelete.value.id}`);
         newsList.value = newsList.value.filter((n) => n.id !== newsToDelete.value.id);
         showSuccessMessage("News deleted successfully!");
         closeDeleteModal();
@@ -172,7 +172,7 @@ const deleteNews = async () => {
 
 const toggleStatus = async (id) => {
     try {
-        await router.patch(`/news/${id}/toggle-status`, {}, { preserveState: true, preserveScroll: true });
+        await router.patch(`/admin/news/${id}/toggle-status`, {}, { preserveState: true, preserveScroll: true });
         const newsItem = newsList.value.find((n) => n.id === id);
         if (newsItem) newsItem.status = !newsItem.status;
         showSuccessMessage("Status updated successfully!");
