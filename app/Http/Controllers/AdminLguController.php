@@ -45,54 +45,54 @@ class AdminLguController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'municipality_id' => 'required|exists:municipalities,id',
-        'mayor' => 'required|string|max:255',
-        'vice_mayor' => 'required|string|max:255',
-        'sb_member1' => 'nullable|string|max:255',
-        'sb_member2' => 'nullable|string|max:255',
-        'sb_member3' => 'nullable|string|max:255',
-        'sb_member4' => 'nullable|string|max:255',
-        'sb_member5' => 'nullable|string|max:255',
-        'sb_member6' => 'nullable|string|max:255',
-        'sb_member7' => 'nullable|string|max:255',
-        'sb_member8' => 'nullable|string|max:255',
-        'sb_member9' => 'nullable|string|max:255',
-        'sb_member10' => 'nullable|string|max:255',
-        'lb_pres' => 'nullable|string|max:255',
-        'psk_pres' => 'nullable|string|max:255',
-    ]);
+    {
+        $validated = $request->validate([
+            'municipality_id' => 'required|exists:municipalities,id',
+            'mayor' => 'required|string|max:255',
+            'vice_mayor' => 'required|string|max:255',
+            'sb_member1' => 'nullable|string|max:255',
+            'sb_member2' => 'nullable|string|max:255',
+            'sb_member3' => 'nullable|string|max:255',
+            'sb_member4' => 'nullable|string|max:255',
+            'sb_member5' => 'nullable|string|max:255',
+            'sb_member6' => 'nullable|string|max:255',
+            'sb_member7' => 'nullable|string|max:255',
+            'sb_member8' => 'nullable|string|max:255',
+            'sb_member9' => 'nullable|string|max:255',
+            'sb_member10' => 'nullable|string|max:255',
+            'lb_pres' => 'nullable|string|max:255',
+            'psk_pres' => 'nullable|string|max:255',
+        ]);
 
-    Lgu::create($validated);
+        Lgu::create($validated);
 
-    return redirect()->route('AdminLGUs')->with('success', 'Added Successfully!');
-}
+        return redirect()->route('AdminLGUs')->with('success', 'Added Successfully!');
+    }
 
-public function update(Request $request, Lgu $lgu)
-{
-    $validated = $request->validate([
-        'municipality_id' => 'required|exists:municipalities,id',
-        'mayor' => 'required|string|max:255',
-        'vice_mayor' => 'required|string|max:255',
-        'sb_member1' => 'nullable|string|max:255',
-        'sb_member2' => 'nullable|string|max:255',
-        'sb_member3' => 'nullable|string|max:255',
-        'sb_member4' => 'nullable|string|max:255',
-        'sb_member5' => 'nullable|string|max:255',
-        'sb_member6' => 'nullable|string|max:255',
-        'sb_member7' => 'nullable|string|max:255',
-        'sb_member8' => 'nullable|string|max:255',
-        'sb_member9' => 'nullable|string|max:255',
-        'sb_member10' => 'nullable|string|max:255',
-        'lb_pres' => 'nullable|string|max:255',
-        'psk_pres' => 'nullable|string|max:255',
-    ]);
+    public function update(Request $request, Lgu $lgu)
+    {
+        $validated = $request->validate([
+            'municipality_id' => 'required|exists:municipalities,id',
+            'mayor' => 'required|string|max:255',
+            'vice_mayor' => 'required|string|max:255',
+            'sb_member1' => 'nullable|string|max:255',
+            'sb_member2' => 'nullable|string|max:255',
+            'sb_member3' => 'nullable|string|max:255',
+            'sb_member4' => 'nullable|string|max:255',
+            'sb_member5' => 'nullable|string|max:255',
+            'sb_member6' => 'nullable|string|max:255',
+            'sb_member7' => 'nullable|string|max:255',
+            'sb_member8' => 'nullable|string|max:255',
+            'sb_member9' => 'nullable|string|max:255',
+            'sb_member10' => 'nullable|string|max:255',
+            'lb_pres' => 'nullable|string|max:255',
+            'psk_pres' => 'nullable|string|max:255',
+        ]);
 
-    $lgu->update($validated);
+        $lgu->update($validated);
 
-    return redirect()->route('AdminLGUs')->with('success', 'Updated Successfully!');
-}
+        return redirect()->route('AdminLGUs')->with('success', 'Updated Successfully!');
+    }
 
 
     public function destroy(Lgu $lgu)

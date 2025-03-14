@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -11,7 +12,7 @@ use Inertia\Inertia;
 //Guest Routes
 Route::get('/', [GuestNewsController::class, 'homeIndex'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
-Route::inertia('/LGUs', 'Guest/LGUs')->name('LGUs');
+Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::inertia('/latestIssuances', 'Guest/LatestIssuances')->name('LatestIssuances');

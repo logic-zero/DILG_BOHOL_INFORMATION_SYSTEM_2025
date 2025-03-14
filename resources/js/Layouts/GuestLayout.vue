@@ -189,7 +189,7 @@ const setDropdown = (index, isOpen) => {
 };
 
 const menus = [
-    { name: "Officials", dropdown: [{ name: "LGUs", link: "/LGUs" }, { name: "Provincial Officials", link: "/provincialOfficials" }] },
+    { name: "Officials", dropdown: [{ name: "LGUs", link: "/guestLGUs" }, { name: "Provincial Officials", link: "/provincialOfficials" }] },
     { name: "LGRRC", dropdown: [{ name: "DILG E-Library", link: "https://library.dilg.gov.ph/" }, { name: "Knowledge Materials", link: "/knowledgeMaterials" }] },
     {
         name: "Issuances", dropdown: [

@@ -46,29 +46,6 @@ class Lgu extends Model
 
     }
 
-    public function scopeSearch($query, $terms){
-        collect(explode(" " , $terms))->filter()->each(function($term) use($query){
-            $term = '%'. $term . '%';
-
-            $query->where('mayor', 'like', $term)
-                ->orWhere('vice_mayor', 'like', $term)
-                ->orWhere('municipality_id', 'like', $term)
-                ->orWhere('sb_member1', 'like', $term)
-                ->orWhere('sb_member2', 'like', $term)
-                ->orWhere('sb_member3', 'like', $term)
-                ->orWhere('sb_member4', 'like', $term)
-                ->orWhere('sb_member5', 'like', $term)
-                ->orWhere('sb_member6', 'like', $term)
-                ->orWhere('sb_member7', 'like', $term)
-                ->orWhere('sb_member8', 'like', $term)
-                ->orWhere('sb_member9', 'like', $term)
-                ->orWhere('sb_member10', 'like', $term)
-                ->orWhere('lb_pres', 'like', $term)
-                ->orWhere('psk_pres', 'like', $term);
-
-        });
-    }
-
     // public function getActivitylogOptions(): LogOptions
     // {
     //     return LogOptions::defaults()
