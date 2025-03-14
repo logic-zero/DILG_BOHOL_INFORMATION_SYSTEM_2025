@@ -24,17 +24,19 @@ const lguToDelete = ref(null);
 
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
-    return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
+    return from && to
+        ? `Showing ${from} to ${to} of ${total} entries`
+        : "No results found";
 });
 
 const filters = ref({
-    search: pageProps.filters?.lgus ?? "",
+    search: pageProps.filters?.search ?? "",
 });
 
 watch(
     () => filters.value.search,
     debounce(() => {
-        applyFilters();
+        fetchLgus();
     }, 500)
 );
 
@@ -51,12 +53,10 @@ const fetchLgus = (url = "/admin/lgus") => {
     });
 };
 
-const applyFilters = () => {
-    fetchLgus();
-};
 const goToPage = (url) => url && fetchLgus(url);
 
 const form = useForm({
+    id: null,
     municipality_id: "",
     mayor: "",
     vice_mayor: "",
@@ -72,13 +72,21 @@ const openModal = (lgu = null) => {
     errorMessage.value = "";
 
     if (lgu) {
+        form.id = lgu.id;
         form.municipality_id = lgu.municipality_id;
         form.mayor = lgu.mayor;
         form.vice_mayor = lgu.vice_mayor;
         form.sb_members = [
-            lgu.sb_member1, lgu.sb_member2, lgu.sb_member3, lgu.sb_member4,
-            lgu.sb_member5, lgu.sb_member6, lgu.sb_member7, lgu.sb_member8,
-            lgu.sb_member9, lgu.sb_member10,
+            lgu.sb_member1,
+            lgu.sb_member2,
+            lgu.sb_member3,
+            lgu.sb_member4,
+            lgu.sb_member5,
+            lgu.sb_member6,
+            lgu.sb_member7,
+            lgu.sb_member8,
+            lgu.sb_member9,
+            lgu.sb_member10,
         ];
         form.lb_pres = lgu.lb_pres;
         form.psk_pres = lgu.psk_pres;
@@ -93,49 +101,58 @@ const closeModal = () => {
     errorMessage.value = "";
 };
 
+const showSuccessMessage = (message) => {
+    successMessage.value = message;
+    showSuccess.value = true;
+    setTimeout(() => {
+        showSuccess.value = false;
+    }, 3000);
+};
+
 const submitLgu = () => {
     errorMessage.value = "";
 
-    if (!form.municipality_id) return (errorMessage.value = "Municipality is required.");
+    if (!form.municipality_id)
+        return (errorMessage.value = "Municipality is required.");
     if (!form.mayor) return (errorMessage.value = "Mayor is required.");
     if (!form.vice_mayor) return (errorMessage.value = "Vice Mayor is required.");
 
-    const payload = {
+    const url = isEditMode.value ? `/admin/lgus/${form.id}` : "/admin/lgus";
+
+    const formattedData = {
         municipality_id: form.municipality_id,
         mayor: form.mayor,
         vice_mayor: form.vice_mayor,
-        sb_member1: form.sb_members[0],
-        sb_member2: form.sb_members[1],
-        sb_member3: form.sb_members[2],
-        sb_member4: form.sb_members[3],
-        sb_member5: form.sb_members[4],
-        sb_member6: form.sb_members[5],
-        sb_member7: form.sb_members[6],
-        sb_member8: form.sb_members[7],
-        sb_member9: form.sb_members[8],
-        sb_member10: form.sb_members[9],
-        lb_pres: form.lb_pres,
-        psk_pres: form.psk_pres,
+        sb_member1: form.sb_members[0] || "",
+        sb_member2: form.sb_members[1] || "",
+        sb_member3: form.sb_members[2] || "",
+        sb_member4: form.sb_members[3] || "",
+        sb_member5: form.sb_members[4] || "",
+        sb_member6: form.sb_members[5] || "",
+        sb_member7: form.sb_members[6] || "",
+        sb_member8: form.sb_members[7] || "",
+        sb_member9: form.sb_members[8] || "",
+        sb_member10: form.sb_members[9] || "",
+        lb_pres: form.lb_pres || "",
+        psk_pres: form.psk_pres || "",
     };
 
-    const url = isEditMode.value ? `/admin/lgus/${editingLgu.value.id}` : "/admin/lgus";
-
-    router.post(url, payload, {
+    router.post(url, formattedData, {
         preserveScroll: true,
         preserveState: true,
-        only: ["lgus", "filters"], // Ensure only relevant data updates
         onSuccess: ({ props }) => {
             pagination.value = props.lgus;
-            lguList.value = [...props.lgus.data]; // Ensure immediate UI update
-
-            showSuccess.value = true;
-            successMessage.value = isEditMode.value ? "LGU updated successfully!" : "LGU added successfully!";
-            setTimeout(() => showSuccess.value = false, 3000);
-
+            lguList.value = [...props.lgus.data];
+            showSuccessMessage(
+                isEditMode.value
+                    ? "LGU updated successfully!"
+                    : "LGU added successfully!"
+            );
             closeModal();
         },
         onError: (errors) => {
-            errorMessage.value = Object.values(errors).flat().join(", ") || "An error occurred.";
+            errorMessage.value =
+                Object.values(errors).flat().join(", ") || "An error occurred.";
         },
     });
 };
@@ -146,11 +163,9 @@ const openDeleteModal = (lgu) => {
 };
 
 const closeDeleteModal = () => {
-    isDeleteModalOpen.value = false;
     lguToDelete.value = null;
+    isDeleteModalOpen.value = false;
 };
-
-
 
 const deleteLgu = async () => {
     if (!lguToDelete.value) return;
@@ -214,8 +229,8 @@ const deleteLgu = async () => {
                 </thead>
                 <tbody>
                     <tr v-for="lgu in lguList" :key="lgu.id" class="border-b hover:bg-gray-50 transition">
-                        <td class="p-3 text-gray-900 font-medium break-words">
-                            {{ lgu.municipality?.municipality || 'Unknown Municipality' }}
+                        <td class="p-3 text-gray-900 font-extrabold break-words">
+                            {{ lgu.municipality?.municipality || "Unknown Municipality" }}
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ lgu.mayor }}
@@ -227,7 +242,7 @@ const deleteLgu = async () => {
                             <div class="flex justify-center gap-1">
                                 <button @click="openModal(lgu)"
                                     class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
-                                    Edit
+                                    View | Edit
                                 </button>
                                 <button @click="openDeleteModal(lgu)"
                                     class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
@@ -244,14 +259,14 @@ const deleteLgu = async () => {
             <div v-for="lgu in lguList" :key="lgu.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-between items-start flex-wrap gap-2">
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-lg font-semibold text-gray-900">
-                            {{ lgu.municipality?.municipality || 'Unknown Municipality' }}
+                        <h2 class="text-lg font-extrabold mb-2 text-gray-900">
+                            {{ lgu.municipality?.municipality || "Unknown Municipality" }}
                         </h2>
                         <p class="text-sm text-gray-600">
-                            Mayor: {{ lgu.mayor }}
+                            <span class="font-bold">Mayor:</span> {{ lgu.mayor }}
                         </p>
                         <p class="text-sm text-gray-600">
-                            Vice Mayor: {{ lgu.vice_mayor }}
+                            <span class="font-bold">Vice Mayor:</span> {{ lgu.vice_mayor }}
                         </p>
                     </div>
                 </div>
@@ -259,7 +274,7 @@ const deleteLgu = async () => {
                 <div class="mt-3 flex gap-2">
                     <button @click="openModal(lgu)"
                         class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i> View | Edit
                     </button>
                     <button @click="openDeleteModal(lgu)"
                         class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition">
@@ -276,15 +291,13 @@ const deleteLgu = async () => {
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
-                </button>
+                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
             </div>
         </div>
 
-        <!-- Add/Edit Modal -->
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 shadow-lg w-full max-w-lg mx-4 max-h-[95vh] overflow-y-auto">
-                <h2 class="text-xl mb-4">
+                <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit LGU" : "Add LGU" }}
                 </h2>
 
@@ -293,30 +306,30 @@ const deleteLgu = async () => {
                     {{ errorMessage }}
                 </div>
 
-                <label class="block text-gray-700">Municipality</label>
+                <label class="font-bold block text-gray-700">Municipality</label>
                 <select v-model="form.municipality_id" class="border p-2 w-full my-2">
                     <option value="" disabled>Select Municipality</option>
                     <option v-for="municipality in municipalities" :key="municipality.id" :value="municipality.id">
-                        {{ municipality.municipality || 'Unknown Municipality' }}
+                        {{ municipality.municipality || "Unknown Municipality" }}
                     </option>
                 </select>
 
-                <label class="block text-gray-700">Mayor</label>
+                <label class="font-bold block text-gray-700">Mayor</label>
                 <input v-model="form.mayor" placeholder="Enter Mayor" class="border p-2 w-full my-2" />
 
-                <label class="block text-gray-700">Vice Mayor</label>
+                <label class="font-bold block text-gray-700">Vice Mayor</label>
                 <input v-model="form.vice_mayor" placeholder="Enter Vice Mayor" class="border p-2 w-full my-2" />
 
-                <label class="block text-gray-700">SB Members</label>
+                <label class="font-bold block text-gray-700">SB Members</label>
                 <div class="grid grid-cols-2 gap-2">
                     <input v-for="(member, index) in form.sb_members" :key="index" v-model="form.sb_members[index]"
                         placeholder="SB Member" class="border p-2 w-full my-1" />
                 </div>
 
-                <label class="block text-gray-700">LB President</label>
+                <label class="font-bold block text-gray-700">LB President</label>
                 <input v-model="form.lb_pres" placeholder="Enter LB President" class="border p-2 w-full my-2" />
 
-                <label class="block text-gray-700">PSK President</label>
+                <label class="font-bold block text-gray-700">PSK President</label>
                 <input v-model="form.psk_pres" placeholder="Enter PSK President" class="border p-2 w-full my-2" />
 
                 <div class="flex justify-end gap-2 mt-4">
@@ -331,8 +344,6 @@ const deleteLgu = async () => {
             </div>
         </div>
 
-
-        <!-- Delete Confirmation Modal -->
         <div v-if="isDeleteModalOpen"
             class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">

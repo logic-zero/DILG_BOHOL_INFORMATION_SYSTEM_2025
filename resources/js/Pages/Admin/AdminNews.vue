@@ -23,7 +23,9 @@ const newsToDelete = ref(null);
 
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
-    return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
+    return from && to
+        ? `Showing ${from} to ${to} of ${total} entries`
+        : "No results found";
 });
 
 const filters = ref({
@@ -53,7 +55,6 @@ const fetchNews = (url = "/admin/news") => {
 
 const applyFilters = () => fetchNews();
 const goToPage = (url) => url && fetchNews(url);
-
 
 const form = useForm({
     id: null,
@@ -112,16 +113,23 @@ const submitNews = () => {
     formData.append("caption", caption);
 
     if (form.images.length) {
-    form.images.forEach((image) => formData.append("images[]", image));
-} else if (isEditMode.value && editingNews.value.images) {
-    formData.append("existing_images", JSON.stringify(editingNews.value.images));
-}
+        form.images.forEach((image) => formData.append("images[]", image));
+    } else if (isEditMode.value && editingNews.value.images) {
+        formData.append(
+            "existing_images",
+            JSON.stringify(editingNews.value.images)
+        );
+    }
 
     const onSuccess = (page) => {
         pagination.value = page.props.news;
         newsList.value = [...page.props.news.data];
 
-        showSuccessMessage(isEditMode.value ? "News updated successfully!" : "News added successfully!");
+        showSuccessMessage(
+            isEditMode.value
+                ? "News updated successfully!"
+                : "News added successfully!"
+        );
         closeModal();
     };
 
@@ -133,13 +141,17 @@ const submitNews = () => {
             "An error occurred.";
     };
 
-    router.post(isEditMode.value ? `/admin/news/${form.id}` : "/admin/news", formData, {
-        preserveScroll: true,
-        preserveState: true,
-        headers: { "Content-Type": "multipart/form-data" },
-        onSuccess,
-        onError,
-    });
+    router.post(
+        isEditMode.value ? `/admin/news/${form.id}` : "/admin/news",
+        formData,
+        {
+            preserveScroll: true,
+            preserveState: true,
+            headers: { "Content-Type": "multipart/form-data" },
+            onSuccess,
+            onError,
+        }
+    );
 };
 
 const openDeleteModal = (news) => {
@@ -157,7 +169,9 @@ const deleteNews = async () => {
 
     try {
         await form.delete(`/admin/news/${newsToDelete.value.id}`);
-        newsList.value = newsList.value.filter((n) => n.id !== newsToDelete.value.id);
+        newsList.value = newsList.value.filter(
+            (n) => n.id !== newsToDelete.value.id
+        );
         showSuccessMessage("News deleted successfully!");
         closeDeleteModal();
 
@@ -169,10 +183,13 @@ const deleteNews = async () => {
     }
 };
 
-
 const toggleStatus = async (id) => {
     try {
-        await router.patch(`/admin/news/${id}/toggle-status`, {}, { preserveState: true, preserveScroll: true });
+        await router.patch(
+            `/admin/news/${id}/toggle-status`,
+            {},
+            { preserveState: true, preserveScroll: true }
+        );
         const newsItem = newsList.value.find((n) => n.id === id);
         if (newsItem) newsItem.status = !newsItem.status;
         showSuccessMessage("Status updated successfully!");
@@ -180,12 +197,12 @@ const toggleStatus = async (id) => {
         errorMessage.value = "Failed to update status.";
     }
 };
-
 </script>
 
 <template>
     <div class="p-4">
-        <h1 class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 dark:text-white border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
+        <h1
+            class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 dark:text-white border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
             NEWS & UPDATES
         </h1>
         <transition name="fade">
@@ -204,8 +221,8 @@ const toggleStatus = async (id) => {
             </button>
 
             <div class="relative flex-1 w-full md:w-auto">
-                <input v-model="filters.search" @keyup.enter="applyFilters" type="text"
-                    placeholder="Search news..." class="border p-2 pl-4 pr-12 rounded w-full" />
+                <input v-model="filters.search" @keyup.enter="applyFilters" type="text" placeholder="Search news..."
+                    class="border p-2 pl-4 pr-12 rounded w-full" />
                 <button @click="applyFilters"
                     class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded hover:bg-gray-100">
                     <i class="fas fa-search"></i>
@@ -233,29 +250,26 @@ const toggleStatus = async (id) => {
                 </thead>
                 <tbody>
                     <tr v-for="news in newsList" :key="news.id" class="border-b hover:bg-gray-50 transition">
-                        <td class="p-3 text-gray-900 font-medium break-words">
+                        <td class="p-3 text-gray-900 font-extrabold break-words">
                             <div class="line-clamp-3">{{ news.title }}</div>
                         </td>
                         <td class="p-3 text-gray-600 break-words" :title="news.caption">
-                            <div class="line-clamp-3">{{ news.caption }}</div>
+                            <div class="line-clamp-6">{{ news.caption }}</div>
                         </td>
                         <td class="p-3 text-gray-700 font-bold truncate">
                             {{ news.user.name }}
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center flex-wrap gap-1 max-w-[160px]">
-                                <img v-for="(image, index) in news.images.slice(
-                                    0,
-                                    5
-                                )" :key="index" :src="`/storage/${image}`" alt="News Image"
+                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index"
+                                    :src="`/storage/${image}`" alt="News Image"
                                     class="w-12 h-12 object-cover border border-gray-300" />
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="toggleStatus(news.id)" :class="news.status
-                                ? 'bg-green-500'
-                                : 'bg-orange-400'
-                                " class="px-3 py-1 text-white rounded text-sm transition">
+                            <button @click="toggleStatus(news.id)"
+                                :class="news.status ? 'bg-green-500' : 'bg-orange-400'"
+                                class="px-3 py-1 text-white rounded text-sm transition">
                                 {{ news.status ? "Approved" : "Pending" }}
                             </button>
                         </td>
@@ -280,24 +294,19 @@ const toggleStatus = async (id) => {
             <div v-for="news in newsList" :key="news.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-between items-start flex-wrap gap-2">
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-lg font-semibold text-gray-900">
+                        <h2 class="text-lg font-extrabold line-clamp-3 mb-2 text-gray-900">
                             {{ news.title }}
                         </h2>
-                        <p class="text-sm text-gray-600 line-clamp-4" :title="news.caption">
+                        <p class="text-sm text-gray-600 line-clamp-6" :title="news.caption">
                             {{ news.caption }}
                         </p>
-                        <p class="text-xs text-gray-500 mt-1">
-                            By: {{ news.user.name }}
-                        </p>
+                        <p class="text-xs font-bold text-gray-500 mt-1">By: {{ news.user.name }}</p>
                     </div>
                     <button @click="toggleStatus(news.id)" :class="news.status
-                        ? 'bg-green-500 text-white'
-                        : 'bg-orange-400 text-white'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-orange-400 text-white'
                         " class="px-3 py-1 rounded text-xs whitespace-nowrap">
-                        <i :class="news.status
-                            ? 'fas fa-check-circle'
-                            : 'fas fa-hourglass'
-                            "></i>
+                        <i :class="news.status ? 'fas fa-check-circle' : 'fas fa-hourglass'"></i>
                         {{ news.status ? "Approved" : "Pending" }}
                     </button>
                 </div>
@@ -321,21 +330,19 @@ const toggleStatus = async (id) => {
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
-    <span>{{ paginationInfo }}</span>
-    <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-        <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
-            v-html="link.label" :class="{
-                'font-bold bg-blue-300 text-gray-900': link.active,
-                'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-            }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
-        </button>
-    </div>
-</div>
-
+            <span>{{ paginationInfo }}</span>
+            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
+                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+                    v-html="link.label" :class="{
+                        'font-bold bg-blue-300 text-gray-900': link.active,
+                        'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
+                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
+            </div>
+        </div>
 
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
-                <h2 class="text-xl mb-4">
+                <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit News" : "Add News" }}
                 </h2>
 
@@ -344,16 +351,14 @@ const toggleStatus = async (id) => {
                     {{ errorMessage }}
                 </div>
 
-                <label class="block text-gray-700">Title</label>
+                <label class="font-bold block text-gray-700">Title</label>
                 <input v-model="form.title" placeholder="Enter title" class="border p-2 w-full my-2" />
 
-                <label class="block text-gray-700">Caption</label>
+                <label class="font-bold block text-gray-700">Caption</label>
                 <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2"></textarea>
 
-                <label class="block text-gray-700">Upload Images</label>
-                <p class="text-sm text-gray-500">
-                    Max 5 images, each up to 5MB
-                </p>
+                <label class="font-bold block text-gray-700">Upload Images</label>
+                <p class="text-sm text-gray-500">Max 5 images, each up to 5MB</p>
                 <input type="file" multiple @change="form.images = [...$event.target.files]"
                     class="border p-2 w-full my-2" />
 
