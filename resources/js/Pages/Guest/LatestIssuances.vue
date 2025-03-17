@@ -10,6 +10,7 @@ const pageProps = usePage().props;
 const issuances = ref(pageProps.b_issuances.data ?? []);
 const pagination = ref(pageProps.b_issuances);
 const outcomeAreas = ref(pageProps.outcomeAreas);
+const isMobile = computed(() => window.innerWidth <= 768);
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",
@@ -116,9 +117,28 @@ const toggleIssuance = (issuanceId) => {
                 </div>
 
                 <transition name="stretch">
-                    <div v-if="selectedIssuanceId === issuance.id" class="mt-4 border-t pt-4 overflow-hidden">
-                        <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
-                            height="500px"></iframe>
+                    <div v-if="selectedIssuanceId === issuance.id" class="mt-4 border-t pt-4 overflow-hidden relative">
+                        <div v-if="isMobile"
+                            class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
+                                <p class="text-xs font-semibold">
+                                    PDF preview is not supported on mobile. Please use a desktop to view it or download
+                                    the file above.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else class="relative">
+                            <div
+                                class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
+                                <i class="fas fa-search-plus mr-1"></i>
+                                Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                            </div>
+
+                            <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
+                                height="500px"></iframe>
+                        </div>
                     </div>
                 </transition>
             </div>
