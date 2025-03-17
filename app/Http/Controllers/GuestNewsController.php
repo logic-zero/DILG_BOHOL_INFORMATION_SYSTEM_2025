@@ -34,24 +34,4 @@ class GuestNewsController extends Controller
             'filters' => $request->only(['search', 'from_date', 'to_date']),
         ]);
     }
-
-    public function homeIndex()
-    {
-        $news = News::where('status', 1)
-            ->latest()
-            ->take(5)
-            ->get()
-            ->map(function ($news) {
-                $news->images = json_decode($news->images);
-                return $news;
-            });
-
-        return Inertia::render('Guest/Home', [
-            'news' => $news,
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
-    }
 }

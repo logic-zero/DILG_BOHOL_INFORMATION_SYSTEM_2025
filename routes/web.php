@@ -6,13 +6,14 @@ use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 //Guest Routes
-Route::get('/', [GuestNewsController::class, 'homeIndex'])->name('home');
+Route::get('/', [HomeController::class, 'Index'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
 Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');

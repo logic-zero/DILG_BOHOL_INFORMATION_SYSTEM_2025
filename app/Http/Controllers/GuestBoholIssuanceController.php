@@ -42,4 +42,5 @@ class GuestBoholIssuanceController extends Controller
             ],
         ]);
     }
+
 }

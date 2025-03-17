@@ -39,8 +39,9 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <Link href="/guestNews" class="text-white text-sm px-2 py-1 rounded bg-blue-800 hover:bg-blue-900 inline-flex items-center">
-                        Discover More News...
+                    <Link href="/guestNews"
+                        class="text-white text-sm px-2 py-1 rounded bg-blue-800 hover:bg-blue-900 inline-flex items-center">
+                    Discover More News...
                     </Link>
                 </div>
             </div>
@@ -49,6 +50,81 @@
 
             <NewsModal v-if="isModalOpen" :newsItem="selectedNews" :isOpen="isModalOpen" @close="closeModal" />
         </div>
+
+        <div class="p-6 w-full">
+            <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
+                Latest Issuances
+            </h1>
+
+            <div v-if="issuances.length > 0" class="space-y-4 md:px-12">
+                <div v-for="issuance in issuances" :key="issuance.id"
+                    class="border border-gray-300 p-4 shadow-lg rounded cursor-pointer transition-all duration-300 bg-white"
+                    @click="toggleIssuance(issuance.id)">
+
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1">
+                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ issuance.title }}</h2>
+                            <p class="text-xs text-gray-600 font-sm">{{ issuance.outcome_area }}</p>
+                        </div>
+                        <p class="text-xs font-bold text-gray-700 w-40 text-right">
+                            <span class="text-red-600">Reference No:</span> {{ issuance.reference_num }}
+                        </p>
+                    </div>
+
+                    <div class="mt-2">
+                        <a :href="'/issuance_files/' + issuance.file" download
+                            class="text-red-600 font-bold hover:underline" @click.stop>
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-600 font-medium">Click to Open PDF</span>
+                        <i :class="{ 'fas fa-chevron-down': selectedIssuanceId === issuance.id, 'fas fa-chevron-right': selectedIssuanceId !== issuance.id }"
+                            class="text-gray-600 text-lg transition-transform duration-300"
+                            :style="{ transform: selectedIssuanceId === issuance.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
+                    </div>
+
+                    <transition name="stretch">
+                        <div v-if="selectedIssuanceId === issuance.id"
+                            class="mt-4 border-t pt-4 overflow-hidden relative">
+                            <div v-if="isMobile"
+                                class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
+                                <div class="flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
+                                    <p class="text-xs font-semibold">
+                                        PDF preview is not supported on mobile. Please use a desktop to view it or
+                                        download
+                                        the file above.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div v-else class="relative">
+                                <div class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
+                                    <i class="fas fa-search-plus mr-1"></i>
+                                    Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to
+                                    zoom
+                                </div>
+
+                                <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
+                                    height="500px"></iframe>
+                            </div>
+                        </div>
+                    </transition>
+                </div>
+
+                <div class="flex justify-center">
+                    <Link href="/latestIssuances"
+                        class="text-white text-sm px-2 py-1 rounded bg-blue-800 hover:bg-blue-900 inline-flex items-center">
+                    Discover More Issuances...
+                    </Link>
+                </div>
+            </div>
+
+            <p v-else class="text-center text-gray-500 mt-4">No issuances found.</p>
+        </div>
+
         <div class="container mx-auto px-4 py-6 max-w-[1400px]">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1 flex flex-col gap-4 md:w-auto w-full">
@@ -93,7 +169,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { usePage, Link } from "@inertiajs/vue3";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
@@ -111,6 +187,15 @@ onMounted(() => {
     script.async = true;
     document.body.appendChild(script);
 });
+
+const pageProps = usePage().props;
+const issuances = ref(pageProps.b_issuances ?? []);
+const selectedIssuanceId = ref(null);
+const isMobile = computed(() => window.innerWidth <= 768);
+
+const toggleIssuance = (issuanceId) => {
+    selectedIssuanceId.value = selectedIssuanceId.value === issuanceId ? null : issuanceId;
+};
 
 const selectedNews = ref(null);
 const isModalOpen = ref(false);
@@ -140,3 +225,23 @@ const newsList = ref(usePage().props.news ?? []);
 
 
 </script>
+
+<style scoped>
+.stretch-enter-active,
+.stretch-leave-active {
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.stretch-enter-from,
+.stretch-leave-to {
+    max-height: 0;
+    opacity: 0;
+}
+
+.stretch-enter-to,
+.stretch-leave-from {
+    max-height: 1000px;
+    opacity: 1;
+}
+</style>
