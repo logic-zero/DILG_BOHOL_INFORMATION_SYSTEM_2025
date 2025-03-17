@@ -217,7 +217,7 @@ const deleteLgu = async () => {
             </div>
         </div>
 
-        <div class="overflow-x-auto hidden md:block">
+        <div class="overflow-x-auto hidden xl:block">
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
@@ -255,7 +255,7 @@ const deleteLgu = async () => {
             </table>
         </div>
 
-        <div class="block md:hidden space-y-4">
+        <div class="block xl:hidden space-y-4">
             <div v-for="lgu in lguList" :key="lgu.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-between items-start flex-wrap gap-2">
                     <div class="flex-1 min-w-0">

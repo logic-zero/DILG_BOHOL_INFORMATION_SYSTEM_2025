@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\BoholIssuanceController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\ProfileController;
@@ -44,16 +45,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/news/{news}', [AdminNewsController::class, 'destroy'])->name('news.destroy');
     Route::patch('/admin/news/{news}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('news.toggle-status');
 
+    //LGU Admin Routes
     Route::get('/admin/lgus', [AdminLguController::class, 'index'])->name('AdminLGUs');
     Route::post('/admin/lgus', [AdminLguController::class, 'store'])->name('lgu.store');
     Route::post('/admin/lgus/{lgu}', [AdminLguController::class, 'update'])->name('lgu.update');
     Route::delete('/admin/lgus/{lgu}', [AdminLguController::class, 'destroy'])->name('lgu.destroy');
 
+    //Issuances Admin Routes
+    Route::get('/admin/issuances', [BoholIssuanceController::class, 'index'])->name('AdminIssuances');
+    Route::post('/admin/issuances', [BoholIssuanceController::class, 'store'])->name('issuances.store');
+    Route::post('/admin/issuances/{issuances}', [BoholIssuanceController::class, 'update'])->name('issuances.update');
+    Route::delete('/admin/issuances/{issuances}', [BoholIssuanceController::class, 'destroy'])->name('issuances.destroy');
 
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
-    // Route::inertia('/adminLGUs', 'Admin/AdminLGUs')->name('AdminLGUs');
     Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
-    Route::inertia('/adminIssuances', 'Admin/AdminIssuances')->name('AdminIssuances');
+    // Route::inertia('/adminIssuances', 'Admin/AdminIssuances')->name('AdminIssuances');
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
     Route::inertia('/adminProvOfficials', 'Admin/AdminProvOfficials')->name('AdminProvOfficials');
