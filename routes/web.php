@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
-use App\Http\Controllers\BoholIssuanceController;
+use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\ProfileController;
@@ -14,9 +15,10 @@ use Inertia\Inertia;
 Route::get('/', [GuestNewsController::class, 'homeIndex'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
 Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
+Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
-Route::inertia('/latestIssuances', 'Guest/LatestIssuances')->name('LatestIssuances');
+// Route::inertia('/latestIssuances', 'Guest/LatestIssuances')->name('LatestIssuances');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/organizationalStructure', 'Guest/OrganizationalStructure')->name('OrganizationalStructure');
@@ -52,10 +54,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/lgus/{lgu}', [AdminLguController::class, 'destroy'])->name('lgu.destroy');
 
     //Issuances Admin Routes
-    Route::get('/admin/issuances', [BoholIssuanceController::class, 'index'])->name('AdminIssuances');
-    Route::post('/admin/issuances', [BoholIssuanceController::class, 'store'])->name('issuances.store');
-    Route::post('/admin/issuances/{issuances}', [BoholIssuanceController::class, 'update'])->name('issuances.update');
-    Route::delete('/admin/issuances/{issuances}', [BoholIssuanceController::class, 'destroy'])->name('issuances.destroy');
+    Route::get('/admin/issuances', [AdminBoholIssuanceController::class, 'index'])->name('AdminIssuances');
+    Route::post('/admin/issuances', [AdminBoholIssuanceController::class, 'store'])->name('issuances.store');
+    Route::post('/admin/issuances/{issuances}', [AdminBoholIssuanceController::class, 'update'])->name('issuances.update');
+    Route::delete('/admin/issuances/{issuances}', [AdminBoholIssuanceController::class, 'destroy'])->name('issuances.destroy');
 
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
     Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');

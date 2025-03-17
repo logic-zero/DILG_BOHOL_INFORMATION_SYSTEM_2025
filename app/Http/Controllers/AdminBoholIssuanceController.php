@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 
-class BoholIssuanceController extends Controller
+class AdminBoholIssuanceController extends Controller
 {
     public function index(Request $request)
     {
@@ -23,7 +23,7 @@ class BoholIssuanceController extends Controller
             });
         }
 
-        $b_issuances = $query->paginate(15)->withQueryString();
+        $b_issuances = $query->paginate(5)->withQueryString();
 
         return Inertia::render('Admin/AdminIssuances', [
             'b_issuances' => $b_issuances,

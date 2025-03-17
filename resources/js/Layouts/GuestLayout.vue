@@ -265,33 +265,39 @@ const menus = [
 }
 
 .bg {
-    animation: slide 3s ease-in-out infinite alternate;
+    animation: slide 20s ease-in-out infinite alternate;
     background-image: linear-gradient(-60deg, rgb(226, 217, 217) 50%, white 50%);
     bottom: 0;
     left: -50%;
-    opacity: .5;
+    opacity: 0.5;
     position: fixed;
     right: -50%;
     top: 0;
     z-index: -1;
+    will-change: transform;
 }
 
 .bg2 {
     animation-direction: alternate-reverse;
-    animation-duration: 4s;
+    animation-duration: 25s;
 }
 
 .bg3 {
-    animation-duration: 5s;
+    animation-duration: 30s;
 }
 
 @keyframes slide {
     0% {
-        transform: translateX(-25%);
+        transform: translate3d(-25%, 0, 0);
     }
-
     100% {
-        transform: translateX(25%);
+        transform: translate3d(25%, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg, .bg2, .bg3 {
+        animation: none !important;
     }
 }
 </style>

@@ -39,12 +39,6 @@ const applyFilters = () => {
     });
 };
 
-const resetFilters = () => {
-    filters.value.search = "";
-    filters.value.municipality_id = "";
-    applyFilters();
-};
-
 const getSbMembers = (lgu) => {
     return [
         lgu.sb_member1, lgu.sb_member2, lgu.sb_member3, lgu.sb_member4,
@@ -130,13 +124,9 @@ const getSbMembers = (lgu) => {
                             </option>
                         </select>
                     </div>
-
-                    <button @click="resetFilters"
-                        class="text-gray-700 px-3 py-2 rounded flex items-center bg-gray-400 justify-center hover:bg-gray-500 w-full md:w-auto">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
                 </div>
             </div>
+
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 md:px-12">
                 <div v-for="lgu in lgus" :key="lgu.id"
