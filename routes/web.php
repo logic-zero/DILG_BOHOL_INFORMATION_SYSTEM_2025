@@ -3,9 +3,11 @@
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\AdminProvincial_OfficialsController;
 use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
+use App\Http\Controllers\GuestProvincial_OfficialsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -17,9 +19,9 @@ Route::get('/', [HomeController::class, 'Index'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
 Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
-Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
+Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
+// Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
-// Route::inertia('/latestIssuances', 'Guest/LatestIssuances')->name('LatestIssuances');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/organizationalStructure', 'Guest/OrganizationalStructure')->name('OrganizationalStructure');
@@ -60,12 +62,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/issuances/{issuances}', [AdminBoholIssuanceController::class, 'update'])->name('issuances.update');
     Route::delete('/admin/issuances/{issuances}', [AdminBoholIssuanceController::class, 'destroy'])->name('issuances.destroy');
 
+    //Prov Officials Admin Routes
+    Route::get('/admin/provincial-officials', [AdminProvincial_OfficialsController::class, 'index'])->name('AdminProvincialOfficials');
+    Route::post('/admin/provincial-officials', [AdminProvincial_OfficialsController::class, 'store'])->name('provincial_officials.store');
+    Route::post('/admin/provincial-officials/{provincial_official}', [AdminProvincial_OfficialsController::class, 'update'])->name('provincial_officials.update');
+    Route::delete('/admin/provincial-officials/{provincial_official}', [AdminProvincial_OfficialsController::class, 'destroy'])->name('provincial_officials.destroy');
+
+
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
     Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
-    // Route::inertia('/adminIssuances', 'Admin/AdminIssuances')->name('AdminIssuances');
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
-    Route::inertia('/adminProvOfficials', 'Admin/AdminProvOfficials')->name('AdminProvOfficials');
+    // Route::inertia('/adminProvOfficials', 'Admin/AdminProvOfficials')->name('AdminProvOfficials');
     Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
     Route::inertia('/adminLogs', 'Admin/AdminLogs')->name('AdminLogs');
     Route::inertia('/adminUsers', 'Admin/AdminUsers')->name('AdminUsers');

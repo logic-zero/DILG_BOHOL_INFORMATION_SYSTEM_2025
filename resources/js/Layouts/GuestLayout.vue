@@ -12,12 +12,12 @@
 
                 <div class="hidden xl:flex xl:items-center">
                     <Link href="/" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">Home</Link>
-                    <Link href="/guestNews" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">News
-                    </Link>
+                    <Link href="/guestNews" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">News</Link>
 
                     <div v-for="(menu, index) in menus" :key="index" class="relative"
                         @mouseenter="setDropdown(index, true)" @mouseleave="setDropdown(index, false)">
                         <button @click="toggleDropdown(index)"
+                            :class="{ 'bg-blue-900 underline': activeDropdown === index, 'hover:bg-blue-900 hover:underline': true }"
                             class="w-full whitespace-nowrap md:w-auto px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline flex items-center gap-1">
                             {{ menu.name }}
                             <span class="text-xs transition-transform duration-200"

@@ -31,7 +31,7 @@ const navLinks = [
     { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt' },
     { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download' },
     { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book' },
-    { href: '/adminProvOfficials', label: 'Prov. Officials', icon: 'fas fa-users' },
+    { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-users' },
     { href: '/adminCitizensCharter', label: 'Citizens Charter', icon: 'fas fa-file-signature' },
     { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history' },
     { href: '/adminUsers', label: 'Users', icon: 'fas fa-user-cog' }
