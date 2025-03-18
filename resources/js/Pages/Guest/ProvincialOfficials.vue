@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex justify-center items-center mt-2 mb-4">
+        <div class="flex justify-center items-center mt-10 mb-20">
             <img src="/img/bohol_seal.png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
         </div>
 
