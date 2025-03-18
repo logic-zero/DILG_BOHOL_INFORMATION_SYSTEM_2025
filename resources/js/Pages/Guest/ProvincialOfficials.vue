@@ -27,7 +27,7 @@
         </div>
 
         <div v-if="firstDistrict.length > 0" class="mb-8">
-            <h2 class="text-2xl font-bold text-center mb-4">1st District</h2>
+            <h2 class="text-2xl font-bold text-center mb-4">1st District Board Member</h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div v-for="official in firstDistrict" :key="official.id" class="text-center">
                     <img :src="`/storage/${official.profile_image}`" class="w-48 h-48 rounded-full mx-auto object-cover shadow-lg border border-black" alt="Profile Image" />
@@ -38,7 +38,7 @@
         </div>
 
         <div v-if="secondDistrict.length > 0" class="mb-8">
-            <h2 class="text-2xl font-bold text-center mb-4">2nd District</h2>
+            <h2 class="text-2xl font-bold text-center mb-4">2nd District Board Member</h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div v-for="official in secondDistrict" :key="official.id" class="text-center">
                     <img :src="`/storage/${official.profile_image}`" class="w-48 h-48 rounded-full mx-auto object-cover shadow-lg border border-black" alt="Profile Image" />
@@ -49,7 +49,7 @@
         </div>
 
         <div v-if="thirdDistrict.length > 0" class="mb-8">
-            <h2 class="text-2xl font-bold text-center mb-4">3rd District</h2>
+            <h2 class="text-2xl font-bold text-center mb-4">3rd District Board Member</h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div v-for="official in thirdDistrict" :key="official.id" class="text-center">
                     <img :src="`/storage/${official.profile_image}`" class="w-48 h-48 rounded-full mx-auto object-cover shadow-lg border border-black" alt="Profile Image" />
