@@ -27,7 +27,7 @@ const navLinks = [
     { href: '/admin/news', label: 'News', icon: 'fas fa-newspaper' },
     { href: '/adminJobVacancies', label: 'Job Vacancies', icon: 'fas fa-briefcase' },
     { href: '/admin/lgus', label: 'LGUs', icon: 'fas fa-city' },
-    { href: '/adminFAQ', label: 'FAQ', icon: 'fas fa-question-circle' },
+    { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle' },
     { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt' },
     { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download' },
     { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book' },

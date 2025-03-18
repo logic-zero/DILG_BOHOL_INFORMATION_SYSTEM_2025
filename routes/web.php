@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminBoholIssuanceController;
+use App\Http\Controllers\AdminFaqController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminProvincial_OfficialsController;
 use App\Http\Controllers\GuestBoholIssuanceController;
+use App\Http\Controllers\GuestFaqController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
@@ -20,6 +22,7 @@ Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.new
 Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
+Route::get('/FAQs', [GuestFaqController::class, 'index'])->name('guest.faqs');
 // Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
@@ -30,7 +33,7 @@ Route::inertia('/citizensCharter', 'Guest/CitizensCharter')->name('CitizensChart
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
-Route::inertia('/FAQs', 'Guest/FAQs')->name('FAQs');
+// Route::inertia('/FAQs', 'Guest/FAQs')->name('FAQs');
 Route::inertia('/jobVacancies', 'Guest/JobVacancies')->name('JobVacancies');
 
 //Authenticated Routes
@@ -68,9 +71,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/provincial-officials/{provincial_official}', [AdminProvincial_OfficialsController::class, 'update'])->name('provincial_officials.update');
     Route::delete('/admin/provincial-officials/{provincial_official}', [AdminProvincial_OfficialsController::class, 'destroy'])->name('provincial_officials.destroy');
 
+    //Faq Admin Routes
+    Route::get('/admin/faqs', [AdminFaqController::class, 'index'])->name('AdminFaqs');
+    Route::post('/admin/faqs', [AdminFaqController::class, 'store'])->name('faqs.store');
+    Route::post('/admin/faqs/{faq}', [AdminFaqController::class, 'update'])->name('faqs.update');
+    Route::delete('/admin/faqs/{faq}', [AdminFaqController::class, 'destroy'])->name('faqs.destroy');
+
 
     Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
-    Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
+    // Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
     // Route::inertia('/adminProvOfficials', 'Admin/AdminProvOfficials')->name('AdminProvOfficials');
@@ -79,4 +88,4 @@ Route::middleware('auth')->group(function () {
     Route::inertia('/adminUsers', 'Admin/AdminUsers')->name('AdminUsers');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
