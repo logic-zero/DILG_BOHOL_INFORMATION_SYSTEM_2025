@@ -135,15 +135,15 @@ const toggleFaq = (faqId) => {
                 <div :style="{ maxHeight: selectedFaqId === faq.id ? '500px' : '0' }"
                     class="overflow-hidden transition-max-height duration-300 ease-out">
                     <div class="mt-4 border-t pt-4">
-                        <p class="text-sm font-bold text-blue-900 mb-2 text-right">
+                        <p class="text-sm font-bold text-blue-900 mb-2 text-right uppercase">
                             {{ faq.program }}
                         </p>
 
-                        <div class="text-sm text-gray-700 mb-2">
+                        <div class="text-md text-gray-700 mb-2">
                             <span class="font-semibold">Answer:</span> {{ faq.answers }}
                         </div>
 
-                        <p class="text-xs text-gray-600 font-bold uppercase text-right">
+                        <p class="text-xs text-gray-600 font-bold uppercase text-right pt-2 border-t">
                             {{ faq.outcome_area }}
                         </p>
                     </div>

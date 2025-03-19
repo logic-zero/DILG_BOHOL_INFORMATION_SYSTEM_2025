@@ -22,11 +22,24 @@ class AdminFaqController extends Controller
             });
         }
 
+        if ($request->filled('program')) {
+            $query->where('program', $request->program);
+        }
+
+        if ($request->filled('outcome_area')) {
+            $query->where('outcome_area', $request->outcome_area);
+        }
+
         $faqs = $query->paginate(5)->withQueryString();
+
+        $programs = Faq::whereNotNull('program')->distinct()->pluck('program')->values();
+        $outcomeAreas = Faq::whereNotNull('outcome_area')->distinct()->pluck('outcome_area')->values();
 
         return Inertia::render('Admin/AdminFAQ', [
             'faqs' => $faqs,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
+            'programs' => $programs,
+            'outcomeAreas' => $outcomeAreas
         ]);
     }
 
