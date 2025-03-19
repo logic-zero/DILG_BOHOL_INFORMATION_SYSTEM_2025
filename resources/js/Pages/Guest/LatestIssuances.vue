@@ -77,7 +77,7 @@ const toggleIssuance = (issuanceId) => {
 
                 <div class="relative w-full md:w-auto">
                     <select v-model="filters.outcome_area"
-                        class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none">
+                        class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none pr-8 appearance-none">
                         <option value="">All Outcomes</option>
                         <option v-for="area in outcomeAreas" :key="area" :value="area">
                             {{ area }}
@@ -116,8 +116,9 @@ const toggleIssuance = (issuanceId) => {
                         :style="{ transform: selectedIssuanceId === issuance.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
                 </div>
 
-                <transition name="stretch">
-                    <div v-if="selectedIssuanceId === issuance.id" class="mt-4 border-t pt-4 overflow-hidden relative">
+                <div :style="{ maxHeight: selectedIssuanceId === issuance.id ? '500px' : '0' }"
+                    class="overflow-hidden transition-max-height duration-300 ease-out">
+                    <div class="mt-4 border-t pt-4">
                         <div v-if="isMobile"
                             class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
                             <div class="flex items-center justify-center">
@@ -140,7 +141,7 @@ const toggleIssuance = (issuanceId) => {
                                 height="500px"></iframe>
                         </div>
                     </div>
-                </transition>
+                </div>
             </div>
         </div>
 
@@ -161,21 +162,8 @@ const toggleIssuance = (issuanceId) => {
 </template>
 
 <style scoped>
-.stretch-enter-active,
-.stretch-leave-active {
-    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
-    overflow: hidden;
-}
-
-.stretch-enter-from,
-.stretch-leave-to {
-    max-height: 0;
-    opacity: 0;
-}
-
-.stretch-enter-to,
-.stretch-leave-from {
-    max-height: 1000px;
-    opacity: 1;
+.transition-max-height {
+    transition-property: max-height;
+    transition-timing-function: ease-out;
 }
 </style>
