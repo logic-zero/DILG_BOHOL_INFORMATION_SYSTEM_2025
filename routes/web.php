@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\AdminOrganizational_StructureController;
+use App\Http\Controllers\AdminPDMUController;
 use App\Http\Controllers\AdminProvincial_OfficialsController;
 use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestFaqController;
@@ -92,6 +94,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/field-officers', [AdminField_OfficersController::class, 'store'])->name('field_officers.store');
     Route::post('/admin/field-officers/{field_officer}', [AdminField_OfficersController::class, 'update'])->name('field_officers.update');
     Route::delete('/admin/field-officers/{field_officer}', [AdminField_OfficersController::class, 'destroy'])->name('field_officers.destroy');
+
+    //Organizational Structure Admin Routes
+    Route::get('/admin/organizational-structure', [AdminOrganizational_StructureController::class, 'index'])->name('AdminOrganizationalStructure');
+    Route::post('/admin/organizational-structure', [AdminOrganizational_StructureController::class, 'store'])->name('organizational_structure.store');
+    Route::post('/admin/organizational-structure/{organizational_structure}', [AdminOrganizational_StructureController::class, 'update'])->name('organizational_structure.update');
+    Route::delete('/admin/organizational-structure/{organizational_structure}', [AdminOrganizational_StructureController::class, 'destroy'])->name('organizational_structure.destroy');
+
+    //PDMU Admin Routes
+    Route::get('/admin/pdmu', [AdminPDMUController::class, 'index'])->name('AdminPDMU');
+    Route::post('/admin/pdmu', [AdminPDMUController::class, 'store'])->name('pdmu.store');
+    Route::post('/admin/pdmu/{pdmu}', [AdminPDMUController::class, 'update'])->name('pdmu.update');
+    Route::delete('/admin/pdmu/{pdmu}', [AdminPDMUController::class, 'destroy'])->name('pdmu.destroy');
 
 
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
