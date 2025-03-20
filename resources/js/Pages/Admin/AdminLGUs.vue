@@ -210,10 +210,9 @@ const deleteLgu = async () => {
             <div class="relative flex-1 w-full md:w-auto">
                 <input v-model="filters.search" @keyup.enter="applyFilters" type="text" placeholder="Search LGU..."
                     class="border p-2 pl-4 pr-12 rounded w-full" />
-                <button @click="applyFilters"
-                    class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded hover:bg-gray-100">
+                <div class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded">
                     <i class="fas fa-search"></i>
-                </button>
+                </div>
             </div>
         </div>
 

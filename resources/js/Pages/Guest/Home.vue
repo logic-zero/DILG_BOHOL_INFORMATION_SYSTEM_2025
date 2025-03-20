@@ -85,9 +85,9 @@
                             :style="{ transform: selectedIssuanceId === issuance.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
                     </div>
 
-                    <transition name="stretch">
-                        <div v-if="selectedIssuanceId === issuance.id"
-                            class="mt-4 border-t pt-4 overflow-hidden relative">
+                    <div :style="{ maxHeight: selectedIssuanceId === issuance.id ? '500px' : '0' }"
+                        class="overflow-hidden transition-max-height duration-300 ease-out">
+                        <div class="mt-4 border-t pt-4">
                             <div v-if="isMobile"
                                 class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
                                 <div class="flex items-center justify-center">
@@ -111,7 +111,7 @@
                                     height="500px"></iframe>
                             </div>
                         </div>
-                    </transition>
+                    </div>
                 </div>
 
                 <div class="flex justify-center">
@@ -227,21 +227,8 @@ const newsList = ref(usePage().props.news ?? []);
 </script>
 
 <style scoped>
-.stretch-enter-active,
-.stretch-leave-active {
-    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
-    overflow: hidden;
-}
-
-.stretch-enter-from,
-.stretch-leave-to {
-    max-height: 0;
-    opacity: 0;
-}
-
-.stretch-enter-to,
-.stretch-leave-from {
-    max-height: 1000px;
-    opacity: 1;
+.transition-max-height {
+    transition-property: max-height;
+    transition-timing-function: ease-out;
 }
 </style>
