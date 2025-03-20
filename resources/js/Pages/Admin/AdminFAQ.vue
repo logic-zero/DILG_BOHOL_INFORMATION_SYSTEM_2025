@@ -293,10 +293,10 @@ const resetSelect = (selectId) => {
                 </div>
 
                 <label class="font-bold block text-gray-700">Questions</label>
-                <textarea v-model="form.questions" placeholder="Enter Questions" class="border p-2 w-full my-2"></textarea>
+                <textarea v-model="form.questions" placeholder="Enter Questions" class="border p-2 w-full my-2 h-24"></textarea>
 
                 <label class="font-bold block text-gray-700">Answers</label>
-                <textarea v-model="form.answers" placeholder="Enter Answers" class="border p-2 w-full my-2"></textarea>
+                <textarea v-model="form.answers" placeholder="Enter Answers" class="border p-2 w-full my-2 h-64"></textarea>
 
                 <label class="font-bold block text-gray-700">Program</label>
                 <input v-model="form.program" placeholder="Enter New Program" class="border p-2 w-full my-2" />

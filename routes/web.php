@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminFaqController;
+use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
@@ -86,12 +87,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/jobs/{job}', [AdminJobController::class, 'update'])->name('jobs.update');
     Route::delete('/admin/jobs/{job}', [AdminJobController::class, 'destroy'])->name('jobs.destroy');
 
+    //Field Officers Admin Routes
+    Route::get('/admin/field-officers', [AdminField_OfficersController::class, 'index'])->name('AdminFieldOfficers');
+    Route::post('/admin/field-officers', [AdminField_OfficersController::class, 'store'])->name('field_officers.store');
+    Route::post('/admin/field-officers/{field_officer}', [AdminField_OfficersController::class, 'update'])->name('field_officers.update');
+    Route::delete('/admin/field-officers/{field_officer}', [AdminField_OfficersController::class, 'destroy'])->name('field_officers.destroy');
 
-    // Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
-    // Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
+
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
-    // Route::inertia('/adminProvOfficials', 'Admin/AdminProvOfficials')->name('AdminProvOfficials');
     Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
     Route::inertia('/adminLogs', 'Admin/AdminLogs')->name('AdminLogs');
     Route::inertia('/adminUsers', 'Admin/AdminUsers')->name('AdminUsers');

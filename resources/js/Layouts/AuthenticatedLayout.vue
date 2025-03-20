@@ -25,13 +25,16 @@ const toggleDropdown = () => isDropdownOpen.value = !isDropdownOpen.value;
 const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
     { href: '/admin/news', label: 'News', icon: 'fas fa-newspaper' },
+    { href: '/admin/organizational-structure', label: 'Organizational Structure', icon: 'fas fa-sitemap' },
+    { href: '/admin/pdmu', label: 'PDMU', icon: 'fas fa-user-friends' },
+    { href: '/admin/field-officers', label: 'Field Officers', icon: 'fas fa-users' },
     { href: '/admin/jobs', label: 'Job Vacancies', icon: 'fas fa-briefcase' },
     { href: '/admin/lgus', label: 'LGUs', icon: 'fas fa-city' },
     { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle' },
     { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt' },
     { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download' },
     { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book' },
-    { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-users' },
+    { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-user-tie' },
     { href: '/adminCitizensCharter', label: 'Citizens Charter', icon: 'fas fa-file-signature' },
     { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history' },
     { href: '/adminUsers', label: 'Users', icon: 'fas fa-user-cog' }
@@ -47,9 +50,9 @@ const navLinks = [
                 <h1 v-if="isSidebarExpanded" class="text-sm font-semibold ml-3 transition-all duration-300">DILG-BOHOL PROVINCE</h1>
             </div>
             <div class="border-t border-gray-600"></div>
-            <div class="flex-1 space-y-1 p-2">
+            <div class="flex-1 p-2">
                 <Link v-for="item in navLinks" :key="item.href" :href="item.href"
-                    class="flex items-center p-3 rounded transition duration-200 text-xs gap-x-3"
+                    class="flex items-center p-2 transition duration-200 text-sm border-b border-gray-700 gap-x-3"
                     :class="{ 'justify-center': !isSidebarExpanded, 'bg-gray-700 text-white': isActive(item.href), 'hover:bg-gray-800': !isActive(item.href) }">
                     <i :class="`${item.icon} text-lg ${isActive(item.href) ? 'text-white' : 'text-gray-500'}`"></i>
                     <span v-if="isSidebarExpanded" class="whitespace-nowrap">{{ item.label }}</span>

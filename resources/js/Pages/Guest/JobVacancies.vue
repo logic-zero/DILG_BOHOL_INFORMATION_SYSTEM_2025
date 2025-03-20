@@ -10,7 +10,7 @@ const pageProps = usePage().props;
 const jobs = ref((pageProps.jobs.data ?? []).map(job => ({
     ...job,
     showFullDetails: false,
-    isAnimating: false 
+    isAnimating: false
 })));
 const pagination = ref(pageProps.jobs);
 
@@ -85,12 +85,9 @@ const toggleDetails = (job) => {
 
 <template>
     <div class="p-6 w-full">
-        <div class="bg-blue-800 text-white py-8 mb-6">
-            <div class="container mx-auto px-4 text-center">
-                <h1 class="text-4xl font-bold mb-4">Join Our Team</h1>
-                <p class="text-lg">Explore exciting job opportunities and grow your career with us.</p>
-            </div>
-        </div>
+        <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
+            Job Vacancies
+        </h1>
 
         <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
             <div class="flex flex-col md:flex-row items-start gap-3">
@@ -196,7 +193,7 @@ const toggleDetails = (job) => {
                         }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                     </button>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </template>

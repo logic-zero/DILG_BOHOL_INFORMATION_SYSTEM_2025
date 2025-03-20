@@ -354,7 +354,7 @@ const toggleStatus = async (id) => {
                 <input v-model="form.title" placeholder="Enter title" class="border p-2 w-full my-2" />
 
                 <label class="font-bold block text-gray-700">Caption</label>
-                <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2"></textarea>
+                <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2 h-80"></textarea>
 
                 <label class="font-bold block text-gray-700">Upload Images</label>
                 <p class="text-sm text-gray-500">Max 5 images, each up to 5MB</p>

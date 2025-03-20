@@ -37,17 +37,17 @@ class Field_Officer extends Model
     }
 
 
-    public function scopeSearch($query, $terms){
-        collect(explode(" " , $terms))->filter()->each(function($term) use($query){
-            $term = '%'. $term . '%';
+    // public function scopeSearch($query, $terms){
+    //     collect(explode(" " , $terms))->filter()->each(function($term) use($query){
+    //         $term = '%'. $term . '%';
 
-            $query->where('fname', 'like', $term)
-                ->orWhere('lname', 'like', $term)
-                ->orWhere('municipality_id', 'like', $term)
-                ->orWhere('cluster', 'like', $term);
+    //         $query->where('fname', 'like', $term)
+    //             ->orWhere('lname', 'like', $term)
+    //             ->orWhere('municipality_id', 'like', $term)
+    //             ->orWhere('cluster', 'like', $term);
 
-        });
-    }
+    //     });
+    // }
 
     // public function getActivitylogOptions(): LogOptions
     // {

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('field_officers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('municipality_id');
-            $table->string('profile_img')->default('field_off.png')->nullable();
+            $table->string('profile_img')->nullable();
             $table->string('fname')->nullable();
             $table->string('mid_initial')->nullable();
             $table->string('lname')->nullable();
