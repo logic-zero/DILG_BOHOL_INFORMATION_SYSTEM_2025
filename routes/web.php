@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminFaqController;
+use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminProvincial_OfficialsController;
 use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestFaqController;
+use App\Http\Controllers\GuestJobController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
@@ -23,6 +25,7 @@ Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
 Route::get('/FAQs', [GuestFaqController::class, 'index'])->name('guest.faqs');
+Route::get('/jobVacancies', [GuestJobController::class, 'index'])->name('guest.job');
 // Route::inertia('/provincialOfficials', 'Guest/ProvincialOfficials')->name('provincialOfficials');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
@@ -34,7 +37,7 @@ Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
 // Route::inertia('/FAQs', 'Guest/FAQs')->name('FAQs');
-Route::inertia('/jobVacancies', 'Guest/JobVacancies')->name('JobVacancies');
+// Route::inertia('/jobVacancies', 'Guest/JobVacancies')->name('JobVacancies');
 
 //Authenticated Routes
 Route::get('/dashboard', function () {
@@ -77,8 +80,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/faqs/{faq}', [AdminFaqController::class, 'update'])->name('faqs.update');
     Route::delete('/admin/faqs/{faq}', [AdminFaqController::class, 'destroy'])->name('faqs.destroy');
 
+    //Job Admin Routes
+    Route::get('/admin/jobs', [AdminJobController::class, 'index'])->name('AdminJobs');
+    Route::post('/admin/jobs', [AdminJobController::class, 'store'])->name('jobs.store');
+    Route::post('/admin/jobs/{job}', [AdminJobController::class, 'update'])->name('jobs.update');
+    Route::delete('/admin/jobs/{job}', [AdminJobController::class, 'destroy'])->name('jobs.destroy');
 
-    Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
+
+    // Route::inertia('/adminJobVacancies', 'Admin/AdminJobVacancies')->name('AdminJobVacancies');
     // Route::inertia('/adminFAQ', 'Admin/AdminFAQ')->name('AdminFAQ');
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');

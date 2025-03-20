@@ -25,7 +25,7 @@ const toggleDropdown = () => isDropdownOpen.value = !isDropdownOpen.value;
 const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
     { href: '/admin/news', label: 'News', icon: 'fas fa-newspaper' },
-    { href: '/adminJobVacancies', label: 'Job Vacancies', icon: 'fas fa-briefcase' },
+    { href: '/admin/jobs', label: 'Job Vacancies', icon: 'fas fa-briefcase' },
     { href: '/admin/lgus', label: 'LGUs', icon: 'fas fa-city' },
     { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle' },
     { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt' },
