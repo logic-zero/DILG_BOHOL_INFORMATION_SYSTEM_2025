@@ -44,7 +44,7 @@ const applyFilters = () => {
     <div>
         <div class="p-6 w-full">
             <div class="flex justify-center items-center mb-6">
-                <img src="/img/dilg-main    .png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
+                <img src="/img/dilg-main.png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
             </div>
             <h1 class="text-3xl p-2 font-bold text-center mb-6 uppercase">
                 FIELD OFFICERS

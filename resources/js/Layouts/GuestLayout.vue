@@ -40,7 +40,7 @@
                 </div>
                 <transition name="mobile-menu">
                     <div v-if="isMenuOpen"
-                        class="xl:hidden absolute top-full left-0 w-full bg-blue-800 flex flex-col shadow-md">
+                        class="xl:hidden absolute top-full left-0 w-full bg-blue-800 flex flex-col shadow-md z-50">
                         <Link href="/" :class="{ 'bg-blue-900 text-white underline': page.url === '/' }"
                             class="px-4 py-2 hover:bg-blue-900 hover:underline" @click="closeMenu">Home</Link>
                         <Link href="/guestNews"
