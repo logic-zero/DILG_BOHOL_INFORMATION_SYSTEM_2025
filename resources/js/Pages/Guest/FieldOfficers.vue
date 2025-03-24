@@ -43,11 +43,14 @@ const applyFilters = () => {
 <template>
     <div>
         <div class="p-6 w-full">
-            <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
-                LIST OF FIELD OFFICERS
+            <div class="flex justify-center items-center mb-6">
+                <img src="/img/dilg-main    .png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
+            </div>
+            <h1 class="text-3xl p-2 font-bold text-center mb-6 uppercase">
+                FIELD OFFICERS
             </h1>
 
-            <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
+            <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-10">
                 <div class="flex flex-col md:flex-row items-start gap-3">
                     <div class="relative w-full md:flex-1">
                         <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>

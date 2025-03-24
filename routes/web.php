@@ -15,6 +15,7 @@ use App\Http\Controllers\GuestField_OfficersController;
 use App\Http\Controllers\GuestJobController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
+use App\Http\Controllers\GuestOrganizational_StructureController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -31,17 +32,15 @@ Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 
 Route::get('/FAQs', [GuestFaqController::class, 'index'])->name('guest.faqs');
 Route::get('/jobVacancies', [GuestJobController::class, 'index'])->name('guest.job');
 Route::get('/fieldOfficers', [GuestField_OfficersController::class, 'index'])->name('guest.fieldOfficers');
+Route::get('organizationalStructure', [GuestOrganizational_StructureController::class, 'index'])->name('guest.organizationalStructure');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
-Route::inertia('/organizationalStructure', 'Guest/OrganizationalStructure')->name('OrganizationalStructure');
-// Route::inertia('/fieldOfficers', 'Guest/FieldOfficers')->name('FieldOfficers');
+// Route::inertia('/organizationalStructure', 'Guest/OrganizationalStructure')->name('OrganizationalStructure');
 Route::inertia('/citizensCharter', 'Guest/CitizensCharter')->name('CitizensCharter');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
-// Route::inertia('/FAQs', 'Guest/FAQs')->name('FAQs');
-// Route::inertia('/jobVacancies', 'Guest/JobVacancies')->name('JobVacancies');
 
 //Authenticated Routes
 Route::get('/dashboard', function () {
