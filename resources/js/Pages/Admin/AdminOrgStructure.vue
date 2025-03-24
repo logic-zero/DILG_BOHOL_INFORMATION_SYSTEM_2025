@@ -215,7 +215,7 @@ const deleteOrganizationalStructure = async () => {
                             <span v-else>No Image</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            {{ organizationalStructure.fname }} {{ organizationalStructure.mid_initial }} {{ organizationalStructure.lname }}
+                            {{ organizationalStructure.fname }} {{ organizationalStructure.mid_initial }}. {{ organizationalStructure.lname }}
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ organizationalStructure.position }}
@@ -251,7 +251,7 @@ const deleteOrganizationalStructure = async () => {
 
                 <div class="text-center">
                     <h2 class="text-xl font-extrabold text-gray-900 mb-2">
-                        {{ organizationalStructure.fname }} {{ organizationalStructure.mid_initial }} {{ organizationalStructure.lname }}
+                        {{ organizationalStructure.fname }} {{ organizationalStructure.mid_initial }}. {{ organizationalStructure.lname }}
                     </h2>
                     <p class="text-sm text-gray-600">
                         <span class="font-bold">Position:</span> {{ organizationalStructure.position }}
