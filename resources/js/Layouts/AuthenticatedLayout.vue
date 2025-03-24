@@ -123,7 +123,7 @@ const navLinks = [
         </div>
         <button @click="toggleMobileSidebar"
             class="fixed bottom-4 left-4 w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center shadow-lg lg:hidden z-50">
-            <i class="fas fa-bars text-lg"></i>
+            <i :class="isMobileSidebarOpen ? 'fas fa-times' : 'fas fa-bars'" class="text-lg"></i>
         </button>
     </div>
 </template>
