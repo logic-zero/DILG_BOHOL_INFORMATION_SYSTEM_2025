@@ -1,23 +1,42 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { debounce } from 'lodash';
 
 const isSidebarExpanded = ref(true);
 const isDropdownOpen = ref(false);
 const isLoaded = ref(false);
+const isMobileSidebarOpen = ref(false);
 const page = usePage();
 
-const isActive = (routeName) => page.url.startsWith(routeName);
+const isActive = (routeName) => page.url === routeName;
+
+const checkScreenSize = debounce(() => {
+    if (window.innerWidth < 1024) {
+        isMobileSidebarOpen.value = false;
+        isSidebarExpanded.value = true;
+    }
+}, 200);
 
 onMounted(() => {
     const savedSidebarState = localStorage.getItem('isSidebarExpanded');
     isSidebarExpanded.value = savedSidebarState ? JSON.parse(savedSidebarState) : true;
     isLoaded.value = true;
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkScreenSize);
 });
 
 const toggleSidebar = () => {
     isSidebarExpanded.value = !isSidebarExpanded.value;
     localStorage.setItem('isSidebarExpanded', JSON.stringify(isSidebarExpanded.value));
+};
+
+const toggleMobileSidebar = () => {
+    isMobileSidebarOpen.value = !isMobileSidebarOpen.value;
 };
 
 const toggleDropdown = () => isDropdownOpen.value = !isDropdownOpen.value;
@@ -43,34 +62,40 @@ const navLinks = [
 
 <template>
     <div v-if="isLoaded" class="min-h-screen bg-gray-100 flex">
-        <div :class="{ 'w-64': isSidebarExpanded, 'w-20': !isSidebarExpanded }"
-            class="bg-gray-900 text-white border-r border-gray-300 h-screen flex flex-col fixed overflow-hidden transition-all duration-300 ease-in-out">
+        <div :class="{
+            'lg:w-64': isSidebarExpanded,
+            'lg:w-20': !isSidebarExpanded,
+            'w-64': isMobileSidebarOpen,
+            'translate-x-0': isMobileSidebarOpen,
+            '-translate-x-full': !isMobileSidebarOpen
+        }"
+            class="bg-gray-900 text-white border-r border-gray-300 h-screen flex flex-col fixed overflow-hidden transition-all duration-300 ease-in-out z-50 lg:translate-x-0">
             <div class="h-16 flex items-center justify-center px-4">
                 <img src="/img/dilg-main.png" alt="DILG LOGO" class="w-12 h-12 object-contain" />
-                <h1 v-if="isSidebarExpanded" class="text-sm font-semibold ml-3 transition-all duration-300">DILG-BOHOL PROVINCE</h1>
+                <h1 v-if="isSidebarExpanded || isMobileSidebarOpen" class="text-sm font-semibold ml-3 transition-all duration-300">DILG-BOHOL PROVINCE</h1>
             </div>
             <div class="border-t border-gray-600"></div>
             <div class="flex-1 p-2">
                 <Link v-for="item in navLinks" :key="item.href" :href="item.href"
-                    class="flex items-center p-2 transition duration-200 text-sm border-b border-gray-700 gap-x-3"
-                    :class="{ 'justify-center': !isSidebarExpanded, 'bg-gray-700 text-white': isActive(item.href), 'hover:bg-gray-800': !isActive(item.href) }">
+                    class="h-9 flex items-center p-2 transition duration-200 text-sm border-b border-gray-700 gap-x-3"
+                    :class="{ 'justify-center': !isSidebarExpanded && !isMobileSidebarOpen, 'bg-gray-700 text-white': isActive(item.href), 'hover:bg-gray-800': !isActive(item.href) }">
                     <i :class="`${item.icon} text-lg ${isActive(item.href) ? 'text-white' : 'text-gray-500'}`"></i>
-                    <span v-if="isSidebarExpanded" class="whitespace-nowrap">{{ item.label }}</span>
+                    <span v-if="isSidebarExpanded || isMobileSidebarOpen" class="whitespace-nowrap">{{ item.label }}</span>
                 </Link>
             </div>
             <div class="flex-1"></div>
-            <div class="flex justify-center py-10">
+            <div class="flex justify-center pb-16">
                 <button @click="toggleSidebar"
-                    class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition">
+                    class="w-10 h-10 rounded-full bg-gray-800 text-white lg:flex items-center justify-center hover:bg-gray-700 transition hidden">
                     <span v-if="isSidebarExpanded" class="text-lg">《</span>
                     <span v-else class="text-lg">》</span>
                 </button>
             </div>
         </div>
-        <div :class="{ 'ml-64': isSidebarExpanded, 'ml-20': !isSidebarExpanded }"
+        <div :class="{ 'lg:ml-64': isSidebarExpanded, 'lg:ml-20': !isSidebarExpanded }"
             class="flex-1 overflow-auto transition-all duration-300 ease-in-out">
-            <nav class="bg-white shadow-md px-6 py-3 flex justify-between items-center relative">
-                <div class="relative ml-auto">
+            <nav class="bg-white shadow-md px-6 py-3 flex justify-end items-center relative">
+                <div class="relative">
                     <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-4 py-2 rounded">
                         <span>{{ $page.props.auth.user.name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
@@ -80,13 +105,11 @@ const navLinks = [
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
-                    <transition name="dropdown">
-                        <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-                            <Link :href="route('profile.edit')" class="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-                            <Link :href="route('logout')" method="post" as="button"
-                                class="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</Link>
-                        </div>
-                    </transition>
+                    <div v-show="isDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+                        <Link :href="route('profile.edit')" class="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+                        <Link :href="route('logout')" method="post" as="button"
+                            class="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</Link>
+                    </div>
                 </div>
             </nav>
             <header class="bg-white shadow" v-if="$slots.header">
@@ -98,5 +121,9 @@ const navLinks = [
                 <slot />
             </main>
         </div>
+        <button @click="toggleMobileSidebar"
+            class="fixed bottom-4 left-4 w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center shadow-lg lg:hidden z-50">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
     </div>
 </template>
