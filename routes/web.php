@@ -19,6 +19,7 @@ use App\Http\Controllers\GuestOrganizational_StructureController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -107,12 +108,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/pdmu/{pdmu}', [AdminPDMUController::class, 'update'])->name('pdmu.update');
     Route::delete('/admin/pdmu/{pdmu}', [AdminPDMUController::class, 'destroy'])->name('pdmu.destroy');
 
+    //User Admin Routes
+    Route::get('/admin/users', [UserController::class, 'index'])->name('AdminUsers');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('users.store');
+    Route::post('/admin/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 
     Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
     Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
     Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
     Route::inertia('/adminLogs', 'Admin/AdminLogs')->name('AdminLogs');
-    Route::inertia('/adminUsers', 'Admin/AdminUsers')->name('AdminUsers');
+    // Route::inertia('/adminUsers', 'Admin/AdminUsers')->name('AdminUsers');
 });
 
 require __DIR__ . '/auth.php';

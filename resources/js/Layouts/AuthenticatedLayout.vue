@@ -56,7 +56,7 @@ const navLinks = [
     { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-user-tie' },
     { href: '/adminCitizensCharter', label: 'Citizens Charter', icon: 'fas fa-file-signature' },
     { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history' },
-    { href: '/adminUsers', label: 'Users', icon: 'fas fa-user-cog' }
+    { href: '/admin/users', label: 'Users', icon: 'fas fa-user-cog' }
 ];
 </script>
 
