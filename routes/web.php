@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminBoholIssuanceController;
+use App\Http\Controllers\AdminCitizens_CharterController;
 use App\Http\Controllers\AdminFaqController;
 use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
@@ -120,7 +121,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/provincial-officials/{provincial_official}', [AdminProvincial_OfficialsController::class, 'destroy'])->name('provincial_officials.destroy');
 
         //Citizens Charter Admin Routes
-        Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
+        Route::get('/admin/citizens-charter', [AdminCitizens_CharterController::class, 'index'])->name('AdminCitizensCharter');
+        Route::post('/admin/citizens-charter', [AdminCitizens_CharterController::class, 'store'])->name('citizens_charter.store');
+        Route::post('/admin/citizens-charter/{citizens_charter}', [AdminCitizens_CharterController::class, 'update'])->name('citizens_charter.update');
+        Route::delete('/admin/citizens-charter/{citizens_charter}', [AdminCitizens_CharterController::class, 'destroy'])->name('citizens_charter.destroy');
+
+        // Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
 
     });
 

@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Citizens_Charter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+
+class AdminCitizens_CharterController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Citizens_Charter::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%$search%");
+            });
+        }
+
+        $charters = $query->paginate(5)->withQueryString();
+
+        return Inertia::render('Admin/AdminCitizensCharter', [
+            'charters' => $charters,
+            'filters' => $request->only(['search']),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'file' => 'required|file|mimes:mp4,mov,avi|max:102400',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $validated['file'] = $request->file('file')->store('citizens_charters', 'public');
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            $validated['thumbnail'] = $request->file('thumbnail')->store('citizens_charters/thumbnails', 'public');
+        }
+
+        Citizens_Charter::create($validated);
+
+        return response()->json(['success' => 'Video added successfully.']);
+    }
+
+    public function update(Request $request, Citizens_Charter $citizens_charter)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'file' => 'nullable|file|mimes:mp4,mov,avi|max:102400',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
+        if ($request->hasFile('file')) {
+            if ($citizens_charter->file) {
+                Storage::disk('public')->delete($citizens_charter->file);
+            }
+            $validated['file'] = $request->file('file')->store('citizens_charters', 'public');
+        } else {
+            unset($validated['file']);
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            if ($citizens_charter->thumbnail) {
+                Storage::disk('public')->delete($citizens_charter->thumbnail);
+            }
+            $validated['thumbnail'] = $request->file('thumbnail')->store('citizens_charters/thumbnails', 'public');
+        } else {
+            unset($validated['thumbnail']);
+        }
+
+        $citizens_charter->update($validated);
+
+        return response()->json(['success' => 'Video updated successfully.']);
+    }
+
+    public function destroy(Citizens_Charter $citizens_charter)
+    {
+        if ($citizens_charter->file) {
+            Storage::disk('public')->delete($citizens_charter->file);
+        }
+
+        if ($citizens_charter->thumbnail) {
+            Storage::disk('public')->delete($citizens_charter->thumbnail);
+        }
+
+        $citizens_charter->delete();
+
+        return redirect()->route('AdminCitizensCharter')->with('success', 'Video deleted successfully.');
+    }
+}
