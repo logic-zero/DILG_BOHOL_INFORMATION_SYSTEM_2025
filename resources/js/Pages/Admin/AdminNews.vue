@@ -21,6 +21,10 @@ const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
 
+const isSuperAdmin = computed(() => {
+    return pageProps.auth.user.roles.some(role => role.name === 'Super-Admin');
+});
+
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
     return from && to
@@ -184,6 +188,8 @@ const deleteNews = async () => {
 };
 
 const toggleStatus = async (id) => {
+    if (!isSuperAdmin.value) return;
+
     try {
         await router.patch(
             `/admin/news/${id}/toggle-status`,
@@ -239,12 +245,12 @@ const toggleStatus = async (id) => {
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
-                        <th class="p-3 text-left w-[25%]">Title</th>
-                        <th class="p-3 text-left w-[35%]">Caption</th>
+                        <th class="p-3 text-left w-[20%]">Title</th>
+                        <th class="p-3 text-left w-[25%]">Caption</th>
                         <th class="p-3 text-left w-[10%]">Author</th>
                         <th class="p-3 text-center w-[15%]">Images</th>
                         <th class="p-3 text-center w-[10%]">Status</th>
-                        <th class="p-3 text-center w-[5%]">Actions</th>
+                        <th class="p-3 text-center w-[20%]">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -276,7 +282,7 @@ const toggleStatus = async (id) => {
                             <div class="flex justify-center gap-1">
                                 <button @click="openModal(news)"
                                     class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
-                                    Edit
+                                    View | Edit
                                 </button>
                                 <button @click="openDeleteModal(news)"
                                     class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
@@ -318,7 +324,7 @@ const toggleStatus = async (id) => {
                 <div class="mt-3 flex gap-2">
                     <button @click="openModal(news)"
                         class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i>View | Edit
                     </button>
                     <button @click="openDeleteModal(news)"
                         class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition">

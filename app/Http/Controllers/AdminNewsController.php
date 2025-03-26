@@ -65,8 +65,10 @@ class AdminNewsController extends Controller
 
     public function update(Request $request, News $news)
     {
-        if (Auth::id() !== $news->user_id) {
-            abort(403, 'Unauthorized action.');
+        $user = Auth::user();
+
+        if ($user->id !== $news->user_id && !$user->hasAnyRole(['Admin', 'Super-Admin'])) {
+            abort(403, 'Access denied: This news was published by another user and cannot be modified. Only administrators and super administrators have the necessary permissions to update news content.');
         }
 
         $validated = $request->validate([
@@ -103,8 +105,10 @@ class AdminNewsController extends Controller
 
     public function destroy(News $news)
     {
-        if (Auth::id() !== $news->user_id) {
-            abort(403, 'Unauthorized action.');
+        $user = Auth::user();
+
+        if ($user->id !== $news->user_id && !$user->hasAnyRole(['Admin', 'Super-Admin'])) {
+            abort(403, 'Access denied: This news was posted by another user and cannot be deleted. Only administrators and super administrators are authorized to remove news entries.');
         }
 
         foreach (json_decode($news->images, true) as $image) {
@@ -118,6 +122,10 @@ class AdminNewsController extends Controller
 
     public function toggleStatus(News $news)
     {
+        if (!Auth::user()->hasRole('Super-Admin')) {
+            abort(403, 'Access denied: Only super administrators can toggle news status.');
+        }
+
         $news->update(['status' => !$news->status]);
 
         return redirect()->route('AdminNews')->with('success', 'Status updated.');
