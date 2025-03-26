@@ -20,6 +20,7 @@ const showSuccess = ref(false);
 const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
+const showImagePreview = ref(false);
 
 const isSuperAdmin = computed(() => {
     return pageProps.auth.user.roles.some(role => role.name === 'Super-Admin');
@@ -27,7 +28,6 @@ const isSuperAdmin = computed(() => {
 
 const hasNewsPermission = (news) => {
     if (!news) return true;
-
     const user = pageProps.auth.user;
     return user.id === news.user_id || user.roles.some(role => ['Admin', 'Super-Admin'].includes(role.name));
 };
@@ -37,6 +37,15 @@ const paginationInfo = computed(() => {
     return from && to
         ? `Showing ${from} to ${to} of ${total} entries`
         : "No results found";
+});
+
+const previewImages = computed(() => {
+  if (form.images.length > 0) {
+    return Array.from(form.images).map(image => URL.createObjectURL(image));
+  } else if (isEditMode.value && editingNews.value?.images) {
+    return editingNews.value.images.map(image => `/storage/${image}`);
+  }
+  return [];
 });
 
 const filters = ref({
@@ -79,6 +88,7 @@ const openModal = (news = null) => {
     editingNews.value = news;
     isModalOpen.value = true;
     errorMessage.value = "";
+    showImagePreview.value = false;
 
     if (news) {
         form.id = news.id;
@@ -214,28 +224,24 @@ const toggleStatus = async (id) => {
 
 <template>
     <div class="p-4">
-        <h1
-            class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
+        <h1 class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
             NEWS & UPDATES
         </h1>
         <transition name="fade">
-            <div v-if="showSuccess"
-                class="fixed top-20 right-5 bg-green-500 text-white p-3 rounded shadow-lg z-50 flex items-center gap-2">
+            <div v-if="showSuccess" class="fixed top-20 right-5 bg-green-500 text-white p-3 rounded shadow-lg z-50 flex items-center gap-2">
                 <i class="fas fa-check-circle text-white text-lg"></i>
                 <span>{{ successMessage }}</span>
             </div>
         </transition>
 
         <div class="flex flex-col md:flex-row md:items-center gap-2 mb-4">
-            <button @click="openModal()"
-                class="bg-blue-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-900 w-full md:w-auto">
+            <button @click="openModal()" class="bg-blue-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-900 w-full md:w-auto">
                 <i class="fas fa-plus-circle"></i>
                 Add News
             </button>
 
             <div class="relative flex-1 w-full md:w-auto">
-                <input v-model="filters.search" @keyup.enter="applyFilters" type="text" placeholder="Search news..."
-                    class="border p-2 pl-4 pr-12 rounded w-full" />
+                <input v-model="filters.search" @keyup.enter="applyFilters" type="text" placeholder="Search news..." class="border p-2 pl-4 pr-12 rounded w-full" />
                 <div class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-700 px-3 py-1 rounded">
                     <i class="fas fa-search"></i>
                 </div>
@@ -273,29 +279,20 @@ const toggleStatus = async (id) => {
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center flex-wrap gap-1 max-w-[160px]">
-                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index"
-                                    :src="`/storage/${image}`" alt="News Image"
-                                    class="w-12 h-12 object-cover border border-gray-300" />
+                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index" :src="`/storage/${image}`" alt="News Image" class="w-12 h-12 object-cover border border-gray-300" />
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="toggleStatus(news.id)"
-                                :class="news.status ? 'bg-green-500' : 'bg-orange-400'"
-                                class="px-3 py-1 text-white rounded text-sm transition">
+                            <button @click="toggleStatus(news.id)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
                                 {{ news.status ? "Approved" : "Pending" }}
                             </button>
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-1">
-                                <button @click="openModal(news)"
-                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
+                                <button @click="openModal(news)" class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
                                     {{ hasNewsPermission(news) ? 'View | Edit' : 'View' }}
                                 </button>
-                                <button
-                                    v-if="hasNewsPermission(news)"
-                                    @click="openDeleteModal(news)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition"
-                                >
+                                <button v-if="hasNewsPermission(news)" @click="openDeleteModal(news)" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
                                     Delete
                                 </button>
                             </div>
@@ -317,30 +314,21 @@ const toggleStatus = async (id) => {
                         </p>
                         <p class="text-xs font-bold text-gray-500 mt-1">By: {{ news.user.name }}</p>
                     </div>
-                    <button @click="toggleStatus(news.id)" :class="news.status
-                            ? 'bg-green-500 text-white'
-                            : 'bg-orange-400 text-white'
-                        " class="px-3 py-1 rounded text-xs whitespace-nowrap">
+                    <button @click="toggleStatus(news.id)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
                         <i :class="news.status ? 'fas fa-check-circle' : 'fas fa-hourglass'"></i>
                         {{ news.status ? "Approved" : "Pending" }}
                     </button>
                 </div>
 
                 <div v-if="news.images.length" class="flex flex-wrap gap-2 mt-3">
-                    <img v-for="(image, index) in news.images" :key="index" :src="`/storage/${image}`" alt="News Image"
-                        class="w-16 h-16 object-cover border border-gray-300" />
+                    <img v-for="(image, index) in news.images" :key="index" :src="`/storage/${image}`" alt="News Image" class="w-16 h-16 object-cover border border-gray-300" />
                 </div>
 
                 <div class="mt-3 flex gap-2">
-                    <button @click="openModal(news)"
-                        class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
+                    <button @click="openModal(news)" class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
                         <i class="fas fa-edit"></i> {{ hasNewsPermission(news) ? 'View | Edit' : 'View' }}
                     </button>
-                    <button
-                        v-if="hasNewsPermission(news)"
-                        @click="openDeleteModal(news)"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition"
-                    >
+                    <button v-if="hasNewsPermission(news)" @click="openDeleteModal(news)" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
@@ -350,16 +338,15 @@ const toggleStatus = async (id) => {
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
             <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
-                    v-html="link.label" :class="{
-                        'font-bold bg-blue-300 text-gray-900': link.active,
-                        'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
+                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)" v-html="link.label" :class="{
+                    'font-bold bg-blue-300 text-gray-900': link.active,
+                    'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
+                }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
             </div>
         </div>
 
-        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
                 <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit News" : "Add News" }}
                 </h2>
@@ -373,29 +360,48 @@ const toggleStatus = async (id) => {
                 <input v-model="form.title" placeholder="Enter title" class="border p-2 w-full my-2" />
 
                 <label class="font-bold block text-gray-700">Caption</label>
-                <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2 h-80"></textarea>
+                <textarea v-model="form.caption" placeholder="Enter caption" class="border p-2 w-full my-2 h-40"></textarea>
 
                 <label class="font-bold block text-gray-700">Upload Images</label>
                 <p class="text-sm text-gray-500">Max 5 images, each up to 5MB</p>
-                <input type="file" multiple @change="form.images = [...$event.target.files]"
-                    class="border p-2 w-full my-2" />
+                <input type="file" multiple @change="form.images = [...$event.target.files]" class="border p-2 w-full my-2" />
 
-                    <div class="flex justify-end gap-2 mt-4">
-                        <button v-if="!editingNews || hasNewsPermission(editingNews)"
-                            @click="submitNews"
-                            class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                        <button @click="closeModal"
-                            class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
-                            {{ (!editingNews || hasNewsPermission(editingNews)) ? 'Cancel' : 'Close' }}
-                        </button>
+                <button @click="showImagePreview = !showImagePreview" class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                    <i :class="showImagePreview ? 'fas fa-eye-slash' : 'fas fa-eye'" class="mr-1"></i>
+                    {{ showImagePreview ? 'Hide Preview' : 'Show Preview' }}
+                </button>
+
+                <div v-if="showImagePreview && previewImages.length" class="mt-4 border-t pt-4">
+                    <div class="space-y-4">
+                        <div v-for="(image, index) in previewImages" :key="index" class="relative">
+                            <img :src="image" alt="Preview" class="w-full object-cover h-auto p-2 shadow-xl border border-gray-300 rounded" />
+                            <span class="absolute top-2 left-2 text-white py-1 px-2 font-bold text-xs uppercase rounded flex items-center gap-1"
+                                :class="(isEditMode && editingNews?.images && index < editingNews.images.length && form.images.length === 0) ? 'bg-blue-500' : 'bg-green-500'">
+                                <template v-if="isEditMode && editingNews?.images && index < editingNews.images.length && form.images.length === 0">
+                                    <i class="fas fa-database"></i>
+                                    Stored
+                                </template>
+                                <template v-else>
+                                    <i class="fas fa-upload"></i>
+                                    Selected
+                                </template>
+                            </span>
+                        </div>
                     </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <button v-if="!editingNews || hasNewsPermission(editingNews)" @click="submitNews" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button @click="closeModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
+                        {{ (!editingNews || hasNewsPermission(editingNews)) ? 'Cancel' : 'Close' }}
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div v-if="isDeleteModalOpen"
-            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
+        <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
                 <h2 class="text-xl mb-4 text-center">Are you sure?</h2>
                 <p class="text-center mb-4">
