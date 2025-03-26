@@ -25,6 +25,11 @@ const isSuperAdmin = computed(() => {
     return pageProps.auth.user.roles.some(role => role.name === 'Super-Admin');
 });
 
+const hasNewsPermission = (news) => {
+    const user = pageProps.auth.user;
+    return user.id === news.user_id || user.roles.some(role => ['Admin', 'Super-Admin'].includes(role.name));
+};
+
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
     return from && to
@@ -282,10 +287,13 @@ const toggleStatus = async (id) => {
                             <div class="flex justify-center gap-1">
                                 <button @click="openModal(news)"
                                     class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
-                                    View | Edit
+                                    {{ hasNewsPermission(news) ? 'View | Edit' : 'View' }}
                                 </button>
-                                <button @click="openDeleteModal(news)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
+                                <button
+                                    v-if="hasNewsPermission(news)"
+                                    @click="openDeleteModal(news)"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition"
+                                >
                                     Delete
                                 </button>
                             </div>
@@ -324,10 +332,13 @@ const toggleStatus = async (id) => {
                 <div class="mt-3 flex gap-2">
                     <button @click="openModal(news)"
                         class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
-                        <i class="fas fa-edit"></i>View | Edit
+                        <i class="fas fa-edit"></i> {{ hasNewsPermission(news) ? 'View | Edit' : 'View' }}
                     </button>
-                    <button @click="openDeleteModal(news)"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition">
+                    <button
+                        v-if="hasNewsPermission(news)"
+                        @click="openDeleteModal(news)"
+                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition"
+                    >
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
@@ -367,15 +378,17 @@ const toggleStatus = async (id) => {
                 <input type="file" multiple @change="form.images = [...$event.target.files]"
                     class="border p-2 w-full my-2" />
 
-                <div class="flex justify-end gap-2 mt-4">
-                    <button @click="submitNews"
-                        class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    <button @click="closeModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
-                        Cancel
-                    </button>
-                </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button v-if="hasNewsPermission(editingNews)"
+                            @click="submitNews"
+                            class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button @click="closeModal"
+                            class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
+                            {{ hasNewsPermission(editingNews) ? 'Cancel' : 'Close' }}
+                        </button>
+                    </div>
             </div>
         </div>
 
