@@ -26,6 +26,8 @@ const isSuperAdmin = computed(() => {
 });
 
 const hasNewsPermission = (news) => {
+    if (!news) return true;
+
     const user = pageProps.auth.user;
     return user.id === news.user_id || user.roles.some(role => ['Admin', 'Super-Admin'].includes(role.name));
 };
@@ -379,14 +381,14 @@ const toggleStatus = async (id) => {
                     class="border p-2 w-full my-2" />
 
                     <div class="flex justify-end gap-2 mt-4">
-                        <button v-if="hasNewsPermission(editingNews)"
+                        <button v-if="!editingNews || hasNewsPermission(editingNews)"
                             @click="submitNews"
                             class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
                             <i class="fas fa-save"></i> Save
                         </button>
                         <button @click="closeModal"
                             class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
-                            {{ hasNewsPermission(editingNews) ? 'Cancel' : 'Close' }}
+                            {{ (!editingNews || hasNewsPermission(editingNews)) ? 'Cancel' : 'Close' }}
                         </button>
                     </div>
             </div>
