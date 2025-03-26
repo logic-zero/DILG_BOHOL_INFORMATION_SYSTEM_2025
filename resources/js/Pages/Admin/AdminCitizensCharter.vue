@@ -243,15 +243,15 @@ const deleteCharter = async () => {
         </div>
 
         <div class="space-y-4">
-            <div v-for="charter in chartersList" :key="charter.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
-                <h2 class="text-xl font-extrabold text-gray-900 bg-gray-900 bg-opacity-20 max-w-5xl mx-auto p-1 mb-2 text-center">
+            <div v-for="charter in chartersList" :key="charter.id" class="border rounded shadow-md bg-gray-100 p-4">
+                <h2 class="text-xl font-extrabold text-blue-800 pb-4 bg-gray-200 border border-gray-500 max-w-5xl mx-auto p-1 mb-2 text-center">
                     {{ charter.title }}
                 </h2>
 
-                <div class="bg-black rounded max-w-5xl mx-auto overflow-hidden">
+                <div class="max-w-5xl mx-auto overflow-hidden border border-gray-500">
                     <video
                         controls
-                        class="w-full aspect-video"
+                        class="w-full aspect-[3/2]"
                         :poster="charter.thumbnail ? `/storage/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
                         preload="none"
                     >
