@@ -295,7 +295,7 @@ const deleteCharter = async () => {
                 <label class="font-bold block text-gray-700">Title</label>
                 <input v-model="form.title" placeholder="Enter video title" class="border p-2 w-full my-2" />
 
-                <label class="font-bold block text-gray-700">Video File (MP4, MOV, AVI - max 100MB)</label>
+                <label class="font-bold block text-gray-700">Video File (MP4 - max 100MB)</label>
                 <input
                     type="file"
                     @change="form.file = $event.target.files[0]"
@@ -303,7 +303,7 @@ const deleteCharter = async () => {
                     accept="video/mp4,video/quicktime,video/x-msvideo"
                 />
 
-                <label class="font-bold block text-gray-700">Thumbnail (Optional, JPEG/PNG/JPG/GIF - max 5MB)</label>
+                <label class="font-bold block text-gray-700">Thumbnail (Optional, JPEG/PNG/JPG - max 5MB)</label>
                 <input
                     type="file"
                     @change="handleThumbnailChange"
