@@ -11,6 +11,10 @@ const page = usePage();
 
 const isActive = (routeName) => page.url === routeName;
 
+const hasRole = (roles) => {
+    return page.props.auth.user.roles.some(userRole => roles.includes(userRole.name));
+};
+
 const checkScreenSize = debounce(() => {
     if (window.innerWidth < 1024) {
         isMobileSidebarOpen.value = false;
@@ -42,22 +46,24 @@ const toggleMobileSidebar = () => {
 const toggleDropdown = () => isDropdownOpen.value = !isDropdownOpen.value;
 
 const navLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-    { href: '/admin/news', label: 'News', icon: 'fas fa-newspaper' },
-    { href: '/admin/organizational-structure', label: 'Organizational Structure', icon: 'fas fa-sitemap' },
-    { href: '/admin/pdmu', label: 'PDMU', icon: 'fas fa-user-friends' },
-    { href: '/admin/field-officers', label: 'Field Officers', icon: 'fas fa-users' },
-    { href: '/admin/jobs', label: 'Job Vacancies', icon: 'fas fa-briefcase' },
-    { href: '/admin/lgus', label: 'LGUs', icon: 'fas fa-city' },
-    { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle' },
-    { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt' },
-    { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download' },
-    { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book' },
-    { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-user-tie' },
-    { href: '/adminCitizensCharter', label: 'Citizens Charter', icon: 'fas fa-file-signature' },
-    { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history' },
-    { href: '/admin/users', label: 'Users', icon: 'fas fa-user-cog' }
+    { href: '/dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt', roles: ['Publisher', 'Admin', 'Super-Admin'] },
+    { href: '/admin/news', label: 'News', icon: 'fas fa-newspaper', roles: ['Publisher', 'Admin', 'Super-Admin'] },
+    { href: '/admin/jobs', label: 'Job Vacancies', icon: 'fas fa-briefcase', roles: ['Publisher', 'Admin', 'Super-Admin'] },
+    { href: '/admin/organizational-structure', label: 'Organizational Structure', icon: 'fas fa-sitemap', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/pdmu', label: 'PDMU', icon: 'fas fa-user-friends', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/field-officers', label: 'Field Officers', icon: 'fas fa-users', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/lgus', label: 'LGUs', icon: 'fas fa-city', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt', roles: ['Admin', 'Super-Admin'] },
+    { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download', roles: ['Admin', 'Super-Admin'] },
+    { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-user-tie', roles: ['Admin', 'Super-Admin'] },
+    { href: '/adminCitizensCharter', label: 'Citizens Charter', icon: 'fas fa-file-signature', roles: ['Admin', 'Super-Admin'] },
+    { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history', roles: ['Super-Admin'] },
+    { href: '/admin/users', label: 'Users', icon: 'fas fa-user-cog', roles: ['Super-Admin'] }
 ];
+
+const filteredNavLinks = navLinks.filter(link => hasRole(link.roles));
 </script>
 
 <template>
@@ -76,7 +82,7 @@ const navLinks = [
             </div>
             <div class="border-t border-gray-600"></div>
             <div class="flex-1 p-2">
-                <Link v-for="item in navLinks" :key="item.href" :href="item.href"
+                <Link v-for="item in filteredNavLinks" :key="item.href" :href="item.href"
                     class="h-9 flex items-center p-2 transition duration-200 text-sm border-b border-gray-700 gap-x-3"
                     :class="{ 'justify-center': !isSidebarExpanded && !isMobileSidebarOpen, 'bg-gray-700 text-white': isActive(item.href), 'hover:bg-gray-800': !isActive(item.href) }">
                     <i :class="`${item.icon} text-lg ${isActive(item.href) ? 'text-white' : 'text-gray-500'}`"></i>
