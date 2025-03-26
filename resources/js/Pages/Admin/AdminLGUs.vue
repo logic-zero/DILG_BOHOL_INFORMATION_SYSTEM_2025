@@ -188,8 +188,8 @@ const deleteLgu = async () => {
 <template>
     <div class="p-4">
         <h1
-            class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 dark:text-white border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
-            LGU Management
+            class="text-3xl md:text-4xl mb-5 font-bold text-gray-800 border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
+            LGUs
         </h1>
 
         <transition name="fade">
