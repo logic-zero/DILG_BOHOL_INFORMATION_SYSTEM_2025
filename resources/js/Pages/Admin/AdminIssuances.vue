@@ -206,10 +206,10 @@ const deleteIssuance = async () => {
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
                         <th class="p-3 text-left w-[25%]">Title</th>
-                        <th class="p-3 text-left w-[25%]">Outcome</th>
+                        <th class="p-3 text-left w-[20%]">Outcome</th>
                         <th class="p-3 text-left w-[10%]">Category</th>
                         <th class="p-3 text-left w-[10%]">Date</th>
-                        <th class="p-3 text-left w-[10%]">Reference No.</th>
+                        <th class="p-3 text-left w-[15%]">Reference No.</th>
                         <th class="p-3 text-center w-[20%]">Actions</th>
                     </tr>
                 </thead>
