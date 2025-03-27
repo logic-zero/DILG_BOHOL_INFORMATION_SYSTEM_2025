@@ -39,6 +39,7 @@ Route::get('/jobVacancies', [GuestJobController::class, 'index'])->name('guest.j
 Route::get('/fieldOfficers', [GuestField_OfficersController::class, 'index'])->name('guest.fieldOfficers');
 Route::get('organizationalStructure', [GuestOrganizational_StructureController::class, 'index'])->name('guest.organizationalStructure');
 Route::get('/citizensCharter', [GuestCitizens_CharterController::class, 'index'])->name('guest.citizensCharter');
+Route::get('/citizens-charter/download-pdf', [GuestCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.download-pdf');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');

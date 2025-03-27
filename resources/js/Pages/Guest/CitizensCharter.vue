@@ -9,6 +9,7 @@ defineOptions({
 
 const props = defineProps({
     charters: Object,
+    pdf: Object,
 });
 
 const paginationInfo = computed(() => {
@@ -36,6 +37,16 @@ const goToPage = (url) => {
         <h1 class="text-3xl text-black p-2 font-bold text-center mb-6 uppercase">
             CITIZENS CHARTER
         </h1>
+
+        <div v-if="pdf?.file" class="max-w-5xl mx-auto mb-2 flex justify-end">
+            <a
+                :href="`/citizens-charter/download-pdf`"
+                class="inline-flex items-center justify-center gap-2 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800 transition"
+            >
+                <i class="fas fa-file-pdf"></i>
+                <span>Download PDF</span>
+            </a>
+        </div>
 
         <div class="space-y-4">
             <div v-for="charter in charters.data" :key="charter.id">
