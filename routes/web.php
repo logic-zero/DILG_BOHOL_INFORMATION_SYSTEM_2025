@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminCitizens_CharterController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminFaqController;
 use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
@@ -48,9 +49,9 @@ Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('Contact
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
 
 //Authenticated Routes
-Route::get('/dashboard', function () {
-    return Inertia::render('Admin/Dashboard');
-})->middleware(['auth', 'verified', 'role:Publisher|Admin|Super-Admin'])->name('dashboard');
+Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'role:Publisher|Admin|Super-Admin'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
