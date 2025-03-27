@@ -105,7 +105,7 @@ const toggleIssuance = (issuanceId) => {
                 <div class="mt-2">
                     <a :href="'/issuance_files/' + issuance.file" download
                         class="text-red-600 font-bold hover:underline" @click.stop>
-                        <i class="fas fa-download"></i> Download PDF
+                        <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
                 </div>
 
