@@ -243,7 +243,7 @@ const deleteCharter = async () => {
         </div>
 
         <div class="space-y-4">
-            <div v-for="charter in chartersList" :key="charter.id" class="border rounded shadow-md bg-gray-100 p-4">
+            <div v-for="charter in chartersList" :key="charter.id" class="border max-w-5xl mx-auto rounded shadow-xl bg-gray-100 p-4">
                 <h2 class="text-xl font-extrabold text-blue-800 pb-4 bg-gray-200 border border-gray-500 max-w-5xl mx-auto p-1 mb-2 text-center">
                     {{ charter.title }}
                 </h2>

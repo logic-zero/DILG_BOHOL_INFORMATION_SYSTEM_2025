@@ -1,8 +1,7 @@
 <template>
     <div>
         <header>
-            <nav
-                class="bg-blue-800 text-white text-sm flex items-center justify-between xl:justify-center xl:px-32 relative">
+            <nav class="bg-blue-800 text-white text-sm flex items-center justify-between xl:justify-center xl:px-32 relative">
                 <Link href="/" class="font-bold text-lg mr-10 px-4 py-2 whitespace-nowrap">DILG-BOHOL PROVINCE</Link>
 
                 <button @click="isMenuOpen = !isMenuOpen" class="xl:hidden text-white focus:outline-none px-3 py-2">
@@ -112,48 +111,47 @@
 
             <div class="w-full bg-gray-300 py-6">
                 <div class="max-w-screen-lg mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Left Column -->
                     <div class="flex flex-col items-center">
                         <p class="text-xs font-medium uppercase">Republic of the Philippines</p>
                         <img src="/img/govph-seal.png" class="h-32 w-32 mt-2" alt="Government Seal">
                     </div>
 
-                    <!-- Middle Column -->
                     <div class="flex flex-col items-center">
                         <p class="text-xs font-medium uppercase">Government Links</p>
                         <div class="flex flex-col items-center mt-2 space-y-1">
-                            <a href="https://president.gov.ph/" target="_blank" class="text-xs hover:underline">Office
-                                of the
-                                President</a>
-                            <a href="https://ovp.gov.ph/" target="_blank" class="text-xs hover:underline">Office of the
-                                Vice
-                                President</a>
-                            <a href="http://legacy.senate.gov.ph/" target="_blank"
-                                class="text-xs hover:underline">Senate of the
-                                Philippines</a>
-                            <a href="https://www.congress.gov.ph/" target="_blank" class="text-xs hover:underline">House
-                                of
-                                Representatives</a>
-                            <a href="https://sc.judiciary.gov.ph/" target="_blank"
-                                class="text-xs hover:underline">Supreme
-                                Court</a>
-                            <a href="https://ca.judiciary.gov.ph/" target="_blank" class="text-xs hover:underline">Court
-                                of
-                                Appeals</a>
-                            <a href="https://sb.judiciary.gov.ph/" target="_blank"
-                                class="text-xs hover:underline">Sandiganbayan</a>
+                            <a href="https://president.gov.ph/" target="_blank" class="text-xs hover:underline">Office of the President</a>
+                            <a href="https://ovp.gov.ph/" target="_blank" class="text-xs hover:underline">Office of the Vice President</a>
+                            <a href="http://legacy.senate.gov.ph/" target="_blank" class="text-xs hover:underline">Senate of the Philippines</a>
+                            <a href="https://www.congress.gov.ph/" target="_blank" class="text-xs hover:underline">House of Representatives</a>
+                            <a href="https://sc.judiciary.gov.ph/" target="_blank" class="text-xs hover:underline">Supreme Court</a>
+                            <a href="https://ca.judiciary.gov.ph/" target="_blank" class="text-xs hover:underline">Court of Appeals</a>
+                            <a href="https://sb.judiciary.gov.ph/" target="_blank" class="text-xs hover:underline">Sandiganbayan</a>
                         </div>
                     </div>
 
-                    <!-- Right Column -->
                     <div class="flex flex-col items-center">
-                        <!-- Still not complete -->
                         <VisitorCounter />
                     </div>
                 </div>
             </div>
         </footer>
 
+        <button
+            v-show="showBackToTop"
+            @click="scrollToTop"
+            class="fixed bottom-4 right-6 bg-blue-800 text-white p-2 rounded shadow-lg hover:bg-blue-900 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none group"
+            aria-label="Back to top"
+        >
+            <span
+                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap text-blue-800 text-xs opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100"
+            >
+                Back to top
+            </span>
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+        </button>
     </div>
 
     <div class="bg"></div>
@@ -163,12 +161,13 @@
 
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import VisitorCounter from '../Components/VisitorCounter.vue';
 
 const page = usePage();
 const isMenuOpen = ref(false);
 const activeDropdown = ref(null);
+const showBackToTop = ref(false);
 
 const isDropdownActive = (menu) => {
     return menu.dropdown.some(item => page.url.startsWith(item.link));
@@ -185,12 +184,32 @@ const closeMenu = () => {
     activeDropdown.value = null;
 };
 
-
 const setDropdown = (index, isOpen) => {
     if (window.innerWidth > 1280) {
         activeDropdown.value = isOpen ? index : null;
     }
 };
+
+const checkScrollPosition = () => {
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+    const pageHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    showBackToTop.value = scrollPosition > (pageHeight * 0.5);
+};
+
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', checkScrollPosition);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', checkScrollPosition);
+});
 
 const menus = [
     { name: "Officials", dropdown: [{ name: "LGUs", link: "/guestLGUs" }, { name: "Provincial Officials", link: "/provincialOfficials" }] },
@@ -223,7 +242,6 @@ const menus = [
 
 <style>
 @media (max-width: 1280px) {
-
     .mobile-menu-enter-active,
     .mobile-menu-leave-active {
         transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -244,7 +262,6 @@ const menus = [
 }
 
 @media (max-width: 1280px) {
-
     .dropdown-mobile-enter-active,
     .dropdown-mobile-leave-active {
         transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
