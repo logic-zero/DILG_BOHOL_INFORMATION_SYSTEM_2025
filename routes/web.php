@@ -125,6 +125,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/citizens-charter', [AdminCitizens_CharterController::class, 'store'])->name('citizens_charter.store');
         Route::post('/admin/citizens-charter/{citizens_charter}', [AdminCitizens_CharterController::class, 'update'])->name('citizens_charter.update');
         Route::delete('/admin/citizens-charter/{citizens_charter}', [AdminCitizens_CharterController::class, 'destroy'])->name('citizens_charter.destroy');
+        Route::post('/citizens-charter/pdf', [AdminCitizens_CharterController::class, 'storePdf'])->name('citizens-charter.storePdf');
+        Route::get('/citizens-charter/pdf/download', [AdminCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.downloadPdf');
 
         // Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
 

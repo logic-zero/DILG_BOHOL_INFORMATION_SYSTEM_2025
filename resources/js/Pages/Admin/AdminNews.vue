@@ -375,7 +375,7 @@ const toggleStatus = async (id) => {
                     <div class="space-y-4">
                         <div v-for="(image, index) in previewImages" :key="index" class="relative">
                             <img :src="image" alt="Preview" class="w-full object-cover h-auto p-2 shadow-xl border border-gray-300 rounded" />
-                            <span class="absolute top-2 left-2 text-white py-1 px-2 font-bold text-xs uppercase rounded flex items-center gap-1"
+                            <span class="absolute top-2 left-2 text-white py-1 px-2 font-bold text-xs flex items-center gap-1"
                                 :class="(isEditMode && editingNews?.images && index < editingNews.images.length && form.images.length === 0) ? 'bg-blue-500' : 'bg-green-500'">
                                 <template v-if="isEditMode && editingNews?.images && index < editingNews.images.length && form.images.length === 0">
                                     <i class="fas fa-database"></i>

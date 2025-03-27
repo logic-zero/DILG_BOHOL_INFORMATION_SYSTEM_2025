@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Citizens_Charter;
+use App\Models\Citizens_Charter_PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -21,10 +22,12 @@ class AdminCitizens_CharterController extends Controller
         }
 
         $charters = $query->paginate(5)->withQueryString();
+        $pdf = Citizens_Charter_PDF::first();
 
         return Inertia::render('Admin/AdminCitizensCharter', [
             'charters' => $charters,
             'filters' => $request->only(['search']),
+            'pdf' => $pdf,
         ]);
     }
 
@@ -93,5 +96,37 @@ class AdminCitizens_CharterController extends Controller
         $citizens_charter->delete();
 
         return redirect()->route('AdminCitizensCharter')->with('success', 'Video deleted successfully.');
+    }
+
+    public function storePdf(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:51200',
+        ]);
+
+        $existingPdf = Citizens_Charter_PDF::first();
+        if ($existingPdf && $existingPdf->file) {
+            Storage::disk('public')->delete($existingPdf->file);
+            $existingPdf->delete();
+        }
+
+        $filePath = $request->file('file')->store('citizens_charters_pdf', 'public');
+
+        Citizens_Charter_PDF::create([
+            'file' => $filePath,
+        ]);
+
+        return response()->json(['success' => 'PDF uploaded successfully.']);
+    }
+
+    public function downloadPdf()
+    {
+        $pdf = Citizens_Charter_PDF::first();
+
+        if (!$pdf || !$pdf->file) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->download($pdf->file);
     }
 }

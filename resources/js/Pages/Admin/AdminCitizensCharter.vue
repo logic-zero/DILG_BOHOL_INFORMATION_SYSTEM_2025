@@ -11,6 +11,7 @@ defineOptions({
 const pageProps = usePage().props;
 const pagination = ref(pageProps.charters);
 const chartersList = ref(pageProps.charters.data ?? []);
+const pdfData = ref(pageProps.pdf ?? null);
 
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
@@ -27,12 +28,26 @@ const cancelUpload = ref(() => {});
 const uploadStartTime = ref(null);
 const estimatedTimeRemaining = ref('');
 const thumbnailPreview = ref(null);
+const isPdfModalOpen = ref(false);
+const pdfUploadProgress = ref(0);
+const isPdfUploading = ref(false);
 
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
     return from && to
         ? `Showing ${from} to ${to} of ${total} entries`
         : "No results found";
+});
+
+const pdfFormattedDate = computed(() => {
+    if (!pdfData.value) return '';
+    return new Date(pdfData.value.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 });
 
 const filters = ref({
@@ -50,10 +65,11 @@ const fetchCharters = (url = "/admin/citizens-charter") => {
     router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
-        only: ["charters", "filters"],
+        only: ["charters", "filters", "pdf"],
         onSuccess: ({ props }) => {
             pagination.value = props.charters;
             chartersList.value = props.charters.data;
+            pdfData.value = props.pdf;
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
@@ -67,6 +83,10 @@ const form = useForm({
     title: "",
     file: null,
     thumbnail: null,
+});
+
+const pdfForm = useForm({
+    file: null,
 });
 
 const openModal = (charter = null) => {
@@ -214,6 +234,46 @@ const deleteCharter = async () => {
         errorMessage.value = "Failed to delete video.";
     }
 };
+
+const uploadPdf = () => {
+    if (!pdfForm.file) {
+        errorMessage.value = "Please select a PDF file.";
+        return;
+    }
+
+    isPdfUploading.value = true;
+    pdfUploadProgress.value = 0;
+
+    const formData = new FormData();
+    formData.append("file", pdfForm.file);
+
+    const config = {
+        onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+            );
+            pdfUploadProgress.value = percentCompleted;
+        },
+    };
+
+    axios.post('/citizens-charter/pdf', formData, config)
+        .then((response) => {
+            showSuccessMessage(response.data.success);
+            fetchCharters();
+            isPdfModalOpen.value = false;
+            pdfForm.reset();
+        })
+        .catch((error) => {
+            errorMessage.value = error.response?.data?.message || "Failed to upload PDF.";
+        })
+        .finally(() => {
+            isPdfUploading.value = false;
+        });
+};
+
+const downloadPdf = () => {
+    window.open('/citizens-charter/pdf/download', '_blank');
+};
 </script>
 
 <template>
@@ -232,6 +292,11 @@ const deleteCharter = async () => {
             <button @click="openModal()" class="bg-blue-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-900 w-full md:w-auto">
                 <i class="fas fa-plus-circle"></i>
                 Add Video
+            </button>
+
+            <button @click="isPdfModalOpen = true" class="bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-red-800 w-full md:w-auto">
+                <i class="fas fa-file-pdf"></i>
+                {{ pdfData ? 'Change PDF' : 'Upload PDF' }}
             </button>
 
             <div class="relative flex-1 w-full md:w-auto">
@@ -278,6 +343,73 @@ const deleteCharter = async () => {
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
                     }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
+            </div>
+        </div>
+
+        <div v-if="isPdfModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+                <h2 class="text-xl mb-4 font-extrabold">
+                    {{ pdfData ? 'Update PDF' : 'Upload PDF' }}
+                </h2>
+
+                <div v-if="errorMessage" class="bg-red-500 text-white p-2 rounded mb-2 flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    {{ errorMessage }}
+                </div>
+
+                <div v-if="pdfData" class="mb-4 p-4 border rounded bg-gray-50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Current PDF:</span>
+                        <button @click="downloadPdf" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-download mr-1"></i> Download
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div class="flex justify-between mb-1">
+                            <span>Uploaded:</span>
+                            <span>{{ pdfFormattedDate }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="mb-4 p-4 border rounded bg-gray-50 text-center text-gray-500">
+                    <i class="fas fa-file-pdf text-4xl mb-2 text-red-500"></i>
+                    <p>No PDF uploaded yet</p>
+                </div>
+
+                <label class="font-bold block text-gray-700">PDF File (max 50MB)</label>
+                <input
+                    type="file"
+                    @change="pdfForm.file = $event.target.files[0]"
+                    class="border p-2 w-full my-2"
+                    accept="application/pdf"
+                />
+
+                <div v-if="isPdfUploading" class="mt-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Uploading...</span>
+                        <span>{{ pdfUploadProgress }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-red-600 h-2.5 rounded-full" :style="`width: ${pdfUploadProgress}%`"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <button
+                        @click="uploadPdf"
+                        class="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 flex items-center gap-1"
+                        :disabled="isPdfUploading || !pdfForm.file"
+                    >
+                        <i class="fas fa-upload"></i> {{ pdfData ? 'Update' : 'Upload' }}
+                    </button>
+                    <button
+                        @click="isPdfModalOpen = false; errorMessage = '';"
+                        class="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500"
+                        :disabled="isPdfUploading"
+                    >
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
 
