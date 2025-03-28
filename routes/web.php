@@ -28,8 +28,6 @@ use App\Http\Controllers\PresidentialDirectiveController;
 use App\Http\Controllers\PageVisitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\LegalOpinionController;
-use App\Http\Controllers\PresidentialDirectiveController;
 use App\Http\Controllers\RepublicActController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
