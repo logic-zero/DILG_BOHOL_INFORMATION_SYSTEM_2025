@@ -23,6 +23,7 @@ use App\Http\Controllers\GuestOrganizational_StructureController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageVisitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -47,6 +48,9 @@ Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
+
+Route::post('/track-visit', [PageVisitController::class, 'trackVisit']);
+Route::get('/visit-count', [PageVisitController::class, 'getVisitCount']);
 
 //Authenticated Routes
 Route::get('/dashboard', [AdminDashboardController::class, 'index'])
