@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('page_visits', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address');
+            $table->string('ip_address', 50);
             $table->timestamps();
         });
 

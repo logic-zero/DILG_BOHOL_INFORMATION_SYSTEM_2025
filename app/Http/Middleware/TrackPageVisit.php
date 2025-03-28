@@ -13,6 +13,11 @@ class TrackPageVisit
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Exclude authenticated users (e.g., admin pages)
+        if (auth()->check()) {
+            return $next($request);
+        }
+
         $ip = $request->ip();
 
         // Check if a visit from this IP was recorded in the last 10 seconds

@@ -94,7 +94,7 @@ const toggleDetails = (job) => {
 
 <template>
     <div class="p-4 sm:p-6 w-full">
-        <div class="bg-blue-800 text-white py-6 sm:py-8 mb-4 sm:mb-6">
+        <div class="bg-blue-800 text-white py-2 sm:py-4 mb-4 sm:mb-6">
             <div class="container mx-auto px-4 text-center">
                 <h1 class="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Join Our Team</h1>
                 <p class="text-sm sm:text-lg">Explore exciting job opportunities with us</p>
@@ -106,12 +106,12 @@ const toggleDetails = (job) => {
                 <div class="relative w-full sm:flex-1">
                     <i class="absolute left-3 top-2 sm:top-3 text-gray-500 fas fa-search"></i>
                     <input v-model="filters.search" type="text" placeholder="Search jobs..."
-                        class="border border-gray-300 pl-10 pr-3 py-1 sm:py-2 w-full focus:ring-2 focus:ring-gray-400 outline-none text-sm sm:text-base" />
+                        class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none text-sm sm:text-base" />
                 </div>
 
                 <div class="relative w-full sm:w-1/2">
                     <select v-model="filters.position"
-                        class="border border-gray-300 px-3 py-1 sm:py-2 w-full focus:ring-2 focus:ring-gray-400 outline-none text-sm sm:text-base">
+                        class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none text-sm sm:text-base">
                         <option value="">All Positions</option>
                         <option v-for="position in pageProps.positions" :key="position" :value="position">
                             {{ position }}
@@ -178,7 +178,7 @@ const toggleDetails = (job) => {
                                     View Details
                                 </a>
                             </div>
-                            
+
                             <div class="absolute bottom-2 right-0 sm:bottom-0">
                                 <p class="text-xs sm:text-sm text-gray-500 text-right">Posted: {{ formatDate(job.created_at) }}</p>
                             </div>

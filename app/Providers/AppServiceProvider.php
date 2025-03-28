@@ -28,14 +28,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Define your scheduled tasks here
         $schedule->call(function () {
-            $scraperService = app(ScraperService::class);
-            $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
-
             $republicActService = app(RepublicActService::class);
             $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
 
             $presidentialdirectiveService = app(PresidentialDirectiveService::class);
             $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
+
+            // $scraperService = app(ScraperService::class);
+            // $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
         })->everyMinute();
     }
 }

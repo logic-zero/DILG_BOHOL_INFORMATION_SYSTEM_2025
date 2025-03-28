@@ -2,6 +2,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import TotalCountCard from "@/Components/TotalCountCard.vue";
+import PageVisitCard from "@/Components/PageVisitCard.vue";
+import PageVisitsChart from "@/Components/PageVisitsChart.vue";
 
 defineOptions({ layout: AuthenticatedLayout });
 
@@ -16,6 +18,7 @@ const props = defineProps({
     prov_officials: Number,
     citizens_charter: Number,
     users: Number,
+    pageVisits: Object,
 });
 </script>
 
@@ -23,8 +26,56 @@ const props = defineProps({
     <Head title="Dashboard" />
 
     <div class="mx-auto px-4 py-6 flex flex-col lg:flex-row gap-4">
-        <div class="lg:flex-1"></div>
+        <!-- page visit section -->
+        <div class="lg:flex-1">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <PageVisitCard
+                    title="Today's Visits"
+                    :count="pageVisits.today"
+                    icon="fas fa-calendar-day"
+                    bg-color="bg-white"
+                    border-color="border-blue-900 border"
+                    text-color="text-blue-950"
+                />
 
+                <PageVisitCard
+                    title="This Week"
+                    :count="pageVisits.thisWeek"
+                    icon="fas fa-calendar-week"
+                    bg-color="bg-white"
+                    border-color="border-blue-900 border"
+                    text-color="text-blue-950"
+                />
+
+                <PageVisitCard
+                    title="This Month"
+                    :count="pageVisits.thisMonth"
+                    icon="fas fa-calendar-alt"
+                    bg-color="bg-white"
+                    border-color="border-blue-900 border"
+                    text-color="text-blue-950"
+                />
+
+                <PageVisitCard
+                    title="Total Visits"
+                    :count="pageVisits.total"
+                    icon="fas fa-chart-line"
+                    bg-color="bg-white"
+                    border-color="border-blue-900 border"
+                    text-color="text-blue-950"
+                />
+            </div>
+
+            <div class="bg-white p-4 rounded-lg border shadow-sm border-blue-900">
+                <h3 class="text-md text-blue-950 uppercase font-semibold mb-4">Page Visits (Last 10 Days)</h3>
+                <PageVisitsChart
+                    :labels="pageVisits.graph.labels"
+                    :data="pageVisits.graph.data"
+                />
+            </div>
+        </div>
+
+        <!-- other cards section-->
         <div class="xl:w-[625px] flex justify-center">
             <div class="grid grid-cols-2 xl:grid-cols-3 gap-4">
                 <!-- Row 1 -->

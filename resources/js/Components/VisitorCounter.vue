@@ -29,6 +29,6 @@ onMounted(() => {
 
 <template>
     <div class="border border-black bg-white bg-opacity-50 text-black p-4 rounded text-center font-light">
-    <p class="text-xs font-bold tracking-wide uppercase">Total Visits: {{ totalVisits }}</p>
-</div>
+        <p class="text-xs font-bold tracking-wide uppercase">Total Visits: {{ totalVisits }}</p>
+    </div>
 </template>
