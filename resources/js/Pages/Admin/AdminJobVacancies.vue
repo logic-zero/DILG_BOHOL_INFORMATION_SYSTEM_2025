@@ -12,7 +12,7 @@ const pageProps = usePage().props;
 const pagination = ref(pageProps.jobs);
 const jobsList = ref((pageProps.jobs.data ?? []).map(job => ({
     ...job,
-    showFullDetails: false // Add a property to track whether full details are shown
+    showFullDetails: false
 })));
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
@@ -22,6 +22,18 @@ const showSuccess = ref(false);
 const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const jobToDelete = ref(null);
+const isImageModalOpen = ref(false);
+const selectedImage = ref("");
+
+const openImageModal = (imageUrl) => {
+  selectedImage.value = imageUrl;
+  isImageModalOpen.value = true;
+};
+
+const closeImageModal = () => {
+  isImageModalOpen.value = false;
+  selectedImage.value = "";
+};
 
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
@@ -63,7 +75,7 @@ const fetchJobs = (url = "/admin/jobs") => {
             pagination.value = props.jobs;
             jobsList.value = props.jobs.data.map(job => ({
                 ...job,
-                showFullDetails: false // Reset showFullDetails on fetch
+                showFullDetails: false
             }));
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
@@ -74,11 +86,11 @@ const goToPage = (url) => url && fetchJobs(url);
 
 const form = useForm({
     id: null,
-    hiring_img: null, // Change to handle file upload
+    hiring_img: null, 
     position: "",
     details: "",
     link: "",
-    remarks: "Available", // Set default value for remarks
+    remarks: "Available",
 });
 
 const openModal = (job = null) => {
@@ -89,21 +101,20 @@ const openModal = (job = null) => {
 
     if (job) {
         form.id = job.id;
-        form.hiring_img = null; // Reset file input
+        form.hiring_img = null;
         form.position = job.position;
         form.details = job.details;
         form.link = job.link;
-        form.remarks = job.remarks;
     } else {
         form.reset();
-        form.remarks = "Available"; // Set default value for remarks when adding a new job
+        form.remarks = "Available"; 
     }
 };
 
 const closeModal = () => {
     isModalOpen.value = false;
     form.reset();
-    form.remarks = "Available"; // Reset remarks to default value
+    form.remarks = "Available";
     errorMessage.value = "";
 };
 
@@ -120,11 +131,10 @@ const submitJob = () => {
 
     if (!form.position) return (errorMessage.value = "Position is required.");
     if (!form.details) return (errorMessage.value = "Details are required.");
-    if (!form.link) return (errorMessage.value = "Link is required.");
+    if (!form.link) return (errorMessage.value = "Document link is required.");
 
     const url = isEditMode.value ? `/admin/jobs/${form.id}` : "/admin/jobs";
 
-    // Use FormData to handle file uploads
     const formData = new FormData();
     formData.append("position", form.position);
     formData.append("details", form.details);
@@ -222,11 +232,11 @@ const toggleDetails = (job) => {
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
-                        <th class="p-3 text-left w-[15%]">Remarks</th>
+                        <th class="p-3 text-left w-[10%]">Remarks</th>
                         <th class="p-3 text-left w-[10%]">Image</th>
                         <th class="p-3 text-left w-[15%]">Position</th>
                         <th class="p-3 text-left w-[15%]">Details</th>
-                        <th class="p-3 text-left w-[15%]">Date Posted</th>
+                        <th class="p-3 text-left w-[20%]">Posted on</th>
                         <th class="p-3 text-left w-[15%]">Document Link</th>
                         <th class="p-3 text-center w-[15%]">Actions</th>
                     </tr>
@@ -234,15 +244,18 @@ const toggleDetails = (job) => {
                 <tbody>
                     <tr v-for="job in jobsList" :key="job.id"
                         class="border-b hover:bg-gray-50 transition">
-                        <td class="p-3 text-gray-600 break-words">
-                            {{ job.remarks }}
+                        <td class="p-3 break-words">
+                            <span class="text-white bg-green-400 px-3 py-2 rounded-sm">{{ job.remarks }}</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            <img
-                                :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`"
-                                alt="Hiring Image"
-                                class="w-16 h-16 object-cover rounded"
-                            />
+                            <button @click="openImageModal(job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`)" 
+                                    class="focus:outline-none">
+                                <img 
+                                    :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`" 
+                                    alt="Hiring Image" 
+                                    class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                />
+                            </button>
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ job.position }}
@@ -260,17 +273,26 @@ const toggleDetails = (job) => {
                         <td class="p-3 text-gray-600 break-words">
                             {{ formatDate(job.created_at) }}
                         </td>
-                        <td class="p-3 text-gray-600 break-words">
-                            <a :href="job.link" target="_blank" class="text-blue-500 hover:underline">{{ job.link }}</a>
+                        <td class="p-3 text-gray-600">
+                            <div class="w-[200px]">
+                                <a 
+                                    :href="job.link" 
+                                    target="_blank" 
+                                    class="text-blue-500 hover:underline block truncate"
+                                    :title="job.link"
+                                >
+                                    {{ job.link }}
+                                </a>
+                            </div>
                         </td>
                         <td class="p-3 text-center">
-                            <div class="flex justify-center gap-1">
+                            <div class="flex justify-center gap-1 whitespace-nowrap">
                                 <button @click="openModal(job)"
-                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
+                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition w-24">
                                     View | Edit
                                 </button>
                                 <button @click="openDeleteModal(job)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
+                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition w-20">
                                     Delete
                                 </button>
                             </div>
@@ -292,7 +314,6 @@ const toggleDetails = (job) => {
             </div>
         </div>
 
-        <!-- Add/Edit Modal -->
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 shadow-lg w-full max-w-lg mx-4 max-h-[95vh] overflow-y-auto">
                 <h2 class="text-xl mb-4 font-extrabold">
@@ -303,15 +324,12 @@ const toggleDetails = (job) => {
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     {{ errorMessage }}
                 </div>
-
-                <label class="font-bold block text-gray-700">Remarks</label>
-                <input v-model="form.remarks" placeholder="Enter Remarks" class="border p-2 w-full my-2" />
-
-                <label class="font-bold block text-gray-700">Image</label>
-                <input type="file" @change="form.hiring_img = $event.target.files[0]" class="border p-2 w-full my-2" />
-
+                
                 <label class="font-bold block text-gray-700">Position</label>
                 <input v-model="form.position" placeholder="Enter Position" class="border p-2 w-full my-2" />
+
+                <label class="font-bold block text-gray-700">Upload Image: <span class="text-red-600">(Max: 1)</span></label>
+                <input type="file" @change="form.hiring_img = $event.target.files[0]" class="border p-2 w-full my-2" />
 
                 <label class="font-bold block text-gray-700">Details</label>
                 <textarea v-model="form.details" placeholder="Enter Details" class="border p-2 w-full my-2"></textarea>
@@ -331,7 +349,6 @@ const toggleDetails = (job) => {
             </div>
         </div>
 
-        <!-- Delete Modal -->
         <div v-if="isDeleteModalOpen"
             class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
             <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
@@ -351,17 +368,39 @@ const toggleDetails = (job) => {
                 </div>
             </div>
         </div>
+
+        <div v-if="isImageModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+             @click.self="closeImageModal">
+          <div class="relative max-w-4xl max-h-screen">
+            <button @click="closeImageModal" 
+                    class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none">
+              <i class="fas fa-times text-2xl"></i>
+            </button>
+            <img :src="selectedImage" alt="Job Image" class="max-w-full max-h-screen object-contain">
+          </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s;
+  transition: opacity 0.5s;
 }
 
 .fade-enter,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
+}
+
+.img-zoom-enter-active,
+.img-zoom-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.img-zoom-enter,
+.img-zoom-leave-to {
+  transform: scale(0.95);
+  opacity: 0;
 }
 </style>

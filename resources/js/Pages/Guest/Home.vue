@@ -2,6 +2,47 @@
     <div>
         <div class="p-6 w-full">
             <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
+                Here displays the images
+            </h1>
+
+            <div class="container">
+                <div class="row">
+                    <!-- Links section (left side) -->
+                    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start mt-5 mb-5">
+                        <Link :href="route('guest.provincialDirector')" class="btn btn-md custom-button mb-3">
+                            <span class="button-text">THE PROVINCIAL DIRECTOR</span>
+                            <span class="fas fa-arrow-right arrow-icon"></span>
+                        </Link>
+
+                        <Link :href="route('guest.latestIssuances')" class="btn btn-md custom-button">
+                            <span class="button-text">ABOUT US (no route pa) </span>
+                            <span class="fas fa-arrow-right arrow-icon"></span>
+                        </Link>
+
+                        <Link :href="route('guest.latestIssuances')" class="btn btn-md custom-button">
+                            <span class="button-text">LATEST ISSUANCES</span>
+                            <span class="fas fa-arrow-right arrow-icon"></span>
+                        </Link>
+                    </div>
+
+                    <!-- Intro section (right side) -->
+                    <div class="col-md-6 mt-5 mb-5 text-center">
+                        <img src="/img/dilg-main.png" alt="DILG Logo" class="dilg-logo mb-3">
+
+                        <h1 class="dilg-title">
+                            Department of the Interior and Local Government
+                        </h1>
+                        <p class="mt-3 dilg-description">
+                            The DILG is the executive department of the Philippine government responsible for promoting peace and
+                            order, ensuring public safety, and strengthening local government capability aimed towards the effective
+                            delivery of basic services to the citizenry.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-6 w-full">
+            <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
                 Latest News & Updates
             </h1>
 
@@ -226,7 +267,51 @@ const newsList = ref(usePage().props.news ?? []);
 
 </script>
 
-<style scoped>
+<style scoped>.custom-button {
+    background-color: #234495;
+    color: white;
+    width: 300px;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between; /* Align text and icon to opposite ends */
+    align-items: center; /* Vertically center content */
+    text-decoration: none;
+}
+
+.custom-button:hover {
+    background-color: #1a3374; /* Darker shade for hover effect */
+}
+
+/* Button text styling */
+.button-text {
+    flex-grow: 1; /* Allow text to take up available space */
+}
+
+/* Arrow icon styling */
+.arrow-icon {
+    margin-left: 10px; /* Add some spacing between text and icon */
+}
+
+/* DILG logo styling */
+.dilg-logo {
+    height: 100px;
+    width: 100px;
+}
+
+/* DILG title styling */
+.dilg-title {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+/* DILG description styling */
+.dilg-description {
+    text-indent: 40px; /* Equivalent to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+    line-height: 1.6;
+}
+
 .transition-max-height {
     transition-property: max-height;
     transition-timing-function: ease-out;

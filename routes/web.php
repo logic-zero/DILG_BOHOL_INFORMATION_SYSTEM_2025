@@ -23,12 +23,51 @@ use App\Http\Controllers\GuestOrganizational_StructureController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalOpinionController;
+use App\Http\Controllers\PresidentialDirectiveController;
 use App\Http\Controllers\PageVisitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LegalOpinionController;
+use App\Http\Controllers\PresidentialDirectiveController;
+use App\Http\Controllers\RepublicActController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// routes/api.php
+Route::prefix('api')->group(function () {
+    Route::get('/proxy-pdf', function () {
+        $url = request()->query('url');
+
+        if (!$url) {
+            return response()->json(['error' => 'No URL provided'], 400);
+        }
+
+        try {
+            Log::info("Fetching PDF from: " . $url);
+
+            $response = Http::withOptions([
+                'verify' => storage_path('cacert.pem'), // Path to the CA bundle
+            ])->withHeaders([
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                    ])->get($url);
+
+            if ($response->successful()) {
+                return response($response->body(), 200, [
+                    'Content-Type' => $response->header('Content-Type'),
+                    'Content-Disposition' => 'inline; filename="document.pdf"',
+                ]);
+            }
+
+            Log::error("Failed to fetch PDF. Status: " . $response->status());
+            return response()->json(['error' => 'Failed to fetch PDF'], $response->status());
+        } catch (\Exception $e) {
+            Log::error("Exception: " . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+});
 
 //Guest Routes
 Route::get('/', [HomeController::class, 'Index'])->name('home');
@@ -42,8 +81,11 @@ Route::get('/fieldOfficers', [GuestField_OfficersController::class, 'index'])->n
 Route::get('organizationalStructure', [GuestOrganizational_StructureController::class, 'index'])->name('guest.organizationalStructure');
 Route::get('/citizensCharter', [GuestCitizens_CharterController::class, 'index'])->name('guest.citizensCharter');
 Route::get('/citizens-charter/download-pdf', [GuestCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.download-pdf');
+Route::get('/legalOpinions', [LegalOpinionController::class, 'index'])->name('guest.legalOpinions');
+Route::get('/republicActs', [RepublicActController::class, 'index'])->name('guest.republicActs');
+Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, 'index'])->name('guest.presidentialDirectives');
+Route::inertia('/provincialDirector', 'Guest/ProvincialDirector')->name('guest.provincialDirector');
 Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
-Route::inertia('/legalOpinions', 'Guest/LegalOpinions')->name('LegalOpinions');
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
@@ -62,7 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::middleware('role:Publisher|Admin|Super-Admin')->group(function(){
+    Route::middleware('role:Publisher|Admin|Super-Admin')->group(function () {
         //News Admin Routes
         Route::get('/admin/news', [AdminNewsController::class, 'index'])->name('AdminNews');
         Route::post('/admin/news', [AdminNewsController::class, 'store'])->name('news.store');
@@ -77,7 +119,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/jobs/{job}', [AdminJobController::class, 'destroy'])->name('jobs.destroy');
     });
 
-    Route::middleware('role:Admin|Super-Admin')->group(function(){
+    Route::middleware('role:Admin|Super-Admin')->group(function () {
         //Organizational Structure Admin Routes
         Route::get('/admin/organizational-structure', [AdminOrganizational_StructureController::class, 'index'])->name('AdminOrganizationalStructure');
         Route::post('/admin/organizational-structure', [AdminOrganizational_StructureController::class, 'store'])->name('organizational_structure.store');
@@ -138,7 +180,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::middleware('role:Super-Admin')->group(function(){
+    Route::middleware('role:Super-Admin')->group(function () {
         //User Admin Routes
         Route::get('/admin/users', [UserController::class, 'index'])->name('AdminUsers');
         Route::post('/admin/users', [UserController::class, 'store'])->name('users.store');

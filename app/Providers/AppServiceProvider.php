@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
+use App\Services\ScraperService;
+use App\Services\RepublicActService;
+use App\Services\PresidentialDirectiveService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +23,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Vite::prefetch(concurrency: 3);
+        // Resolve the Schedule class from the service container
+        $schedule = $this->app->make(Schedule::class);
+
+        // Define your scheduled tasks here
+        $schedule->call(function () {
+            $scraperService = app(ScraperService::class);
+            $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
+
+            $republicActService = app(RepublicActService::class);
+            $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
+
+            $presidentialdirectiveService = app(PresidentialDirectiveService::class);
+            $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
+        })->everyMinute();
     }
 }
+
+
+// $sendLegalOpinions = app(LegalOpinionService::class);
+// $sendLegalOpinions->sendAllLegalOpinionsToTangkaraw();

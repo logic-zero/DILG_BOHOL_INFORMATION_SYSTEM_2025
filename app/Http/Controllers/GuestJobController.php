@@ -33,7 +33,7 @@ class GuestJobController extends Controller
             $query->where('remarks', 'LIKE', "%$remarks%");
         }
 
-        $jobs = $query->paginate(10)->withQueryString();
+        $jobs = $query->paginate(5)->withQueryString();
 
         // Fetch unique values for positions and remarks
         $positions = Job::distinct()->pluck('position')->filter()->values();

@@ -219,9 +219,9 @@ const menus = [
             { name: "Latest Issuances", link: "/latestIssuances" },
             { name: "Joint Circulars", link: "https://dilg.gov.ph/issuances-archive/jc/" },
             { name: "Memo Circulars", link: "https://dilg.gov.ph/issuances-archive/mc/" },
-            { name: "Presidential Directives", link: "https://dilg.gov.ph/issuances-archive/pd/" },
+            { name: "Presidential Directives", link: "/presidentialDirectives" },
             { name: "Draft Issuances", link: "https://dilg.gov.ph/issuances-archive/draft/" },
-            { name: "Republic Acts", link: "https://dilg.gov.ph/issuances-archive/ra/" },
+            { name: "Republic Acts", link: "/republicActs" },
             { name: "Legal Opinions", link: "/legalOpinions" },
         ]
     },
