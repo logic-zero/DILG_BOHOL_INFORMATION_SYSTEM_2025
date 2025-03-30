@@ -25,10 +25,14 @@ const props = defineProps({
 <template>
     <Head title="Dashboard" />
 
-    <div class="mx-auto px-4 py-6 flex flex-col lg:flex-row gap-4">
+    <h1 class="text-3xl md:text-4xl mt-4 mb-2 font-bold text-gray-800 border-b-2 border-gray-500 pb-2 text-center mx-auto w-fit">
+        DASHBOARD
+    </h1>
+
+    <div class="mx-auto px-4 py-6 flex flex-col xl:flex-row gap-4">
         <!-- page visit section -->
-        <div class="lg:flex-1">
-            <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="flex-1 min-w-0">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <PageVisitCard
                     title="Today's Visits"
                     :count="pageVisits.today"
@@ -67,7 +71,7 @@ const props = defineProps({
             </div>
 
             <div class="bg-white p-4 rounded-lg border shadow-sm border-blue-900">
-                <h3 class="text-md text-blue-950 uppercase font-semibold mb-4">Page Visits (Last 10 Days)</h3>
+                <h3 class="text-sm text-blue-950 uppercase font-semibold mb-4">Page Visits (Last 10 Days)</h3>
                 <PageVisitsChart
                     :labels="pageVisits.graph.labels"
                     :data="pageVisits.graph.data"
@@ -76,8 +80,8 @@ const props = defineProps({
         </div>
 
         <!-- other cards section-->
-        <div class="xl:w-[625px] flex justify-center">
-            <div class="grid grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="xl:w-[625px] w-full">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 justify-items-center">
                 <!-- Row 1 -->
                 <TotalCountCard
                     title="Total News"

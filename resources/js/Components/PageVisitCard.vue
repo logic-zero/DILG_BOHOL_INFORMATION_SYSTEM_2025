@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="group relative transition-all duration-300 hover:scale-105 w-full h-[120px]">
+    <div class="group relative transition-all duration-300 hover:scale-105 w-full h-[105px]">
         <div class="h-full p-3 rounded-lg border shadow-sm hover:shadow-md flex flex-col"
              :class="[bgColor, borderColor]">
             <div class="flex justify-between items-start h-full">
