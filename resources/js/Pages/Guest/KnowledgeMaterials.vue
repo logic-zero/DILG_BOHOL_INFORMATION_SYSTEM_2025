@@ -1,11 +1,105 @@
+<script setup>
+import { ref, watch, computed } from "vue";
+import { usePage, router } from "@inertiajs/vue3";
+import { debounce } from "lodash";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+
+defineOptions({ layout: GuestLayout });
+
+const pageProps = usePage().props;
+const materials = ref(pageProps.materials.data ?? []);
+const pagination = ref(pageProps.materials);
+
+const filters = ref({
+    search: pageProps.filters?.search ?? "",
+});
+
+const applyFilters = () => {
+    router.get("/knowledgeMaterials", filters.value, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ["materials", "filters"],
+        onSuccess: ({ props }) => {
+            pagination.value = props.materials;
+            materials.value = props.materials.data;
+        },
+    });
+};
+
+const debouncedSearch = debounce(applyFilters, 500);
+
+watch(() => filters.value.search, debouncedSearch);
+
+const paginationInfo = computed(() => {
+    const { from, to, total } = pagination.value;
+    return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
+});
+
+const goToPage = (url) => {
+    if (!url) return;
+    router.get(url, filters.value, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ["materials", "filters"],
+        onSuccess: ({ props }) => {
+            pagination.value = props.materials;
+            materials.value = props.materials.data;
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+    });
+};
+</script>
+
 <template>
-    <div>
-        <h1>Knowledge Materials</h1>
+    <div class="p-6 w-full">
+        <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
+            Knowledge Materials
+        </h1>
+
+        <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
+            <div class="flex flex-col md:flex-row items-start gap-3">
+                <div class="relative w-full md:flex-1">
+                    <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
+                    <input v-model="filters.search" type="text" placeholder="Search materials..."
+                        class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none" />
+                </div>
+            </div>
+        </div>
+
+        <div v-if="materials.length > 0" class="space-y-4 md:px-12">
+            <div v-for="material in materials" :key="material.id"
+                class="border border-gray-300 p-4 shadow-lg rounded bg-white">
+
+                <div class="flex justify-between items-center">
+                    <div class="flex-1 flex justify-between">
+                        <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ material.title }}</h2>
+                        <p class="text-xs uppercase text-gray-600 font-bold">
+                            {{ new Date(material.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <a :href="route('guest.knowledgeMaterials.download', material)"
+                        class="text-red-600 font-bold hover:underline">
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <p v-else class="text-center text-gray-500 mt-4">No materials found.</p>
+
+        <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
+            <span>{{ paginationInfo }}</span>
+            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
+                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+                    v-html="link.label" :class="{
+                        'font-bold bg-blue-300 text-gray-900': link.active,
+                        'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
+                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                </button>
+            </div>
+        </div>
     </div>
 </template>
-
-<script setup>
-import GuestLayout from "../../Layouts/GuestLayout.vue"
-
-defineOptions({ layout: GuestLayout});
-</script>

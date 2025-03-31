@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminFaqController;
 use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
+use App\Http\Controllers\AdminKnowledge_MaterialsController;
 use App\Http\Controllers\AdminLguController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminOrganizational_StructureController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\GuestCitizens_CharterController;
 use App\Http\Controllers\GuestFaqController;
 use App\Http\Controllers\GuestField_OfficersController;
 use App\Http\Controllers\GuestJobController;
+use App\Http\Controllers\GuestKnowledge_MaterialsController;
 use App\Http\Controllers\GuestLguController;
 use App\Http\Controllers\GuestNewsController;
 use App\Http\Controllers\GuestOrganizational_StructureController;
@@ -83,7 +85,10 @@ Route::get('/legalOpinions', [LegalOpinionController::class, 'index'])->name('gu
 Route::get('/republicActs', [RepublicActController::class, 'index'])->name('guest.republicActs');
 Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, 'index'])->name('guest.presidentialDirectives');
 Route::inertia('/provincialDirector', 'Guest/ProvincialDirector')->name('guest.provincialDirector');
-Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
+// Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
+Route::get('/knowledgeMaterials', [GuestKnowledge_MaterialsController::class, 'index'])->name('guest.knowledgeMaterials');
+Route::get('/knowledgeMaterials/download/{knowledgeMaterial}', [GuestKnowledge_MaterialsController::class, 'download'])->name('guest.knowledgeMaterials.download');
+
 Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
@@ -158,7 +163,12 @@ Route::middleware('auth')->group(function () {
         Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
 
         //Knowledge Materials Admin Routes
-        Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
+        Route::get('/admin/knowledge-materials', [AdminKnowledge_MaterialsController::class, 'index'])->name('AdminKnowledgeMaterials');
+        Route::post('/admin/knowledge-materials', [AdminKnowledge_MaterialsController::class, 'store'])->name('knowledge-materials.store');
+        Route::post('/admin/knowledge-materials/{knowledgeMaterial}', [AdminKnowledge_MaterialsController::class, 'update'])->name('knowledge-materials.update');
+        Route::delete('/admin/knowledge-materials/{knowledgeMaterial}', [AdminKnowledge_MaterialsController::class, 'destroy'])->name('knowledge-materials.destroy');
+        Route::get('/admin/knowledge-materials/{knowledgeMaterial}/download', [AdminKnowledge_MaterialsController::class, 'download'])->name('knowledge-materials.download');
+        // Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
 
         //Prov Officials Admin Routes
         Route::get('/admin/provincial-officials', [AdminProvincial_OfficialsController::class, 'index'])->name('AdminProvincialOfficials');

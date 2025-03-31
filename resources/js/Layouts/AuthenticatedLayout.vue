@@ -56,7 +56,7 @@ const navLinks = [
     { href: '/admin/faqs', label: 'FAQ', icon: 'fas fa-question-circle', roles: ['Admin', 'Super-Admin'] },
     { href: '/admin/issuances', label: 'Issuances', icon: 'fas fa-file-alt', roles: ['Admin', 'Super-Admin'] },
     { href: '/adminDownloadables', label: 'Downloadables', icon: 'fas fa-download', roles: ['Admin', 'Super-Admin'] },
-    { href: '/adminKnowledgeMaterials', label: 'Knowledge Materials', icon: 'fas fa-book', roles: ['Admin', 'Super-Admin'] },
+    { href: '/admin/knowledge-materials', label: 'Knowledge Materials', icon: 'fas fa-book', roles: ['Admin', 'Super-Admin'] },
     { href: '/admin/provincial-officials', label: 'Prov. Officials', icon: 'fas fa-user-tie', roles: ['Admin', 'Super-Admin'] },
     { href: '/admin/citizens-charter', label: 'Citizens Charter', icon: 'fas fa-file-signature', roles: ['Admin', 'Super-Admin'] },
     { href: '/adminLogs', label: 'Logs', icon: 'fas fa-history', roles: ['Super-Admin'] },
