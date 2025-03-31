@@ -14,7 +14,6 @@ class PresidentialDirectiveController extends Controller
     {
         $query = PresidentialDirective::query();
 
-        // Search filter
         if ($request->has('search') && $request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
@@ -22,23 +21,15 @@ class PresidentialDirectiveController extends Controller
             });
         }
 
-        // Date filter - only apply if a specific date is selected
         if ($request->has('date') && $request->date) {
             $query->where('date', $request->date);
         }
 
-        // Paginate and order results - newest first
-        $directives = $query->orderBy('date', 'desc')
-            ->orderBy('created_at', 'desc') // secondary sort
-            ->paginate(10);
+        $directives = $query->paginate(10);
 
-        // Get all distinct dates (not just those on current page)
-        $dates = PresidentialDirective::select('date')
-            ->distinct()
-            ->orderBy('date', 'desc')
+        $dates = PresidentialDirective::distinct('date')
             ->pluck('date');
 
-        // Prepare the response
         $response = [
             'dates' => $dates,
             'pagination' => $directives,

@@ -24,11 +24,9 @@ class RepublicActController extends Controller
             $query->where('date', $request->date);
         }
 
-        $acts = $query->orderBy('date', 'desc')->paginate(10);
+        $acts = $query->paginate(10);
 
-        $dates = RepublicAct::select('date')
-            ->distinct()
-            ->orderBy('date', 'desc')
+        $dates = RepublicAct::distinct('date')
             ->pluck('date');
 
         $response = [

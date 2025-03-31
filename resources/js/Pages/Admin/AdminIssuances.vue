@@ -205,11 +205,12 @@ const deleteIssuance = async () => {
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
-                        <th class="p-3 text-left w-[25%]">Title</th>
+                        <th class="p-3 text-left w-[15%]">Title</th>
                         <th class="p-3 text-left w-[20%]">Outcome</th>
-                        <th class="p-3 text-left w-[10%]">Category</th>
+                        <th class="p-3 text-left w-[15%]">Category</th>
                         <th class="p-3 text-left w-[10%]">Date</th>
                         <th class="p-3 text-left w-[15%]">Reference No.</th>
+                        <th class="p-3 text-left w-[10%]">File</th>
                         <th class="p-3 text-center w-[20%]">Actions</th>
                     </tr>
                 </thead>
@@ -231,14 +232,24 @@ const deleteIssuance = async () => {
                         <td class="p-3 text-gray-600 break-words">
                             {{ issuance.reference_num }}
                         </td>
+                        <td class="p-3 text-gray-600 break-words">
+                            <a v-if="issuance.file" 
+                            :href="'/issuance_files/' + issuance.file" 
+                            download
+                            class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ issuance.file }}
+                            </a>
+                            <span v-else class="text-gray-400">No file</span>
+                        </td>
                         <td class="p-3 text-center">
-                            <div class="flex justify-center gap-1">
+                            <div class="flex justify-center gap-1 whitespace-nowrap">
                                 <button @click="openModal(issuance)"
-                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition">
+                                    class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1 rounded text-sm transition w-24">
                                     View | Edit
                                 </button>
+
                                 <button @click="openDeleteModal(issuance)"
-                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition">
+                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition w-20">
                                     Delete
                                 </button>
                             </div>

@@ -5,7 +5,7 @@
         </h1>
 
         <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
-            <div class="flex flex-col md:flex-row gap-3 w-full mb-4">
+            <div class="flex flex-col md:flex-row gap-3 w-full">
                 <div class="relative w-full md:w-3/4">
                     <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
                     <input 
@@ -32,50 +32,62 @@
         </div>
 
         <div v-if="filteredActs.length > 0" class="space-y-4 md:px-12">
-            <div class="border border-gray-300 rounded-lg overflow-hidden">
-                <div v-for="(act, index) in filteredActs" :key="act.id"
-                    class="grid grid-cols-12 p-5 border-b border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-200"
-                    @click="toggleAct(act.id)">
-                    <div class="col-span-1 text-sm text-gray-700 flex items-center justify-center">
-                        {{ getIncrementedNumber(index) }}
-                    </div>
+            <div v-for="(act, index) in filteredActs" :key="act.id"
+                class="border border-gray-300 p-4 shadow-lg rounded cursor-pointer transition-all duration-300 bg-white"
+                @click="toggleAct(act.id)">
 
-                    <div class="col-span-8 space-y-2 ml-3">
-                        <h2 class="text-md font-semibold text-blue-900">{{ act.title || 'No Title Available' }}</h2>
-                        <p class="text-sm text-gray-600">
-                            <span class="text-red-600">Reference No:</span> {{ act.reference || 'None' }}
-                        </p>
-                        <div class="flex gap-2">
-                            <a :href="act.link" target="_blank" 
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <i class="fas fa-external-link-alt mr-2"></i>
-                                View Full Text
-                            </a>
-                            <a v-if="act.download_link" :href="act.download_link" target="_blank" download 
-                            class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                                <i class="fas fa-download mr-2"></i>
-                                Download PDF
-                            </a>
+                <div class="flex justify-between items-center">
+                    
+                    <div class="flex-1 flex items-start">
+                        <span class="text-sm font-bold text-gray-500 mr-2">{{ index + 1 }}.</span>
+                        <div class="flex-1">
+                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ act.title || 'No Title Available' }}</h2>
+                            <p class="text-xs text-gray-600 font-sm">
+                                <span class="text-red-600">Date:</span> {{ formatDate(act.date) || 'Date not available' }}
+                            </p>
                         </div>
                     </div>
+                    <p class="text-xs font-bold text-gray-700 w-40 text-right">
+                        <span class="text-red-600">Reference No:</span> {{ act.reference || 'None' }}
+                    </p>
+                </div>
 
-                    <div class="col-span-3 text-sm text-gray-600 flex items-center justify-end gap-2">
-                        <div class="w-24 text-right mr-1">
-                            {{ formatDate(act.date) || 'Date not available' }}
+                <div class="mt-2 flex gap-2">
+                    <a v-if="act.download_link" :href="act.download_link" target="_blank" download
+                        class="text-red-600 font-bold hover:underline" @click.stop>
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </a>
+                </div>
+
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-xs text-gray-600 font-medium">Click to View Document</span>
+                    <i :class="{ 'fas fa-chevron-down': selectedActId === act.id, 'fas fa-chevron-right': selectedActId !== act.id }"
+                        class="text-gray-600 text-lg transition-transform duration-300"
+                        :style="{ transform: selectedActId === act.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
+                </div>
+
+                <div :style="{ maxHeight: selectedActId === act.id ? '500px' : '0' }"
+                    class="overflow-hidden transition-max-height duration-300 ease-out">
+                    <div class="mt-4 border-t pt-4">
+                        <div v-if="isMobile"
+                            class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
+                                <p class="text-xs font-semibold">
+                                    Document preview is not supported on mobile. Please use a desktop to view it or use
+                                    the links above.
+                                </p>
+                            </div>
                         </div>
-                        <i :class="{ 'fas fa-chevron-down': selectedActId === act.id, 'fas fa-chevron-right': selectedActId !== act.id }"
-                            class="text-gray-600 text-lg w-6 text-center transition-transform duration-300"
-                            :style="{ transform: selectedActId === act.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
-                    </div>
 
-                    <div v-if="selectedActId === act.id && act.link"
-                        class="col-span-12 mt-4 border-t pt-4">
-                        <iframe 
-                            :src="act.link" 
-                            class="w-full h-[500px] border border-gray-300"
-                            frameborder="0"
-                            allowfullscreen>
-                        </iframe>
+                        <div v-else class="relative" v-if="act.link">
+                            <iframe 
+                                :src="act.link" 
+                                class="w-full h-[500px] border border-gray-300"
+                                frameborder="0"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,6 +128,16 @@ const filters = ref({
 });
 
 const selectedActId = ref(null);
+
+const filteredActs = computed(() => {
+    const sortedActs = [...acts.value];
+    
+    return sortedActs.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+    });
+});
 
 const applyFilters = () => {
     router.get("/republicActs", filters.value, {
@@ -168,11 +190,7 @@ const getIncrementedNumber = (index) => {
     const perPage = pagination.value.per_page || 10;
     return (currentPage - 1) * perPage + index + 1;
 };
-
-const filteredActs = computed(() => {
-    return acts.value;
-});
-</script>
+</script>   
 
 <style scoped>
 .transition-max-height {

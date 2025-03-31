@@ -5,7 +5,7 @@
         </h1>
 
         <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
-            <div class="flex flex-col md:flex-row gap-3 w-full mb-4">
+            <div class="flex flex-col md:flex-row gap-3 w-full">
                 <div class="relative w-full md:w-1/2">
                     <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
                     <input 
@@ -43,66 +43,64 @@
         </div>
 
         <div v-if="filteredOpinions.length > 0" class="space-y-4 md:px-12">
-            <div class="border border-gray-300 rounded-lg overflow-hidden">
-                <div v-for="(opinion, index) in filteredOpinions" :key="opinion.id"
-                    class="grid grid-cols-12 p-5 border-b border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-200"
-                    @click="toggleOpinion(opinion.id)">
-                    <div class="col-span-1 text-sm text-gray-700 flex items-center justify-center">
-                        {{ getIncrementedNumber(index) }}
-                    </div>
+            <div v-for="(opinion, index) in filteredOpinions" :key="opinion.id"
+                class="border border-gray-300 p-4 shadow-lg rounded cursor-pointer transition-all duration-300 bg-white"
+                @click="toggleOpinion(opinion.id)">
 
-                    <div class="col-span-8 space-y-2 ml-3">
-                        <h2 class="text-md font-semibold text-blue-900">{{ opinion.title || 'None' }}</h2>
-                        <p class="text-sm text-gray-600">
-                            <span class="text-red-600">Category:</span> {{ opinion.category || 'None' }}
-                        </p>
-                        <p class="text-sm text-gray-600">
-                            <span class="text-red-600">Reference No:</span> {{ opinion.reference || 'None' }}
-                        </p>
-                        <a :href="opinion.download_link" target="_blank" download 
-                        class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-3-3m3 3l3-3m-9 6h12"></path>
-                            </svg>
-                            Download Attachment
-                        </a>
-                    </div>
-
-                    <div class="col-span-3 text-sm text-gray-600 flex items-center justify-end gap-2">
-                        <div class="w-24 text-right mr-1">
-                            {{ formatDate(opinion.date) || 'None' }}
+                <div class="flex justify-between items-center">
+                    <div class="flex-1 flex items-start">
+                        <span class="text-sm font-bold text-gray-500 mr-2">{{ index + 1 }}.</span>
+                        <div class="flex-1">
+                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ opinion.title || 'None' }}</h2>
+                            <p class="text-xs text-gray-600 font-sm">
+                                <span class="text-red-600">Category:</span> {{ opinion.category || 'None' }}
+                            </p>
                         </div>
-                        <i :class="{ 'fas fa-chevron-down': selectedOpinionId === opinion.id, 'fas fa-chevron-right': selectedOpinionId !== opinion.id }"
-                            class="text-gray-600 text-lg w-6 text-center transition-transform duration-300"
-                            :style="{ transform: selectedOpinionId === opinion.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
                     </div>
+                    <p class="text-xs font-bold text-gray-700 w-40 text-right">
+                        <span class="text-red-600">Reference No:</span> {{ opinion.reference || 'None' }}
+                    </p>
+                </div>
 
-                    <div :style="{ maxHeight: selectedOpinionId === opinion.id ? '500px' : '0' }"
-                        class="col-span-12 overflow-hidden transition-max-height duration-300 ease-out">
-                        <div class="mt-4 border-t pt-4">
-                            <div v-if="isMobile"
-                                class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
-                                <div class="flex items-center justify-center">
-                                    <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
-                                    <p class="text-xs font-semibold">
-                                        PDF preview is not supported on mobile. Please use a desktop to view it or download
-                                        the file above.
-                                    </p>
-                                </div>
+                <div class="mt-2">
+                    <a :href="opinion.download_link" target="_blank" download
+                        class="text-red-600 font-bold hover:underline" @click.stop>
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </a>
+                </div>
+
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-xs text-gray-600 font-medium">Click to Open PDF</span>
+                    <i :class="{ 'fas fa-chevron-down': selectedOpinionId === opinion.id, 'fas fa-chevron-right': selectedOpinionId !== opinion.id }"
+                        class="text-gray-600 text-lg transition-transform duration-300"
+                        :style="{ transform: selectedOpinionId === opinion.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
+                </div>
+
+                <div :style="{ maxHeight: selectedOpinionId === opinion.id ? '500px' : '0' }"
+                    class="overflow-hidden transition-max-height duration-300 ease-out">
+                    <div class="mt-4 border-t pt-4">
+                        <div v-if="isMobile"
+                            class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
+                                <p class="text-xs font-semibold">
+                                    PDF preview is not supported on mobile. Please use a desktop to view it or download
+                                    the file above.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-else class="relative">
+                            <div
+                                class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
+                                <i class="fas fa-search-plus mr-1"></i>
+                                Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                             </div>
 
-                            <div v-else class="relative">
-                                <div
-                                    class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
-                                    <i class="fas fa-search-plus mr-1"></i>
-                                    Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
-                                </div>
-
-                                <!-- PDF.js Container -->
-                                <div ref="pdfContainer" class="pdf-container overflow-auto" style="height: 500px;">
-                                    <canvas v-for="(page, pageIndex) in pdfPages[opinion.id] || []" :key="pageIndex"
-                                        :ref="'pdfCanvas' + opinion.id + '-' + pageIndex"></canvas>
-                                </div>
+                            <!-- PDF.js Container -->
+                            <div ref="pdfContainer" class="pdf-container overflow-auto" style="height: 500px;">
+                                <canvas v-for="(page, pageIndex) in pdfPages[opinion.id] || []" :key="pageIndex"
+                                    :ref="'pdfCanvas' + opinion.id + '-' + pageIndex"></canvas>
                             </div>
                         </div>
                     </div>
@@ -250,12 +248,6 @@ const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-};
-
-const getIncrementedNumber = (index) => {
-    const currentPage = pagination.value.current_page || 1;
-    const perPage = pagination.value.per_page || 10;
-    return (currentPage - 1) * perPage + index + 1;
 };
 
 const filteredOpinions = computed(() => {

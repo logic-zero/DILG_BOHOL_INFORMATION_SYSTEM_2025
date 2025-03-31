@@ -21,6 +21,7 @@ class ScraperService
     {
         $client = new Client([
             'timeout' => 60,
+            'verify' => false
         ]);
         $allOpinions = [];
         $categories = [];
