@@ -31,7 +31,7 @@ const props = defineProps({
 
     <div class="mx-auto px-4 py-6 flex flex-col xl:flex-row gap-4">
         <!-- page visit section -->
-        <div class="flex-1 min-w-0">
+        <div class="xl:max-w-[600px] xl:min-w-[400px] flex-1 min-w-0">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <PageVisitCard
                     title="Today's Visits"
@@ -70,8 +70,8 @@ const props = defineProps({
                 />
             </div>
 
-            <div class="bg-white p-4 rounded-lg border shadow-sm border-blue-900">
-                <h3 class="text-sm text-blue-950 uppercase font-semibold mb-4">Page Visits (Last 10 Days)</h3>
+            <div class="bg-white p-4 rounded-lg border shadow-sm border-blue-900 xl:min-h-[350px]">
+                <h3 class="text-sm text-blue-950 uppercase font-semibold mb-2">Page Visits (Last 10 Days)</h3>
                 <PageVisitsChart
                     :labels="pageVisits.graph.labels"
                     :data="pageVisits.graph.data"
@@ -80,7 +80,7 @@ const props = defineProps({
         </div>
 
         <!-- other cards section-->
-        <div class="xl:w-[625px] w-full">
+        <div class="flex-1">
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 justify-items-center">
                 <!-- Row 1 -->
                 <TotalCountCard

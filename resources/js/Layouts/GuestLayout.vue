@@ -77,10 +77,14 @@
         </header>
 
         <main>
-            <div class="p-4 bg-gray-500 bg-opacity-20">
+            <div class="p-4 bg-gray-500 bg-opacity-20 flex justify-between">
                 <Link href="/" class="inline-block">
                 <img class="w-full max-w-[500px] h-auto" src="/img/dilg-bohol.png" alt="DILG Bohol">
                 </Link>
+
+                <div class="p-4 hidden md:block">
+                    <Clock/>
+                </div>
             </div>
             <slot />
         </main>
@@ -163,6 +167,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import VisitorCounter from '../Components/VisitorCounter.vue';
+import Clock from '@/Components/Clock.vue';
 
 const page = usePage();
 const isMenuOpen = ref(false);

@@ -190,11 +190,8 @@
                             allowfullscreen loading="lazy"></iframe>
                     </div>
 
-                    <div
-                        class="h-[300px] md:h-[30%] min-h-[300px] flex items-center justify-center bg-gray-200 text-gray-500 text-xl font-semibold rounded overflow-hidden">
-                        <iframe class="w-full h-full border-0 rounded"
-                            src="https://calendar.google.com/calendar/embed?src=your-calendar-id%40group.calendar.google.com&ctz=Asia/Manila"
-                            style="border: 0" frameborder="0" scrolling="no"></iframe>
+                    <div>
+                        <Calendar/>
                     </div>
                 </div>
             </div>
@@ -219,6 +216,7 @@ import "swiper/css/autoplay";
 import { Pagination, Autoplay } from "swiper/modules";
 import NewsModal from "@/Components/NewsModal.vue";
 import GuestLayout from "../../Layouts/GuestLayout.vue"
+import Calendar from '@/Components/Calendar.vue';
 
 defineOptions({ layout: GuestLayout });
 
