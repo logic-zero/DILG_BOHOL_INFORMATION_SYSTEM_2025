@@ -5,8 +5,12 @@
             class="bg-white shadow-lg w-full sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] h-[95vh] max-h-[95vh] flex flex-col">
             <div class="px-4 py-3 border-b flex justify-between items-center">
                 <p class="text-sm uppercase text-gray-700 font-black">
-                    {{ formattedDate }}
+                    {{ formattedDate }} -
+                    <Link :href="`/guestNews/${newsItem.id}`" class="text-blue-500 text-xs underline">
+                        View Full Page
+                    </Link>
                 </p>
+
                 <button @click="closeModal" class="text-gray-500 font-bold hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-lg cursor-pointer"></i>
                 </button>
@@ -26,6 +30,7 @@
 
 <script setup>
 import { computed, defineProps, defineEmits } from "vue";
+import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
     newsItem: Object,

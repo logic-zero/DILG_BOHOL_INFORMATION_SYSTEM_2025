@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
+use App\Models\Knowledge_Materials;
 use App\Models\News;
 use App\Models\PDMUs;
 use App\Models\Lgu;
@@ -58,6 +60,8 @@ class AdminDashboardController extends Controller
             'prov_officials' => Provincial_Official::count(),
             'citizens_charter' => Citizens_Charter::count(),
             'users' => User::count(),
+            'knowledge_materials' => Knowledge_Materials::count(),
+            'jobs' => Job::count(),
             'pageVisits' => [
                 'today' => $today,
                 'thisWeek' => $thisWeek,

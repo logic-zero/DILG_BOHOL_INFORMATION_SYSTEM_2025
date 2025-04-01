@@ -19,6 +19,8 @@ const props = defineProps({
     citizens_charter: Number,
     users: Number,
     pageVisits: Object,
+    knowledge_materials: Object,
+    jobs: Object,
 });
 </script>
 
@@ -171,13 +173,13 @@ const props = defineProps({
                 />
                 <TotalCountCard
                     title="Knowledge Materials"
-                    :count="citizens_charter"
+                    :count="knowledge_materials"
                     icon="fas fa-book"
                     color="violet"
                 />
                 <TotalCountCard
                     title="Job Vacancies"
-                    :count="users"
+                    :count="jobs"
                     icon="fas fa-briefcase"
                     color="purple"
                 />

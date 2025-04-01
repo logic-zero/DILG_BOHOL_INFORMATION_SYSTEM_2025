@@ -73,6 +73,7 @@ Route::prefix('api')->group(function () {
 //Guest Routes
 Route::get('/', [HomeController::class, 'Index'])->name('home');
 Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
+Route::get('/guestNews/{id}', [GuestNewsController::class, 'show'])->name('guest.news.show');
 Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
@@ -86,7 +87,6 @@ Route::get('/legalOpinions', [LegalOpinionController::class, 'index'])->name('gu
 Route::get('/republicActs', [RepublicActController::class, 'index'])->name('guest.republicActs');
 Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, 'index'])->name('guest.presidentialDirectives');
 Route::inertia('/provincialDirector', 'Guest/ProvincialDirector')->name('guest.provincialDirector');
-// Route::inertia('/knowledgeMaterials', 'Guest/KnowledgeMaterials')->name('KnowledgeMaterials');
 Route::get('/knowledgeMaterials', [GuestKnowledge_MaterialsController::class, 'index'])->name('guest.knowledgeMaterials');
 Route::get('/knowledgeMaterials/download/{knowledgeMaterial}', [GuestKnowledge_MaterialsController::class, 'download'])->name('guest.knowledgeMaterials.download');
 
@@ -169,7 +169,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/knowledge-materials/{knowledgeMaterial}', [AdminKnowledge_MaterialsController::class, 'update'])->name('knowledge-materials.update');
         Route::delete('/admin/knowledge-materials/{knowledgeMaterial}', [AdminKnowledge_MaterialsController::class, 'destroy'])->name('knowledge-materials.destroy');
         Route::get('/admin/knowledge-materials/{knowledgeMaterial}/download', [AdminKnowledge_MaterialsController::class, 'download'])->name('knowledge-materials.download');
-        // Route::inertia('/adminKnowledgeMaterials', 'Admin/AdminKnowledgeMaterials')->name('AdminKnowledgeMaterials');
 
         //Prov Officials Admin Routes
         Route::get('/admin/provincial-officials', [AdminProvincial_OfficialsController::class, 'index'])->name('AdminProvincialOfficials');
@@ -184,8 +183,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/citizens-charter/{citizens_charter}', [AdminCitizens_CharterController::class, 'destroy'])->name('citizens_charter.destroy');
         Route::post('/citizens-charter/pdf', [AdminCitizens_CharterController::class, 'storePdf'])->name('citizens-charter.storePdf');
         Route::get('/citizens-charter/pdf/download', [AdminCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.downloadPdf');
-
-        // Route::inertia('/adminCitizensCharter', 'Admin/AdminCitizensCharter')->name('AdminCitizensCharter');
 
     });
 

@@ -34,4 +34,14 @@ class GuestNewsController extends Controller
             'filters' => $request->only(['search', 'from_date', 'to_date']),
         ]);
     }
+
+    public function show($id)
+    {
+        $news = News::where('status', 1)->findOrFail($id);
+        $news->images = json_decode($news->images);
+
+        return Inertia::render('Guest/GuestSingleNewsDetails', [
+            'news' => $news
+        ]);
+    }
 }
