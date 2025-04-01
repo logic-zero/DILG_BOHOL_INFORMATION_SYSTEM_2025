@@ -90,7 +90,7 @@ const setThumbsSwiper = (swiper) => {
 
                 <div class="xl:w-1/2 p-6 md:p-8">
                     <div class="text-content">
-                        <p class="text-sm font-semibold text-gray-500 mb-4">
+                        <p class="text-sm uppercase font-semibold text-gray-500 mb-4">
                             {{ formatDate(newsItem.created_at) }}
                         </p>
 
