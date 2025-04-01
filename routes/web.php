@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminCitizens_CharterController;
 use App\Http\Controllers\AdminDashboardController;
@@ -196,7 +197,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
         //Logs Admin Routes
-        Route::inertia('/adminLogs', 'Admin/AdminLogs')->name('AdminLogs');
+        Route::get('/adminLogs', [ActivityLogController::class, 'index'])->name('AdminLogs');
+
     });
 });
 
