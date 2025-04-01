@@ -34,8 +34,8 @@ class AppServiceProvider extends ServiceProvider
             $presidentialdirectiveService = app(PresidentialDirectiveService::class);
             $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
 
-            // $scraperService = app(ScraperService::class);
-            // $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
+            $scraperService = app(ScraperService::class);
+            $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
         })->everyMinute();
     }
 }

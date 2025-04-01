@@ -14,7 +14,7 @@ class ActivityLogController extends Controller
                         ->select('description', 'created_at', 'causer_id')
                         ->with('causer')
                         ->latest()
-                        ->paginate(10);
+                        ->paginate(20);
 
         return Inertia::render('Admin/AdminLogs', [
             'logs' => $logs
