@@ -10,7 +10,6 @@ const pageProps = usePage().props;
 const issuances = ref(pageProps.b_issuances.data ?? []);
 const pagination = ref(pageProps.b_issuances);
 const outcomeAreas = ref(pageProps.outcomeAreas);
-const isMobile = computed(() => window.innerWidth <= 768);
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",
@@ -116,21 +115,10 @@ const toggleIssuance = (issuanceId) => {
                         :style="{ transform: selectedIssuanceId === issuance.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
                 </div>
 
-                <div :style="{ maxHeight: selectedIssuanceId === issuance.id ? '500px' : '0' }"
+                <div :style="{ maxHeight: selectedIssuanceId === issuance.id ? '600px' : '0' }"
                     class="overflow-hidden transition-max-height duration-300 ease-out">
                     <div class="mt-4 border-t pt-4">
-                        <div v-if="isMobile"
-                            class="border border-red-500 bg-red-100 text-red-700 p-4 rounded text-center w-full">
-                            <div class="flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
-                                <p class="text-xs font-semibold">
-                                    PDF preview is not supported on mobile. Please use a desktop to view it or download
-                                    the file above.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div v-else class="relative">
+                        <div class="relative">
                             <div
                                 class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
                                 <i class="fas fa-search-plus mr-1"></i>
@@ -139,6 +127,14 @@ const toggleIssuance = (issuanceId) => {
 
                             <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
                                 height="500px"></iframe>
+                        </div>
+                        <div class="border border-gray-500 bg-gray-100 text-gray-700 p-2 rounded text-center w-full mt-2">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-lg mr-2"></i>
+                                <p class="text-xs font-semibold">
+                                    If PDF preview doesn't work, please download the file above.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

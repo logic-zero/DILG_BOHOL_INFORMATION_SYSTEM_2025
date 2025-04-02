@@ -6,25 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class Job extends Model
+class Knowledge_Materials extends Model
 {
     use LogsActivity;
 
     protected $primaryKey = 'id';
     protected $fillable =
-        [
-            'user_id',
-            'hiring_img',
-            'position',
-            'details',
-            'link',
-            'remarks'
-        ];
+    [
+        'title',
+        'file',
+        'date'
+    ];
 
-    protected $table = "job_vacancies";
+    protected $table = "knowledge_materials";
 
     protected $casts = [
         'created_at' => 'datetime',
+        'date' => 'date',
     ];
 
     protected static function boot()
@@ -37,7 +35,7 @@ class Job extends Model
             activity()
                 ->performedOn($model)
                 ->causedBy($user)
-                ->log("The user '{$userName}' has successfully created a new job vacancy for the position '{$model->position}'.");
+                ->log("The user '{$userName}' has successfully added a new Knowledge Material: '{$model->title}'.");
         });
 
         static::updated(function ($model) {
@@ -46,7 +44,7 @@ class Job extends Model
             activity()
                 ->performedOn($model)
                 ->causedBy($user)
-                ->log("The user '{$userName}' has updated the job vacancy for the position '{$model->position}'.");
+                ->log("The user '{$userName}' has updated the Knowledge Material: '{$model->title}'.");
         });
 
         static::deleted(function ($model) {
@@ -55,7 +53,7 @@ class Job extends Model
             activity()
                 ->performedOn($model)
                 ->causedBy($user)
-                ->log("The user '{$userName}' has deleted the job vacancy for the position '{$model->position}'.");
+                ->log("The user '{$userName}' has deleted the Knowledge Material: '{$model->title}'.");
         });
     }
 
@@ -64,7 +62,7 @@ class Job extends Model
         return LogOptions::defaults()
             ->logAll()
             ->logOnlyDirty()
-            ->useLogName('job')
-            ->setDescriptionForEvent(fn(string $eventName) => "Job vacancy has been {$eventName} successfully.");
+            ->useLogName('knowledge_material')
+            ->setDescriptionForEvent(fn(string $eventName) => "Knowledge Material entry has been {$eventName} successfully.");
     }
 }

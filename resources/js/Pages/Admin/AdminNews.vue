@@ -269,6 +269,7 @@ const toggleStatus = async (id) => {
                 <tbody>
                     <tr v-for="news in newsList" :key="news.id" class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-900 font-extrabold break-words">
+                            <span v-if="news.is_modified" class="inline-block bg-yellow-100 text-yellow-900 text-xs px-2 py-0.5 rounded-full mt-1">Modified</span>
                             <div class="line-clamp-3">{{ news.title }}</div>
                         </td>
                         <td class="p-3 text-gray-600 break-words" :title="news.caption">
@@ -306,6 +307,7 @@ const toggleStatus = async (id) => {
             <div v-for="news in newsList" :key="news.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-between items-start flex-wrap gap-2">
                     <div class="flex-1 min-w-0">
+                        <span v-if="news.is_modified" class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full ml-1 align-middle">Modified</span>
                         <h2 class="text-lg font-extrabold line-clamp-3 mb-2 text-gray-900">
                             {{ news.title }}
                         </h2>

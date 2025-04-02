@@ -28,6 +28,10 @@ class AdminNewsController extends Controller
 
         $news = $query->paginate(10)->withQueryString()->through(function ($news) {
             $news->images = json_decode($news->images);
+
+            $news->is_modified = $news->updated_at->format('Y-m-d H:i:s') !==
+                                $news->created_at->format('Y-m-d H:i:s');
+
             return $news;
         });
 
@@ -36,7 +40,6 @@ class AdminNewsController extends Controller
             'filters' => $request->only(['search', 'status']),
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -126,6 +129,7 @@ class AdminNewsController extends Controller
             abort(403, 'Access denied: Only super administrators can toggle news status.');
         }
 
+        $news->timestamps = false;
         $news->update(['status' => !$news->status]);
 
         return redirect()->route('AdminNews')->with('success', 'Status updated.');

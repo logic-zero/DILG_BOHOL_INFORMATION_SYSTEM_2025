@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Faq extends Model
 {
-    /** @use HasFactory<\Database\Factories\FaqFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $primaryKey = 'id';
     protected $fillable =
@@ -17,35 +18,52 @@ class Faq extends Model
             'program',
             'questions',
             'answers',
-
         ];
 
     protected $table = "faqs";
 
-
     protected $casts = [
         'created_at' => 'datetime',
-
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
 
-    // public function scopeSearch($query, $terms)
-    // {
-    //     collect(explode(" ", $terms))->filter()->each(function ($term) use ($query) {
-    //         $term = '%' . $term . '%';
+        static::created(function ($model) {
+            $user = auth()->user();
+            $userName = $user ? $user->name : 'System';
+            activity()
+                ->performedOn($model)
+                ->causedBy($user)
+                ->log("The user '{$userName}' has successfully added a new FAQ: Question '{$model->questions}'.");
+        });
 
-    //         $query->where('questions', 'like', $term)
-    //             ->orWhere('program_id', 'like', $term)
-    //             ->orWhere('answers', 'like', $term)
-    //             ->orWhere('outcome_area', 'like', $term);
-    //     });
-    // }
+        static::updated(function ($model) {
+            $user = auth()->user();
+            $userName = $user ? $user->name : 'System';
+            activity()
+                ->performedOn($model)
+                ->causedBy($user)
+                ->log("The user '{$userName}' has updated the FAQ: Question '{$model->questions}'.");
+        });
 
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //         ->logOnly(['questions', 'answers', 'outcome_area'])
-    //         ->setDescriptionForEvent(fn(string $eventName) => "A Frequently Asked Question (FAQ) has been {$eventName}")
-    //         ->logOnlyDirty();
-    // }
+        static::deleted(function ($model) {
+            $user = auth()->user();
+            $userName = $user ? $user->name : 'System';
+            activity()
+                ->performedOn($model)
+                ->causedBy($user)
+                ->log("The user '{$userName}' has deleted the FAQ: Question '{$model->questions}'.");
+        });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('faq')
+            ->setDescriptionForEvent(fn(string $eventName) => "FAQ entry has been {$eventName} successfully.");
+    }
 }
