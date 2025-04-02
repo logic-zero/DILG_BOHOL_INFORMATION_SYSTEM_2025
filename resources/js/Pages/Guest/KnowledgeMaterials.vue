@@ -14,6 +14,21 @@ const filters = ref({
     search: pageProps.filters?.search ?? "",
 });
 
+const showModal = ref(false);
+const currentFlipbookUrl = ref("");
+
+const openFlipbook = (pdfUrl) => {
+    const encodedPdfUrl = encodeURIComponent(pdfUrl);
+    const randomParam = Math.random().toString(36).substring(7);
+    currentFlipbookUrl.value = `https://heyzine.com/api1?pdf=${encodedPdfUrl}&k=de98c2e60096a623&r=${randomParam}`;
+    showModal.value = true;
+};
+
+const openInFullPage = () => {
+    window.open(currentFlipbookUrl.value, '_blank');
+    showModal.value = false;
+};
+
 const applyFilters = () => {
     router.get("/knowledgeMaterials", filters.value, {
         preserveState: true,
@@ -79,11 +94,15 @@ const goToPage = (url) => {
                     </div>
                 </div>
 
-                <div class="mt-2">
+                <div class="mt-2 flex gap-4">
                     <a :href="route('guest.knowledgeMaterials.download', material)"
                         class="text-red-600 font-bold hover:underline">
                         <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
+                    <button @click="openFlipbook(route('guest.knowledgeMaterials.download', material))"
+                            class="text-blue-600 font-bold hover:underline">
+                        <i class="fas fa-book-open"></i> View Flipbook
+                    </button>
                 </div>
             </div>
         </div>
@@ -99,6 +118,28 @@ const goToPage = (url) => {
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
                     }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
+            </div>
+        </div>
+
+        <div v-if="showModal" class="fixed inset-0 z-50 bg-white flex items-center justify-center p-0">
+            <div class="absolute inset-0 flex flex-col">
+                <div class="bg-white p-2 flex justify-end">
+                    <div class="space-x-2">
+                        <button @click="openInFullPage"
+                                class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 rounded">
+                            <i class="fas fa-expand mr-1"></i> Full Page
+                        </button>
+                        <button @click="showModal = false"
+                                class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-300 rounded">
+                            <i class="fas fa-times mr-1"></i> Close
+                        </button>
+                    </div>
+                </div>
+
+                <iframe :src="currentFlipbookUrl"
+                        class="flex-1 border-0 w-full h-full"
+                        allowfullscreen>
+                </iframe>
             </div>
         </div>
     </div>
