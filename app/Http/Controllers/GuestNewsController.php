@@ -6,6 +6,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class GuestNewsController extends Controller
 {
@@ -36,12 +37,17 @@ class GuestNewsController extends Controller
     }
 
     public function show($id)
-    {
-        $news = News::where('status', 1)->findOrFail($id);
-        $news->images = json_decode($news->images);
+{
+    $news = News::where('status', 1)->findOrFail($id);
+    $news->images = json_decode($news->images);
 
-        return Inertia::render('Guest/GuestSingleNewsDetails', [
-            'news' => $news
-        ]);
-    }
+    return Inertia::render('Guest/GuestSingleNewsDetails', [
+        'news' => $news,
+        'meta' => [
+            'title' => $news->title,
+            'description' => $news->caption ?: Str::limit(strip_tags($news->content), 160),
+            'image' => $news->images ? asset('storage/'.$news->images[0]) : null,
+        ]
+    ]);
+}
 }

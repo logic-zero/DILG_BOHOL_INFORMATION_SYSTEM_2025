@@ -5,7 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <title>DILG Bohol Province</title>
+
+    @if(isset($page['props']['meta']))
+        <meta property="og:title" content="{{ $page['props']['meta']['title'] }}" />
+        <meta property="og:description" content="{{ $page['props']['meta']['description'] }}" />
+        <meta property="og:image" content="{{ $page['props']['meta']['image'] }}" />
+    @else
+        <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta property="og:title" content="Your Website Title" />
+        <meta property="og:description" content="Your description" />
+        <meta property="og:image" content="https://images.pexels.com/photos/556416/pexels-photo-556416.jpeg?cs=srgb&dl=landscape-mountains-nature-556416.jpg&fm=jpg" />
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

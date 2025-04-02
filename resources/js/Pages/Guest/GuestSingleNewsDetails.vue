@@ -14,6 +14,11 @@ const pageProps = usePage().props
 const newsItem = computed(() => pageProps.news)
 const thumbsSwiper = ref(null)
 
+const shareOnFacebook = () => {
+    const url = encodeURIComponent(window.location.href)
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400')
+}
+
 const formatDate = (dateString) => {
     return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
@@ -33,16 +38,23 @@ const setThumbsSwiper = (swiper) => {
 
 <template>
     <div class="min-h-screen p-4 md:p-8">
-        <div class="mx-auto mb-4">
-            <h1 class="text-2xl md:text-3xl font-bold text-blue-900 mb-2">News Details</h1>
-            <Link href="/guestNews" class="flex items-center text-blue-600 hover:text-blue-800 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                        clip-rule="evenodd" />
-                </svg>
-                Back to News Page
-            </Link>
+        <div class="mx-auto mb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-blue-900 mb-2">News Details</h1>
+                <Link href="/guestNews" class="flex items-center text-blue-600 hover:text-blue-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Back to News Page
+                </Link>
+            </div>
+
+            <button @click="shareOnFacebook" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition">
+                <i class="fab fa-facebook-f mr-2"></i>
+                Share to Facebook
+            </button>
         </div>
 
         <div class="mx-auto bg-white rounded shadow-lg overflow-hidden">
