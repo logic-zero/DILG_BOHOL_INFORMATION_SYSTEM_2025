@@ -21,7 +21,7 @@ const isLoading = ref(false);
 const openFlipbook = (pdfUrl) => {
     const encodedPdfUrl = encodeURIComponent(pdfUrl);
     const randomParam = Math.random().toString(36).substring(7);
-    currentFlipbookUrl.value = `https://heyzine.com/api1?pdf=${encodedPdfUrl}&k=de98c2e60096a623&r=${randomParam}`;
+    currentFlipbookUrl.value = `https://heyzine.com/api1?pdf=${encodedPdfUrl}&k=0b55f138ea199759&r=${randomParam}`;
     showModal.value = true;
     isLoading.value = true;
 };
