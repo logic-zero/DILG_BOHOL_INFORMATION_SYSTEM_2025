@@ -8,17 +8,17 @@
             <div class="flex flex-col md:flex-row gap-3 w-full">
                 <div class="relative w-full md:w-3/4">
                     <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
-                    <input 
-                    v-model="filters.search" 
-                    type="text" 
+                    <input
+                    v-model="filters.search"
+                    type="text"
                     placeholder="Search by title or reference number..."
-                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none" 
+                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     />
                 </div>
 
                 <div class="flex items-center w-full md:w-1/4">
-                    <select 
-                    id="date" 
+                    <select
+                    id="date"
                     v-model="filters.date"
                     class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     >
@@ -83,14 +83,14 @@
                             </div>
                         </div>
 
-                        <div v-else class="relative" v-if="directive.link">
+                        <div class="relative" v-if="directive.link">
                             <div
                                 class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
                                 <i class="fas fa-search-plus mr-1"></i>
                                 Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                             </div>
-                            <iframe 
-                                :src="directive.link" 
+                            <iframe
+                                :src="directive.link"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 allowfullscreen>
@@ -139,7 +139,7 @@ const selectedDirectiveId = ref(null);
 
 const filteredDirectives = computed(() => {
     const sortedDirectives = [...directives.value];
-    
+
     return sortedDirectives.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
@@ -171,7 +171,7 @@ const paginationInfo = computed(() => {
 
 const goToPage = (url) => {
     if (!url) return;
-    router.get(url, filters.value, { 
+    router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["pagination"],

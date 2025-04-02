@@ -1,32 +1,45 @@
 <template>
     <div>
-        <div class="p-6 w-full">
-            <div>
-                reserve for covor photos
+        <div class="p-6 pt-3 w-full">
+            <div class="px-5 w-full h-[700px] overflow-hidden relative">
+                <swiper
+                    :modules="[Autoplay]"
+                    :allowTouchMove="false"
+                    :autoplay="{ delay: 20000, disableOnInteraction: false }"
+                    class="w-full h-full"
+                >
+                    <swiper-slide v-for="(image, index) in images" :key="index">
+                        <div class="w-full h-full flex justify-center items-center bg-transparent">
+                            <img
+                                :src="`/storage/${image}`"
+                                alt="Cover Photo"
+                                class="max-w-full max-h-full object-contain relative z-10"
+                            />
+                        </div>
+                    </swiper-slide>
+                </swiper>
             </div>
             <div class="container mx-auto px-4">
                 <div class="flex flex-col md:flex-row flex-wrap">
-                    <!-- Links section (left side) -->
                     <div class="w-full md:w-1/2 p-2 md:p-4 order-2 md:order-1">
-                        <div class="flex flex-col items-center md:items-start">
-                            <Link :href="route('guest.provincialDirector')" class="btn rounded bg-blue-800 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-72">
+                        <div class="flex flex-col items-center md:items-start justify-center h-full">
+                            <Link :href="route('guest.provincialDirector')" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-96">
                                 <span>THE PROVINCIAL DIRECTOR</span>
                                 <span class="fas fa-arrow-right"></span>
                             </Link>
 
-                            <Link :href="route('guest.latestIssuances')" class="btn rounded bg-blue-800 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-72">
-                                <span>ABOUT US</span>
+                            <Link href="/aboutUs" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-96">
+                                <span>VISION & MISSION</span>
                                 <span class="fas fa-arrow-right"></span>
                             </Link>
 
-                            <Link :href="route('guest.latestIssuances')" class="btn rounded bg-blue-800 text-white btn-md px-4 py-3 flex justify-between items-center w-full md:w-72">
+                            <Link href="/latestIssuances" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md px-4 py-3 flex justify-between items-center w-full md:w-96">
                                 <span>LATEST ISSUANCES</span>
                                 <span class="fas fa-arrow-right"></span>
                             </Link>
                         </div>
                     </div>
 
-                    <!-- Intro section (right side) -->
                     <div class="w-full md:w-1/2 p-2 md:p-4 order-1 md:order-2">
                         <div class="flex flex-col items-center justify-center my-5 text-center">
                             <img src="/img/dilg-main.png" alt="DILG Logo" class="mb-3 h-24 md:h-32 w-24 md:w-32">
@@ -222,17 +235,18 @@ import Calendar from '@/Components/Calendar.vue';
 
 defineOptions({ layout: GuestLayout });
 
+const pageProps = usePage().props;
+const images = ref(pageProps.images ?? []);
+const issuances = ref(pageProps.b_issuances ?? []);
+const selectedIssuanceId = ref(null);
+const isMobile = computed(() => window.innerWidth <= 768);
+
 onMounted(() => {
     const script = document.createElement("script");
     script.src = "https://app3.weatherwidget.org/js/?id=ww_17a0c713a0539";
     script.async = true;
     document.body.appendChild(script);
 });
-
-const pageProps = usePage().props;
-const issuances = ref(pageProps.b_issuances ?? []);
-const selectedIssuanceId = ref(null);
-const isMobile = computed(() => window.innerWidth <= 768);
 
 const toggleIssuance = (issuanceId) => {
     selectedIssuanceId.value = selectedIssuanceId.value === issuanceId ? null : issuanceId;
@@ -263,8 +277,6 @@ const formatDate = (dateString) => {
 };
 
 const newsList = ref(usePage().props.news ?? []);
-
-
 </script>
 
 <style scoped>

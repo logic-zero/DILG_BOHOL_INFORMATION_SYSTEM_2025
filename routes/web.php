@@ -184,6 +184,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/citizens-charter/pdf', [AdminCitizens_CharterController::class, 'storePdf'])->name('citizens-charter.storePdf');
         Route::get('/citizens-charter/pdf/download', [AdminCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.downloadPdf');
 
+        Route::post('/home-images', [AdminDashboardController::class, 'store'])->name('home-images.store');
     });
 
     Route::middleware('role:Super-Admin')->group(function () {

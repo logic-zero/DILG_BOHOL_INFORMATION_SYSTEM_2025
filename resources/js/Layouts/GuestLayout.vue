@@ -1,6 +1,6 @@
 <template>
     <div>
-        <header>
+        <header class="sticky top-0 z-50">
             <nav class="bg-blue-800 text-white text-sm flex items-center justify-between xl:justify-center xl:px-32 relative">
                 <Link href="/" class="font-bold text-lg mr-10 px-4 py-2 whitespace-nowrap">DILG-BOHOL PROVINCE</Link>
 

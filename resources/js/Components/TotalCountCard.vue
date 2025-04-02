@@ -90,7 +90,7 @@ const colors = {
 
 <template>
     <div
-        class="group relative transition-all duration-300 hover:scale-105 w-full h-[105px]"
+        class="group relative transition-all duration-300 hover:scale-105 w-full h-[100px]"
     >
         <div
             class="h-full p-3 rounded-lg border shadow-sm hover:shadow-md flex flex-col"

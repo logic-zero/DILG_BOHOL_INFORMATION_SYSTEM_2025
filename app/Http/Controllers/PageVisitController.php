@@ -12,12 +12,20 @@ class PageVisitController extends Controller
     // Show total visit count with caching
     public function getVisitCount()
     {
-        // Cache the visit count for 5 minutes
-        $visitCount = Cache::remember('page_visit_count', 300, function () {
+        // Cache total visit count for 5 minutes
+        $totalVisits = Cache::remember('page_visit_count', 300, function () {
             return PageVisit::count();
         });
 
-        return response()->json(['total_visits' => $visitCount]);
+        $todaysVisits = PageVisit::whereDate('created_at', Carbon::today())->count();
+
+        $yesterdaysVisits = PageVisit::whereDate('created_at', Carbon::yesterday())->count();
+
+        return response()->json([
+            'total_visits' => $totalVisits,
+            'todays_visits' => $todaysVisits,
+            'yesterdays_visits' => $yesterdaysVisits
+        ]);
     }
 
     // Track page visit and prevent duplicate entries within 10 seconds
