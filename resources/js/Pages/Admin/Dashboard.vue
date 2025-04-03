@@ -186,7 +186,7 @@ const submitHomeAudio = () => {
             </div>
 
             <div class="bg-white flex flex-col p-4 rounded-lg border shadow-sm border-blue-900 xl:min-h-[330px]">
-                <h3 class="text-sm text-blue-950 uppercase font-semibold mb-2">Page Visits (Last 10 Days)</h3>
+                <h3 class="text-sm text-blue-950 uppercase font-semibold mb-2">Page Visits (Last 30 Days)</h3>
                 <PageVisitsChart :labels="pageVisits.graph.labels" :data="pageVisits.graph.data" class="mt-auto"/>
             </div>
         </div>

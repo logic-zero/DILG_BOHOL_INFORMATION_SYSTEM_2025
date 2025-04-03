@@ -10,7 +10,7 @@ const props = defineProps({
 onMounted(() => {
     const ctx = document.getElementById('pageVisitsChart');
     new Chart(ctx, {
-        type: "line",
+        type: "bar",
         data: {
             labels: props.labels,
             datasets: [{

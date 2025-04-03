@@ -32,11 +32,11 @@ class AdminDashboardController extends Controller
         $thisMonth = PageVisit::whereYear('created_at', date('Y'))->whereMonth('created_at', date('m'))->count();
         $total = PageVisit::count();
 
-        $lastTenDays = PageVisit::select(
+        $lastThirtyDays = PageVisit::select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('COUNT(*) as count')
         )
-            ->where('created_at', '>=', Carbon::now()->subDays(10))
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -44,7 +44,7 @@ class AdminDashboardController extends Controller
         $labels = [];
         $data = [];
 
-        foreach ($lastTenDays as $day) {
+        foreach ($lastThirtyDays as $day) {
             $labels[] = Carbon::parse($day->date)->format('M d');
             $data[] = $day->count;
         }
