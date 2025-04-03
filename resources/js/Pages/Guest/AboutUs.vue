@@ -1,7 +1,30 @@
 <script setup>
 import GuestLayout from "../../Layouts/GuestLayout.vue";
+import { onMounted, onUnmounted } from 'vue';
 
 defineOptions({ layout: GuestLayout });
+const props = defineProps({
+    audio: Object
+});
+
+let audio = null;
+
+onMounted(() => {
+    if (props.audio) {
+        audio = new Audio('/storage/' + props.audio.file);
+        audio.volume = 1;
+        audio.loop = true;
+        audio.play().catch(e => console.log('Autoplay prevented:', e));
+    }
+});
+
+onUnmounted(() => {
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio = null;
+    }
+});
 </script>
 
 <template>

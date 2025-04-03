@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminCitizens_CharterController;
@@ -89,8 +90,8 @@ Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, '
 Route::inertia('/provincialDirector', 'Guest/ProvincialDirector')->name('guest.provincialDirector');
 Route::get('/knowledgeMaterials', [GuestKnowledge_MaterialsController::class, 'index'])->name('guest.knowledgeMaterials');
 Route::get('/knowledgeMaterials/download/{knowledgeMaterial}', [GuestKnowledge_MaterialsController::class, 'download'])->name('guest.knowledgeMaterials.download');
+Route::get('/aboutUs', [AboutController::class, 'index'])->name('AboutUs');
 
-Route::inertia('/aboutUs', 'Guest/AboutUs')->name('AboutUs');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
@@ -184,7 +185,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/citizens-charter/pdf', [AdminCitizens_CharterController::class, 'storePdf'])->name('citizens-charter.storePdf');
         Route::get('/citizens-charter/pdf/download', [AdminCitizens_CharterController::class, 'downloadPdf'])->name('citizens-charter.downloadPdf');
 
-        Route::post('/home-images', [AdminDashboardController::class, 'store'])->name('home-images.store');
+        Route::post('/home-images', [AdminDashboardController::class, 'storeImage'])->name('home-images.store');
+        Route::post('/home-audio', [AdminDashboardController::class, 'storeAudio'])->name('home-audio.store');
     });
 
     Route::middleware('role:Super-Admin')->group(function () {

@@ -8,17 +8,17 @@
             <div class="flex flex-col md:flex-row gap-3 w-full">
                 <div class="relative w-full md:w-3/4">
                     <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
-                    <input 
-                    v-model="filters.search" 
-                    type="text" 
+                    <input
+                    v-model="filters.search"
+                    type="text"
                     placeholder="Search by title or reference number..."
-                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none" 
+                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     />
                 </div>
 
                 <div class="flex items-center w-full md:w-1/4">
-                    <select 
-                    id="date" 
+                    <select
+                    id="date"
                     v-model="filters.date"
                     class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     >
@@ -37,9 +37,8 @@
                 @click="toggleAct(act.id)">
 
                 <div class="flex justify-between items-center">
-                    
                     <div class="flex-1 flex items-start">
-                        <span class="text-sm font-bold text-gray-500 mr-2">{{ index + 1 }}.</span>
+                        <span class="text-sm font-bold text-gray-500 mr-2">{{ getDisplayIndex(index) }}.</span>
                         <div class="flex-1">
                             <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ act.title || 'No Title Available' }}</h2>
                             <p class="text-xs text-gray-600 font-sm">
@@ -80,9 +79,9 @@
                             </div>
                         </div>
 
-                        <div v-else class="relative" v-if="act.link">
-                            <iframe 
-                                :src="act.link" 
+                        <div class="relative" v-if="act.link">
+                            <iframe
+                                :src="act.link"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 allowfullscreen>
@@ -128,10 +127,17 @@ const filters = ref({
 });
 
 const selectedActId = ref(null);
+const isMobile = computed(() => window.innerWidth <= 768);
+
+const getDisplayIndex = (index) => {
+    return pagination.value.current_page > 1
+        ? index + 1 + (pagination.value.per_page * (pagination.value.current_page - 1))
+        : index + 1;
+};
 
 const filteredActs = computed(() => {
     const sortedActs = [...acts.value];
-    
+
     return sortedActs.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
@@ -163,7 +169,7 @@ const paginationInfo = computed(() => {
 
 const goToPage = (url) => {
     if (!url) return;
-    router.get(url, filters.value, { 
+    router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["pagination"],
@@ -184,24 +190,11 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 };
-
-const getIncrementedNumber = (index) => {
-    const currentPage = pagination.value.current_page || 1;
-    const perPage = pagination.value.per_page || 10;
-    return (currentPage - 1) * perPage + index + 1;
-};
-</script>   
+</script>
 
 <style scoped>
 .transition-max-height {
     transition-property: max-height;
     transition-timing-function: ease-out;
-}
-
-.pdf-page {
-    display: block;
-    margin: 0 auto 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 </style>

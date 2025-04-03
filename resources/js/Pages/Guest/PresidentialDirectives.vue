@@ -38,7 +38,7 @@
 
                 <div class="flex justify-between items-center">
                     <div class="flex-1 flex items-start">
-                        <span class="text-sm font-bold text-gray-500 mr-2">{{ index + 1 }}.</span>
+                        <span class="text-sm font-bold text-gray-500 mr-2">{{ getDisplayIndex(index) }}.</span>
                         <div class="flex-1">
                             <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ directive.title || 'No Title Available' }}</h2>
                             <p class="text-xs text-gray-600 font-sm">
@@ -52,10 +52,6 @@
                 </div>
 
                 <div class="mt-2">
-                    <!-- <a :href="directive.link" target="_blank"
-                        class="text-blue-600 font-bold hover:underline mr-4" @click.stop>
-                        <i class="fas fa-external-link-alt"></i> View Full Text
-                    </a> -->
                     <a v-if="directive.download_link" :href="directive.download_link" target="_blank" download
                         class="text-red-600 font-bold hover:underline" @click.stop>
                         <i class="fas fa-file-pdf"></i> Download PDF
@@ -136,10 +132,16 @@ const filters = ref({
 });
 
 const selectedDirectiveId = ref(null);
+const isMobile = computed(() => window.innerWidth <= 768);
+
+const getDisplayIndex = (index) => {
+    return pagination.value.current_page > 1
+        ? index + 1 + (pagination.value.per_page * (pagination.value.current_page - 1))
+        : index + 1;
+};
 
 const filteredDirectives = computed(() => {
     const sortedDirectives = [...directives.value];
-
     return sortedDirectives.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
@@ -192,24 +194,11 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 };
-
-const getIncrementedNumber = (index) => {
-    const currentPage = pagination.value.current_page || 1;
-    const perPage = pagination.value.per_page || 10;
-    return (currentPage - 1) * perPage + index + 1;
-};
 </script>
 
 <style scoped>
 .transition-max-height {
     transition-property: max-height;
     transition-timing-function: ease-out;
-}
-
-.pdf-page {
-    display: block;
-    margin: 0 auto 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 </style>

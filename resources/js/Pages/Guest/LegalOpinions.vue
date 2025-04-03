@@ -8,17 +8,17 @@
             <div class="flex flex-col md:flex-row gap-3 w-full">
                 <div class="relative w-full md:w-1/2">
                     <i class="absolute left-3 top-2 text-gray-500 fas fa-search"></i>
-                    <input 
-                    v-model="filters.search" 
-                    type="text" 
+                    <input
+                    v-model="filters.search"
+                    type="text"
                     placeholder="Search legal opinions..."
-                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none" 
+                    class="border border-gray-300 pl-10 pr-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     />
                 </div>
 
                 <div class="flex items-center w-full md:w-1/4">
-                    <select 
-                    id="category" 
+                    <select
+                    id="category"
                     v-model="filters.category"
                     class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     >
@@ -30,8 +30,8 @@
                 </div>
 
                 <div class="flex items-center w-full md:w-1/4">
-                    <select 
-                    id="lo_filter" 
+                    <select
+                    id="lo_filter"
                     v-model="filters.loFilter"
                     class="border border-gray-300 px-3 py-1 w-full focus:ring-2 focus:ring-gray-400 outline-none"
                     >
@@ -49,7 +49,7 @@
 
                 <div class="flex justify-between items-center">
                     <div class="flex-1 flex items-start">
-                        <span class="text-sm font-bold text-gray-500 mr-2">{{ index + 1 }}.</span>
+                        <span class="text-sm font-bold text-gray-500 mr-2">{{ getDisplayIndex(index) }}.</span>
                         <div class="flex-1">
                             <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ opinion.title || 'None' }}</h2>
                             <p class="text-xs text-gray-600 font-sm">
@@ -97,10 +97,9 @@
                                 Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                             </div>
 
-                            <!-- PDF.js Container -->
-                            <div ref="pdfContainer" class="pdf-container overflow-auto" style="height: 500px;">
+                            <div ref="pdfContainer" class="border border-gray-300 bg-gray-100 overflow-auto h-[500px]">
                                 <canvas v-for="(page, pageIndex) in pdfPages[opinion.id] || []" :key="pageIndex"
-                                    :ref="'pdfCanvas' + opinion.id + '-' + pageIndex"></canvas>
+                                    :ref="'pdfCanvas' + opinion.id + '-' + pageIndex" class="block mx-auto mb-2 border border-gray-200 shadow-sm"></canvas>
                             </div>
                         </div>
                     </div>
@@ -129,7 +128,7 @@ import { ref, watch, computed, onMounted } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
-import * as pdfjsLib from "pdfjs-dist"; 
+import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
 defineOptions({ layout: GuestLayout });
@@ -149,12 +148,18 @@ const filters = ref({
 
 const selectedOpinionId = ref(null);
 const isMobile = computed(() => window.innerWidth <= 768);
-const pdfPages = ref({}); 
+const pdfPages = ref({});
+
+const getDisplayIndex = (index) => {
+    return pagination.value.current_page > 1
+        ? index + 1 + (pagination.value.per_page * (pagination.value.current_page - 1))
+        : index + 1;
+};
 
 const renderPdf = async (opinionId, pdfUrl) => {
     loadingPdf.value = opinionId;
     pdfError.value = null;
-    
+
     try {
         const proxyUrl = `/api/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`;
         const loadingTask = pdfjsLib.getDocument(proxyUrl);
@@ -166,19 +171,18 @@ const renderPdf = async (opinionId, pdfUrl) => {
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const viewport = page.getViewport({ scale: 1.5 });
-            
+
             const canvas = document.createElement('canvas');
-            canvas.className = 'pdf-page';
             const context = canvas.getContext('2d');
-            
+
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            
+
             await page.render({
                 canvasContext: context,
                 viewport: viewport
             }).promise;
-            
+
             container.appendChild(canvas);
         }
     } catch (error) {
@@ -223,7 +227,7 @@ const paginationInfo = computed(() => {
 
 const goToPage = (url) => {
     if (!url) return;
-    router.get(url, filters.value, { 
+    router.get(url, filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["pagination"],
@@ -267,23 +271,5 @@ const filteredOpinions = computed(() => {
 .transition-max-height {
     transition-property: max-height;
     transition-timing-function: ease-out;
-}
-
-.pdf-page {
-    display: block;
-    margin: 0 auto 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.pdf-container {
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-}
-
-.pdf-container canvas {
-    display: block;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd;
 }
 </style>

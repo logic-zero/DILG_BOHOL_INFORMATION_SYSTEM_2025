@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Audio;
 use App\Models\Home_Image;
 use Illuminate\Http\Request;
 use App\Models\Job;
@@ -78,7 +79,7 @@ class AdminDashboardController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function storeImage(Request $request)
     {
         $validated = $request->validate([
             'images' => 'required|array|min:1|max:3',
@@ -107,5 +108,27 @@ class AdminDashboardController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Home images updated successfully.');
+    }
+
+    public function storeAudio(Request $request)
+    {
+        $validated = $request->validate([
+            'audio' => 'required|file|mimes:mp3,wav,aac|max:10240',
+        ]);
+
+        $existingAudio = Audio::first();
+
+        if ($existingAudio) {
+            Storage::disk('public')->delete($existingAudio->file);
+            $existingAudio->delete();
+        }
+
+        $audioPath = $request->file('audio')->store('audios', 'public');
+
+        Audio::create([
+            'file' => $audioPath,
+        ]);
+
+        return redirect()->back()->with('success', 'Audio updated successfully.');
     }
 }

@@ -25,19 +25,29 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const isAudioModalOpen = ref(false);
 const errorMessage = ref("");
 const showSuccess = ref(false);
 const successMessage = ref("");
 const showImagePreview = ref(false);
+const showAudioPreview = ref(false);
 
 const form = useForm({
     images: [],
+});
+
+const audioForm = useForm({
+    audio: null,
 });
 
 const previewImages = computed(() => {
     return form.images.length > 0
         ? Array.from(form.images).map(image => URL.createObjectURL(image))
         : [];
+});
+
+const previewAudio = computed(() => {
+    return audioForm.audio ? URL.createObjectURL(audioForm.audio) : null;
 });
 
 const openModal = () => {
@@ -47,9 +57,21 @@ const openModal = () => {
     form.reset();
 };
 
+const openAudioModal = () => {
+    isAudioModalOpen.value = true;
+    errorMessage.value = "";
+    showAudioPreview.value = false;
+    audioForm.reset();
+};
+
 const closeModal = () => {
     isModalOpen.value = false;
     form.reset();
+};
+
+const closeAudioModal = () => {
+    isAudioModalOpen.value = false;
+    audioForm.reset();
 };
 
 const showSuccessMessage = (message) => {
@@ -89,10 +111,36 @@ const submitHomeImages = () => {
         }
     });
 };
+
+const submitHomeAudio = () => {
+    errorMessage.value = "";
+
+    if (!audioForm.audio) {
+        return (errorMessage.value = "Please upload an audio file.");
+    }
+    if (audioForm.audio.size > 10 * 1024 * 1024) {
+        return (errorMessage.value = "Audio file must not exceed 10MB.");
+    }
+
+    const formData = new FormData();
+    formData.append("audio", audioForm.audio);
+
+    router.post('/home-audio', formData, {
+        preserveScroll: true,
+        preserveState: true,
+        headers: { "Content-Type": "multipart/form-data" },
+        onSuccess: () => {
+            showSuccessMessage("Home audio updated successfully!");
+            closeAudioModal();
+        },
+        onError: (errors) => {
+            errorMessage.value = errors.audio?.[0] || "An error occurred.";
+        }
+    });
+};
 </script>
 
 <template>
-
     <Head title="Dashboard" />
 
     <transition name="fade">
@@ -108,16 +156,20 @@ const submitHomeImages = () => {
         DASHBOARD
     </h1>
 
-    <div class="px-4">
+    <div class="px-4 flex flex-wrap justify-between gap-2">
         <button @click="openModal"
-            class="bg-blue-800 text-white px-2 py-1 text-sm rounded flex items-center gap-2 hover:bg-blue-900">
+            class="bg-blue-800 text-white px-2 py-1 text-sm rounded flex items-center gap-2 hover:bg-blue-900 flex-1 min-w-[150px] sm:flex-none sm:min-w-0">
             <i class="fas fa-image"></i>
-            Update Home Images
+            <span class="whitespace-nowrap">Update Home Images</span>
+        </button>
+        <button @click="openAudioModal"
+            class="bg-blue-800 text-white px-2 py-1 text-sm rounded flex items-center gap-2 hover:bg-blue-900 flex-1 min-w-[150px] sm:flex-none sm:min-w-0">
+            <i class="fas fa-music"></i>
+            <span class="whitespace-nowrap">Update Home Audio</span>
         </button>
     </div>
 
     <div class="mx-auto px-4 py-4 flex flex-col xl:flex-row gap-4">
-        <!-- page visit section -->
         <div class="xl:max-w-[500px] xl:min-w-[400px] flex-1 min-w-0">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <PageVisitCard title="Today's Visits" :count="pageVisits.today" icon="fas fa-calendar-day"
@@ -139,34 +191,28 @@ const submitHomeImages = () => {
             </div>
         </div>
 
-        <!-- other cards section-->
         <div class="flex-1">
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 justify-items-center">
-                <!-- Row 1 -->
                 <TotalCountCard title="Total News" :count="newsStats.total" icon="fas fa-newspaper" color="indigo" />
                 <TotalCountCard title="Approved News" :count="newsStats.approved" icon="fas fa-check-circle"
                     color="green" />
                 <TotalCountCard title="Pending News" :count="newsStats.pending" icon="fas fa-clock" color="yellow" />
 
-                <!-- Row 2 -->
                 <TotalCountCard title="Organizational Structure" :count="organizational_structure" icon="fas fa-sitemap"
                     color="fuchsia" />
                 <TotalCountCard title="PDMUs" :count="pdmu" icon="fas fa-user-friends" color="pink" />
                 <TotalCountCard title="Field Officers" :count="field_officers" icon="fas fa-users" color="violet" />
 
-                <!-- Row 3 -->
                 <TotalCountCard title="LGUs" :count="lgu" icon="fas fa-city" color="red" />
                 <TotalCountCard title="FAQs" :count="faq" icon="fas fa-question-circle" color="orange" />
                 <TotalCountCard title="Issuances" :count="issuances" icon="fas fa-file-alt" color="amber" />
 
-                <!-- Row 4 -->
                 <TotalCountCard title="Provincial Officials" :count="prov_officials" icon="fas fa-user-tie"
                     color="lime" />
                 <TotalCountCard title="Citizens Charter" :count="citizens_charter" icon="fas fa-file-signature"
                     color="emerald" />
                 <TotalCountCard title="Users" :count="users" icon="fas fa-user-cog" color="teal" />
 
-                <!-- Row 5 -->
                 <TotalCountCard title="Downloadables" :count="prov_officials" icon="fas fa-download" color="cyan" />
                 <TotalCountCard title="Knowledge Materials" :count="knowledge_materials" icon="fas fa-book"
                     color="violet" />
@@ -219,6 +265,57 @@ const submitHomeImages = () => {
                         <i class="fas fa-save"></i> Save
                     </button>
                     <button @click="closeModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="isAudioModalOpen"
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+                <h2 class="text-xl mb-4 font-extrabold">
+                    Update Home Audio
+                </h2>
+
+                <div v-if="errorMessage" class="bg-red-500 text-white p-2 rounded mb-2 flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    {{ errorMessage }}
+                </div>
+
+                <label class="font-bold block text-gray-700">Upload Audio</label>
+                <p class="text-sm text-gray-500">Max 10MB (MP3, WAV, AAC formats)</p>
+                <input type="file" @change="audioForm.audio = $event.target.files[0]"
+                    class="border p-2 w-full my-2" accept="audio/*" />
+
+                <button @click="showAudioPreview = !showAudioPreview"
+                    class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center"
+                    :disabled="!audioForm.audio">
+                    <i :class="showAudioPreview ? 'fas fa-eye-slash' : 'fas fa-eye'" class="mr-1"></i>
+                    {{ showAudioPreview ? 'Hide Preview' : 'Show Preview' }}
+                </button>
+
+                <div v-if="showAudioPreview && previewAudio" class="mt-4 border-t pt-4">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-music text-4xl text-blue-500"></i>
+                        <div>
+                            <p class="font-medium">{{ audioForm.audio.name }}</p>
+                            <p class="text-sm text-gray-500">{{ (audioForm.audio.size / (1024 * 1024)).toFixed(2) }} MB</p>
+                        </div>
+                    </div>
+                    <audio controls class="w-full mt-4">
+                        <source :src="previewAudio" :type="audioForm.audio.type">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <button @click="submitHomeAudio"
+                        class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1"
+                        :disabled="!audioForm.audio">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button @click="closeAudioModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
                         Cancel
                     </button>
                 </div>
