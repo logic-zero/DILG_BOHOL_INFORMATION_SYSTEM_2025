@@ -323,7 +323,7 @@ const downloadFile = (material) => {
                 <label class="font-bold block text-gray-700">Date</label>
                 <input v-model="form.date" type="date" class="border p-2 w-full my-2" />
 
-                <label class="font-bold block text-gray-700">File (PDF only)</label>
+                <label class="font-bold block text-gray-700">PDF File (Optional)</label>
                 <input type="file" @change="form.file = $event.target.files[0]" accept=".pdf"
                     class="border p-2 w-full my-2" />
 

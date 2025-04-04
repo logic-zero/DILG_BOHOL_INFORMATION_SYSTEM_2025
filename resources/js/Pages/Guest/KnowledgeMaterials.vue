@@ -22,6 +22,8 @@ const isLoading = ref(false);
 const showAnyflipModal = ref(false);
 const currentAnyflipUrl = ref("");
 const currentPdfUrl = ref("");
+const isAnyflipLoading = ref(false);
+const isAnyflipLoaded = ref(false);
 
 const openFlipbook = (pdfUrl) => {
     const encodedPdfUrl = encodeURIComponent(pdfUrl);
@@ -40,6 +42,14 @@ const openAnyflip = (url, pdfUrl, material) => {
     currentPdfUrl.value = pdfUrl;
     currentMaterial.value = material;
     showAnyflipModal.value = true;
+    if (!isAnyflipLoaded.value) {
+        isAnyflipLoading.value = true;
+    }
+};
+
+const handleAnyflipIframeLoad = () => {
+    isAnyflipLoading.value = false;
+    isAnyflipLoaded.value = true;
 };
 
 const switchToFlipbook = () => {
@@ -87,6 +97,10 @@ const closeAnyflipModal = (event) => {
         showAnyflipModal.value = false;
     }
 };
+
+const openInFullPage = () => {
+    window.open(currentFlipbookUrl.value, '_blank');
+};
 </script>
 
 <template>
@@ -105,28 +119,21 @@ const closeAnyflipModal = (event) => {
             </div>
         </div>
 
-        <div v-if="materials.length > 0" class="space-y-4 md:px-12">
+        <div v-if="materials.length > 0" class="space-y-2 md:px-12">
             <div v-for="material in materials" :key="material.id"
-                class="border border-gray-300 p-4 shadow-lg rounded bg-white">
+                class="border border-gray-300 shadow-lg rounded bg-white">
 
-                <div class="flex justify-between items-center">
-                    <div class="flex-1 flex justify-between">
-                        <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ material.title }}</h2>
-                        <p class="text-xs uppercase text-gray-600 font-bold">
-                            {{ new Date(material.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+                <div class="flex flex-col sm:flex-row gap-2 w-full">
+                    <div class="px-3 py-2 bg-blue-800 flex-1">
+                        <p class="text-sm text-white text-center whitespace-nowrap">
+                            {{ new Date(material.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
                         </p>
                     </div>
-                </div>
-
-                <div class="mt-2 flex gap-4">
-                    <a :href="route('guest.knowledgeMaterials.download', material)"
-                        class="text-red-600 font-bold hover:underline">
-                        <i class="fas fa-file-pdf"></i> Download PDF
-                    </a>
-                    <button @click="openAnyflip(material.link, route('guest.knowledgeMaterials.download', material), material)"
-                            class="text-green-600 font-bold hover:underline">
-                        <i class="fas fa-book"></i> View Anyflip
-                    </button>
+                    <div class="px-3 py-2 flex-1">
+                        <button @click="openAnyflip(material.link, material.file ? route('guest.knowledgeMaterials.download', material) : null, material)" class="w-full">
+                            <h2 class="text-sm text-center font-semibold text-blue-900 hover:underline">{{ material.title }}</h2>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -176,7 +183,6 @@ const closeAnyflipModal = (event) => {
 
         <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click="closeAnyflipModal">
             <div class="relative bg-white shadow-xl w-full max-w-6xl h-[95vh] mx-auto flex flex-col">
-                <!-- Modal Header -->
                 <div class="flex items-center justify-between py-2 px-4 border-b border-gray-200">
                     <h3 class="text-md font-bold text-blue-900">{{ currentMaterial?.title }}</h3>
                     <button @click="showAnyflipModal = false"
@@ -185,19 +191,41 @@ const closeAnyflipModal = (event) => {
                     </button>
                 </div>
 
-                <!-- Modal Content -->
                 <div class="flex-1 relative">
-                    <div class="absolute bottom-2 left-4 z-10 bg-white text-gray-800 px-2 py-1 rounded text-sm shadow-lg border border-gray-200">
-                        If Anyflip doesn't load properly, try:
-                        <button @click="switchToFlipbook" class="ml-1 text-blue-800 rounded hover:underline transition">
-                            <i class="fas fa-book-open mr-1"></i> Use Flipbook
-                        </button>
+                    <div v-if="isAnyflipLoading && !isAnyflipLoaded" class="absolute inset-0 flex items-center justify-center">
+                        <div class="spinner"></div>
+                    </div>
+
+                    <div class="absolute bottom-2 left-4 z-10 bg-white text-gray-800 px-3 py-2 rounded-md text-sm shadow-lg border border-gray-200">
+                        <div class="font-medium text-gray-700 mb-1">Having trouble viewing?</div>
+                        <div class="flex items-center">
+                            <template v-if="currentPdfUrl">
+                                <button @click="switchToFlipbook" class="flex items-center text-blue-700 hover:text-blue-800 hover:underline">
+                                    <i class="fas fa-sync-alt mr-2 text-sm"></i>
+                                    Alternative viewer
+                                </button>
+                                <span class="text-gray-500 mx-2">or</span>
+                                <a :href="currentPdfUrl" class="flex items-center text-red-600 hover:text-red-700 hover:underline">
+                                    <i class="fas fa-download mr-2 text-sm"></i>
+                                    Download PDF
+                                </a>
+                            </template>
+                            <template v-else>
+                                <a :href="currentAnyflipUrl" target="_blank" class="flex items-center text-blue-700 hover:text-blue-800 hover:underline">
+                                    <i class="fas fa-external-link-alt mr-2 text-sm"></i>
+                                    Open this link
+                                </a>
+                            </template>
+                        </div>
                     </div>
 
                     <div class="w-full h-full flex items-center justify-center px-4">
                         <iframe
+                            v-if="showAnyflipModal"
                             :src="currentAnyflipUrl"
+                            @load="handleAnyflipIframeLoad"
                             class="w-full h-full max-w-full max-h-full border-0"
+                            :class="{ 'hidden': isAnyflipLoading && !isAnyflipLoaded }"
                             seamless="seamless"
                             scrolling="no"
                             frameborder="0"
