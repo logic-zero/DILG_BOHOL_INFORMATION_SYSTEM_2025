@@ -9,6 +9,7 @@ defineOptions({ layout: GuestLayout });
 const pageProps = usePage().props;
 const materials = ref(pageProps.materials.data ?? []);
 const pagination = ref(pageProps.materials);
+const currentMaterial = ref(null);
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",
@@ -34,9 +35,10 @@ const handleIframeLoad = () => {
     isLoading.value = false;
 };
 
-const openAnyflip = (url, pdfUrl) => {
+const openAnyflip = (url, pdfUrl, material) => {
     currentAnyflipUrl.value = url;
     currentPdfUrl.value = pdfUrl;
+    currentMaterial.value = material;
     showAnyflipModal.value = true;
 };
 
@@ -121,7 +123,7 @@ const closeAnyflipModal = (event) => {
                         class="text-red-600 font-bold hover:underline">
                         <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
-                    <button @click="openAnyflip(material.link, route('guest.knowledgeMaterials.download', material))"
+                    <button @click="openAnyflip(material.link, route('guest.knowledgeMaterials.download', material), material)"
                             class="text-green-600 font-bold hover:underline">
                         <i class="fas fa-book"></i> View Anyflip
                     </button>
@@ -173,29 +175,36 @@ const closeAnyflipModal = (event) => {
         </div>
 
         <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click="closeAnyflipModal">
-            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-6xl h-[95vh] mx-auto">
-                <button @click="showAnyflipModal = false"
-                        class="absolute -top-10 -right-10 z-50 bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition md:top-4 md:right-4 md:-translate-y-0 md:-translate-x-0">
-                    <i class="fas fa-times text-gray-700 text-lg"></i>
-                </button>
-
-                <div class="absolute bottom-4 left-4 z-10 bg-white text-gray-800 px-4 py-2 rounded-lg text-sm shadow-lg border border-gray-200">
-                    If Anyflip doesn't load properly, try:
-                    <button @click="switchToFlipbook" class="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                        <i class="fas fa-book-open mr-1"></i> Use Flipbook
+            <div class="relative bg-white shadow-xl w-full max-w-6xl h-[95vh] mx-auto flex flex-col">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between py-2 px-4 border-b border-gray-200">
+                    <h3 class="text-md font-bold text-blue-900">{{ currentMaterial?.title }}</h3>
+                    <button @click="showAnyflipModal = false"
+                            class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
 
-                <div class="w-full h-full flex items-center justify-center p-4">
-                    <iframe
-                        :src="currentAnyflipUrl"
-                        class="w-full h-full max-w-full max-h-full border-0"
-                        seamless="seamless"
-                        scrolling="no"
-                        frameborder="0"
-                        allowtransparency="true"
-                        allowfullscreen="true">
-                    </iframe>
+                <!-- Modal Content -->
+                <div class="flex-1 relative">
+                    <div class="absolute bottom-2 left-4 z-10 bg-white text-gray-800 px-2 py-1 rounded text-sm shadow-lg border border-gray-200">
+                        If Anyflip doesn't load properly, try:
+                        <button @click="switchToFlipbook" class="ml-1 text-blue-800 rounded hover:underline transition">
+                            <i class="fas fa-book-open mr-1"></i> Use Flipbook
+                        </button>
+                    </div>
+
+                    <div class="w-full h-full flex items-center justify-center px-4">
+                        <iframe
+                            :src="currentAnyflipUrl"
+                            class="w-full h-full max-w-full max-h-full border-0"
+                            seamless="seamless"
+                            scrolling="no"
+                            frameborder="0"
+                            allowtransparency="true"
+                            allowfullscreen="true">
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </div>
