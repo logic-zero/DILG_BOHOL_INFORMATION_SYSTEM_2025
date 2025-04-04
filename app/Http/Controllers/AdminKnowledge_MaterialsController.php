@@ -16,7 +16,8 @@ class AdminKnowledge_MaterialsController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'LIKE', "%$search%");
+                $q->where('title', 'LIKE', "%$search%")
+                  ->orWhere('link', 'LIKE', "%$search%");
             });
         }
 
@@ -32,8 +33,9 @@ class AdminKnowledge_MaterialsController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string',
+            'link' => 'nullable|url',
             'date' => 'required|date',
-            'file' => 'required|file|mimes:pdf|max:51200',
+            'file' => 'nullable|file|mimes:pdf|max:102400',
         ]);
 
         if ($request->hasFile('file')) {
@@ -49,8 +51,9 @@ class AdminKnowledge_MaterialsController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string',
+            'link' => 'nullable|url',
             'date' => 'required|date',
-            'file' => 'nullable|file|mimes:pdf|max:51200',
+            'file' => 'nullable|file|mimes:pdf|max:102400',
         ]);
 
         if ($request->hasFile('file')) {

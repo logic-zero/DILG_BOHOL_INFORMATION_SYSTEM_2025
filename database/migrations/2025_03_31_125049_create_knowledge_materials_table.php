@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('knowledge_materials', function (Blueprint $table) {
             $table->id();
             $table->longText('title')->nullable();
+            $table->longText('link')->nullable();
             $table->string('file')->nullable();
             $table->date('date')->nullable();
             $table->timestamps();

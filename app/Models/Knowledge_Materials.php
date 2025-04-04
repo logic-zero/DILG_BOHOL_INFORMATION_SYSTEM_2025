@@ -14,6 +14,7 @@ class Knowledge_Materials extends Model
     protected $fillable =
     [
         'title',
+        'link',
         'file',
         'date'
     ];

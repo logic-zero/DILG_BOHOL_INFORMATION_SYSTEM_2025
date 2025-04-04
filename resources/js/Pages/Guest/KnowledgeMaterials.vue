@@ -18,6 +18,10 @@ const showModal = ref(false);
 const currentFlipbookUrl = ref("");
 const isLoading = ref(false);
 
+const showAnyflipModal = ref(false);
+const currentAnyflipUrl = ref("");
+const currentPdfUrl = ref("");
+
 const openFlipbook = (pdfUrl) => {
     const encodedPdfUrl = encodeURIComponent(pdfUrl);
     const randomParam = Math.random().toString(36).substring(7);
@@ -30,9 +34,15 @@ const handleIframeLoad = () => {
     isLoading.value = false;
 };
 
-const openInFullPage = () => {
-    window.open(currentFlipbookUrl.value, '_blank');
-    showModal.value = false;
+const openAnyflip = (url, pdfUrl) => {
+    currentAnyflipUrl.value = url;
+    currentPdfUrl.value = pdfUrl;
+    showAnyflipModal.value = true;
+};
+
+const switchToFlipbook = () => {
+    showAnyflipModal.value = false;
+    openFlipbook(currentPdfUrl.value);
 };
 
 const applyFilters = () => {
@@ -68,6 +78,12 @@ const goToPage = (url) => {
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
+};
+
+const closeAnyflipModal = (event) => {
+    if (event.target.classList.contains('modal-overlay')) {
+        showAnyflipModal.value = false;
+    }
 };
 </script>
 
@@ -105,9 +121,9 @@ const goToPage = (url) => {
                         class="text-red-600 font-bold hover:underline">
                         <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
-                    <button @click="openFlipbook(route('guest.knowledgeMaterials.download', material))"
-                            class="text-blue-600 font-bold hover:underline">
-                        <i class="fas fa-book-open"></i> View Flipbook
+                    <button @click="openAnyflip(material.link, route('guest.knowledgeMaterials.download', material))"
+                            class="text-green-600 font-bold hover:underline">
+                        <i class="fas fa-book"></i> View Anyflip
                     </button>
                 </div>
             </div>
@@ -143,35 +159,7 @@ const goToPage = (url) => {
                 </div>
 
                 <div v-if="isLoading" class="flex-1 flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="book">
-                            <div class="inner">
-                                <div class="left"></div>
-                                <div class="middle"></div>
-                                <div class="right"></div>
-                            </div>
-                            <ul>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                            </ul>
-                        </div>
-                        <p class="mt-4 text-gray-800">Preparing flipbook...</p>
-                    </div>
+                    <div class="spinner"></div>
                 </div>
 
                 <iframe
@@ -183,105 +171,60 @@ const goToPage = (url) => {
                 </iframe>
             </div>
         </div>
+
+        <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click="closeAnyflipModal">
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-6xl h-[95vh] mx-auto">
+                <button @click="showAnyflipModal = false"
+                        class="absolute -top-10 -right-10 z-50 bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition md:top-4 md:right-4 md:-translate-y-0 md:-translate-x-0">
+                    <i class="fas fa-times text-gray-700 text-lg"></i>
+                </button>
+
+                <div class="absolute bottom-4 left-4 z-10 bg-white text-gray-800 px-4 py-2 rounded-lg text-sm shadow-lg border border-gray-200">
+                    If Anyflip doesn't load properly, try:
+                    <button @click="switchToFlipbook" class="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                        <i class="fas fa-book-open mr-1"></i> Use Flipbook
+                    </button>
+                </div>
+
+                <div class="w-full h-full flex items-center justify-center p-4">
+                    <iframe
+                        :src="currentAnyflipUrl"
+                        class="w-full h-full max-w-full max-h-full border-0"
+                        seamless="seamless"
+                        scrolling="no"
+                        frameborder="0"
+                        allowtransparency="true"
+                        allowfullscreen="true">
+                    </iframe>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.book {
-    width: 60px;
-    height: 80px;
-    position: relative;
-    perspective: 150px;
-    margin: 0 auto;
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-.book .inner {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    animation: flip 2s infinite ease-in-out;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.book .left, .book .middle, .book .right {
-    position: absolute;
-    width: 33.33%;
-    height: 100%;
-    background: #3b82f6;
-    transform-origin: right center;
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
 }
 
-.book .left {
-    left: 0;
-    animation: leftPage 2s infinite ease-in-out;
-}
-
-.book .middle {
-    left: 33.33%;
-    background: #1d4ed8;
-}
-
-.book .right {
-    right: 0;
-    transform-origin: left center;
-    animation: rightPage 2s infinite ease-in-out;
-}
-
-.book ul {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-}
-
-.book ul li {
-    position: absolute;
-    list-style: none;
-    background: #fff;
-    border: 1px solid #ddd;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    animation: pages 2s infinite ease-in-out;
-}
-
-.book ul li:nth-child(1) { animation-delay: 0.05s; }
-.book ul li:nth-child(2) { animation-delay: 0.1s; }
-.book ul li:nth-child(3) { animation-delay: 0.15s; }
-.book ul li:nth-child(4) { animation-delay: 0.2s; }
-.book ul li:nth-child(5) { animation-delay: 0.25s; }
-.book ul li:nth-child(6) { animation-delay: 0.3s; }
-.book ul li:nth-child(7) { animation-delay: 0.35s; }
-.book ul li:nth-child(8) { animation-delay: 0.4s; }
-.book ul li:nth-child(9) { animation-delay: 0.45s; }
-.book ul li:nth-child(10) { animation-delay: 0.5s; }
-.book ul li:nth-child(11) { animation-delay: 0.55s; }
-.book ul li:nth-child(12) { animation-delay: 0.6s; }
-.book ul li:nth-child(13) { animation-delay: 0.65s; }
-.book ul li:nth-child(14) { animation-delay: 0.7s; }
-.book ul li:nth-child(15) { animation-delay: 0.75s; }
-.book ul li:nth-child(16) { animation-delay: 0.8s; }
-.book ul li:nth-child(17) { animation-delay: 0.85s; }
-
-@keyframes flip {
-    0%, 100% { transform: rotateY(-20deg); }
-    50% { transform: rotateY(20deg); }
-}
-
-@keyframes leftPage {
-    0%, 100% { transform: rotateY(0); }
-    50% { transform: rotateY(-15deg); }
-}
-
-@keyframes rightPage {
-    0%, 100% { transform: rotateY(0); }
-    50% { transform: rotateY(15deg); }
-}
-
-@keyframes pages {
-    0%, 100% { opacity: 0; transform: translateZ(5px); }
-    50% { opacity: 0.5; transform: translateZ(0); }
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 1rem;
+    }
 }
 </style>

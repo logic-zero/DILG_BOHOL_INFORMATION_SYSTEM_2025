@@ -57,6 +57,7 @@ const goToPage = (url) => url && fetchMaterials(url);
 const form = useForm({
     id: null,
     title: "",
+    link: "",
     date: "",
     file: null,
 });
@@ -70,6 +71,7 @@ const openModal = (material = null) => {
     if (material) {
         form.id = material.id;
         form.title = material.title;
+        form.link = material.link;
         form.date = material.date;
         form.file = null;
     } else {
@@ -96,7 +98,7 @@ const submitMaterial = () => {
 
     if (!form.title) return (errorMessage.value = "Title is required.");
     if (!form.date) return (errorMessage.value = "Date is required.");
-    if (!isEditMode.value && !form.file) return (errorMessage.value = "File is required.");
+    if (!isEditMode.value && !form.file && !form.link) return (errorMessage.value = "File or Link is required.");
 
     const url = isEditMode.value
         ? `/admin/knowledge-materials/${form.id}`
@@ -104,6 +106,7 @@ const submitMaterial = () => {
 
     const formattedData = new FormData();
     formattedData.append("title", form.title);
+    formattedData.append("link", form.link);
     formattedData.append("date", form.date);
     if (form.file) formattedData.append("file", form.file);
 
@@ -194,10 +197,11 @@ const downloadFile = (material) => {
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
-                        <th class="p-3 text-left w-[40%]">Title</th>
+                        <th class="p-3 text-left w-[25%]">Title</th>
                         <th class="p-3 text-left w-[15%]">Date</th>
-                        <th class="p-3 text-left w-[25%]">File</th>
-                        <th class="p-3 text-center w-[20%]">Actions</th>
+                        <th class="p-3 text-left w-[20%]">File</th>
+                        <th class="p-3 text-left w-[15%]">Link</th>
+                        <th class="p-3 text-center w-[25%]">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -216,6 +220,13 @@ const downloadFile = (material) => {
                                 Download PDF
                             </button>
                             <span v-else class="text-gray-400">No file</span>
+                        </td>
+                        <td class="p-3 text-gray-600 break-words">
+                            <a v-if="material.link" :href="material.link" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                <i class="fas fa-link"></i>
+                                Open Link
+                            </a>
+                            <span v-else class="text-gray-400">No link</span>
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-1">
@@ -247,13 +258,21 @@ const downloadFile = (material) => {
                             {{ new Date(material.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}
                         </p>
 
-                        <p class="text-sm text-gray-600">
+                        <p class="text-sm text-gray-600 mb-2">
                             <button v-if="material.file" @click="downloadFile(material)"
                                 class="text-blue-600 hover:text-blue-800 flex items-center gap-1 ml-1">
                                 <i class="fas fa-file-pdf text-red-500"></i>
                                 Download PDF
                             </button>
                             <span v-else class="text-gray-400 ml-1">No file</span>
+                        </p>
+
+                        <p class="text-sm text-gray-600">
+                            <a v-if="material.link" :href="material.link" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center gap-1 ml-1">
+                                <i class="fas fa-link"></i>
+                                Open Link
+                            </a>
+                            <span v-else class="text-gray-400 ml-1">No link</span>
                         </p>
                     </div>
                 </div>
@@ -297,6 +316,9 @@ const downloadFile = (material) => {
 
                 <label class="font-bold block text-gray-700">Title</label>
                 <input v-model="form.title" placeholder="Enter Title" class="border p-2 w-full my-2" />
+
+                <label class="font-bold block text-gray-700">Link</label>
+                <input v-model="form.link" placeholder="Enter AnyFlip URL (https://)" class="border p-2 w-full my-2" />
 
                 <label class="font-bold block text-gray-700">Date</label>
                 <input v-model="form.date" type="date" class="border p-2 w-full my-2" />
