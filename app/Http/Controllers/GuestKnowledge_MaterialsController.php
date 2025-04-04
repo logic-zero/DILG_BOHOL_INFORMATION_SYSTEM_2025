@@ -20,7 +20,7 @@ class GuestKnowledge_MaterialsController extends Controller
             });
         }
 
-        $materials = $query->paginate(10)->withQueryString();
+        $materials = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Guest/KnowledgeMaterials', [
             'materials' => $materials,
