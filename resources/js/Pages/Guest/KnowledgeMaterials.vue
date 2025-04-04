@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
@@ -101,6 +101,16 @@ const closeAnyflipModal = (event) => {
 const openInFullPage = () => {
     window.open(currentFlipbookUrl.value, '_blank');
 };
+
+onMounted(() => {
+    if (materials.value.length > 0) {
+        const firstMaterial = materials.value[0];
+        currentAnyflipUrl.value = firstMaterial.link;
+        currentPdfUrl.value = firstMaterial.file ? route('guest.knowledgeMaterials.download', firstMaterial) : null;
+        currentMaterial.value = firstMaterial;
+        isAnyflipLoading.value = true;
+    }
+});
 </script>
 
 <template>
@@ -235,6 +245,19 @@ const openInFullPage = () => {
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div v-if="materials.length > 0" class="hidden">
+            <iframe
+                :src="currentAnyflipUrl"
+                @load="handleAnyflipIframeLoad"
+                class="w-0 h-0 border-0"
+                seamless="seamless"
+                scrolling="no"
+                frameborder="0"
+                allowtransparency="true"
+                allowfullscreen="true">
+            </iframe>
         </div>
     </div>
 </template>
