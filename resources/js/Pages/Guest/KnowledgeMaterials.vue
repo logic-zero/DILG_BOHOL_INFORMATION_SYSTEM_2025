@@ -119,17 +119,17 @@ const openInFullPage = () => {
             </div>
         </div>
 
-        <div v-if="materials.length > 0" class="space-y-2 md:px-12">
+        <div v-if="materials.length > 0" class="md:px-12">
             <div v-for="material in materials" :key="material.id"
                 class="border border-gray-300 shadow-lg bg-white">
 
-                <div class="flex flex-col sm:flex-row gap-2 w-full">
+                <div class="flex flex-row gap-2 w-full">
                     <div class="py-4 bg-blue-800 flex-1">
                         <p class="text-sm text-white text-center whitespace-nowrap">
                             {{ new Date(material.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
                         </p>
                     </div>
-                    <div class="py-4 flex-1">
+                    <div class="py-4 flex-[2]">
                         <button @click="openAnyflip(material.link, material.file ? route('guest.knowledgeMaterials.download', material) : null, material)" class="w-full">
                             <h2 class="text-sm text-center font-semibold text-blue-900 hover:underline">{{ material.title }}</h2>
                         </button>
