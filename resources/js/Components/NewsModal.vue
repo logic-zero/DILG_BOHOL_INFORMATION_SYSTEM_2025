@@ -4,17 +4,22 @@
         <div
             class="bg-white shadow-lg w-full sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] h-[95vh] max-h-[95vh] flex flex-col">
             <div class="px-4 py-3 border-b flex justify-between items-center">
-                <div>
-                    <p class="text-sm uppercase text-gray-700 font-black">
-                        {{ formattedDate }} -
-                        <Link :href="`/guestNews/${newsItem.id}`" class="text-blue-500 text-xs underline">
+                <div class="flex flex-wrap items-center">
+                    <p class="text-sm uppercase text-gray-700 font-black flex-shrink-0 mr-2">
+                        {{ formattedDate }}
+                    </p>
+                    <div>
+                        <Link :href="`/guestNews/${newsItem.id}`" class="text-blue-500 text-xs uppercase font-bold underline">
                             View Full Page
                         </Link>
-                    </p>
-                    <button @click="shareOnFacebook(newsItem.id)" class="flex font-bold items-center hover:underline text-blue-500 mt-2 transition">
-                        <i class="fab fa-facebook-f mr-2"></i>
-                        Share to Facebook
-                    </button>
+                        <button
+                            @click="shareOnFacebook(newsItem.id)"
+                            class="flex-shrink-0 text-xs font-bold ml-2 items-center hover:underline text-white bg-blue-500 py-1 px-2 rounded transition"
+                        >
+                            <i class="fab fa-facebook-f mr-2"></i>
+                            Share
+                        </button>
+                    </div>
                 </div>
 
                 <button @click="closeModal" class="text-gray-500 font-bold hover:text-gray-700">

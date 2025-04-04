@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="p-6 pt-3 w-full">
-            <div class="px-5 w-full h-[700px] overflow-hidden relative">
+        <div class="md:p-6 pt-0 md:pt-3 w-full">
+            <div class="w-full h-[40vh] sm:h-[50vh] md:h-[70vh] lg:h-[700px] overflow-hidden">
                 <swiper
                     :modules="[Autoplay]"
                     :allowTouchMove="false"
@@ -13,40 +13,41 @@
                             <img
                                 :src="`/storage/${image}`"
                                 alt="Cover Photo"
-                                class="max-w-full max-h-full object-contain relative z-10"
+                                class="w-full h-full object-contain"
                             />
                         </div>
                     </swiper-slide>
                 </swiper>
             </div>
-            <div class="container mx-auto px-4">
+
+            <div class="container mx-auto px-2 sm:px-4">
                 <div class="flex flex-col md:flex-row flex-wrap">
                     <div class="w-full md:w-1/2 p-2 md:p-4 order-2 md:order-1">
-                        <div class="flex flex-col items-center md:items-start justify-center h-full">
-                            <Link :href="route('guest.provincialDirector')" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-96">
-                                <span>THE PROVINCIAL DIRECTOR</span>
-                                <span class="fas fa-arrow-right"></span>
+                        <div class="flex flex-col items-center md:items-start justify-center h-full space-y-3">
+                            <Link :href="route('guest.provincialDirector')" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md w-full sm:w-96 px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center">
+                                <span class="text-sm sm:text-base">THE PROVINCIAL DIRECTOR</span>
+                                <span class="fas fa-arrow-right text-xs sm:text-sm"></span>
                             </Link>
 
-                            <Link href="/aboutUs" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md mb-3 px-4 py-3 flex justify-between items-center w-full md:w-96">
-                                <span>VISION & MISSION</span>
-                                <span class="fas fa-arrow-right"></span>
+                            <Link href="/aboutUs" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md w-full sm:w-96 px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center">
+                                <span class="text-sm sm:text-base">VISION & MISSION</span>
+                                <span class="fas fa-arrow-right text-xs sm:text-sm"></span>
                             </Link>
 
-                            <Link href="/latestIssuances" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md px-4 py-3 flex justify-between items-center w-full md:w-96">
-                                <span>LATEST ISSUANCES</span>
-                                <span class="fas fa-arrow-right"></span>
+                            <Link href="/latestIssuances" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md w-full sm:w-96 px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center">
+                                <span class="text-sm sm:text-base">LATEST ISSUANCES</span>
+                                <span class="fas fa-arrow-right text-xs sm:text-sm"></span>
                             </Link>
                         </div>
                     </div>
 
                     <div class="w-full md:w-1/2 p-2 md:p-4 order-1 md:order-2">
-                        <div class="flex flex-col items-center justify-center my-5 text-center">
-                            <img src="/img/dilg-main.png" alt="DILG Logo" class="mb-3 h-24 md:h-32 w-24 md:w-32">
-                            <h1 class="text-lg font-bold">
+                        <div class="flex flex-col items-center justify-center my-3 sm:my-5 text-center">
+                            <img src="/img/dilg-main.png" alt="DILG Logo" class="mb-2 sm:mb-3 h-20 sm:h-24 md:h-32 w-20 sm:w-24 md:w-32">
+                            <h1 class="text-base sm:text-lg font-bold">
                                 Department of the Interior and Local Government
                             </h1>
-                            <p class="mt-3 max-w-2xl mx-auto text-sm md:text-base">
+                            <p class="mt-2 sm:mt-3 max-w-2xl mx-auto text-xs sm:text-sm md:text-base">
                                 The DILG is the executive department of the Philippine government responsible for promoting peace and
                                 order, ensuring public safety, and strengthening local government capability aimed towards the effective
                                 delivery of basic services to the citizenry.

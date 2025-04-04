@@ -53,7 +53,7 @@ const setThumbsSwiper = (swiper) => {
 
             <button @click="shareOnFacebook" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition">
                 <i class="fab fa-facebook-f mr-2"></i>
-                Share to Facebook
+                Share
             </button>
         </div>
 
