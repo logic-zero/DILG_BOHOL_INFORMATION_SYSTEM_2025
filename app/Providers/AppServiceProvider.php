@@ -7,6 +7,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use App\Services\ScraperService;
 use App\Services\RepublicActService;
 use App\Services\PresidentialDirectiveService;
+use App\Services\LegalOpinionService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,13 +31,16 @@ class AppServiceProvider extends ServiceProvider
         $schedule->call(function () {
             $republicActService = app(RepublicActService::class);
             $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
+            $republicActService->sendAllRepublicActsToTangkaraw();
 
             $presidentialdirectiveService = app(PresidentialDirectiveService::class);
             $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
+            $presidentialdirectiveService->sendPresidentialDirectivesToTangkaraw();
 
-            $scraperService = app(ScraperService::class);
+            $scraperService = app(LegalOpinionService::class);
             $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
-        })->everyMinute();
+            $scraperService->sendAllLegalOpinionsToTangkaraw();
+        })->everySixHours();
     }
 }
 

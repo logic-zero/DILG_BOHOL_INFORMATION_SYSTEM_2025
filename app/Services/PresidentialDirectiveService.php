@@ -6,6 +6,8 @@ use App\Models\PresidentialDirective;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class PresidentialDirectiveService
 {
@@ -23,7 +25,7 @@ class PresidentialDirectiveService
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             ],
-            'verify' => false
+            'verify' => storage_path('cacert.pem'),
         ]);
 
         $uniqueDirectives = [];
@@ -149,6 +151,55 @@ class PresidentialDirectiveService
         } catch (\Exception $e) {
             Log::error('Error scraping data: ' . $e->getMessage());
             return ['error' => 'Error scraping data: ' . $e->getMessage()];
+        }
+    }
+
+    public function sendPresidentialDirectivesToTangkaraw()
+    {
+        $presidentialDirectives = DB::connection('dilg')->table('presidential_directives')->get();
+
+        if ($presidentialDirectives->isEmpty()) {
+            Log::warning('No presidential directives found in the DILG database.');
+            session()->flash('error', 'No presidential directives to send.');
+            return;
+        }
+
+        Log::info('Fetched presidential directives from DILG database:', $presidentialDirectives->toArray());
+
+        $presidentialDirectivesData = $presidentialDirectives->map(function ($presidentialDirective) {
+            return [
+                'title' => $presidentialDirective->title,
+                'link' => $presidentialDirective->link,
+                'reference' => $presidentialDirective->reference,
+                'date' => $presidentialDirective->date,
+                'download_link' => $presidentialDirective->download_link,
+            ];
+        })->toArray();
+
+        Log::info('Prepared presidential directives to send:', $presidentialDirectivesData);
+
+        if (empty($presidentialDirectivesData)) {
+            Log::warning('Mapped presidential directives data is empty. Nothing to send.');
+            session()->flash('error', 'No presidential directives to send.');
+            return;
+        }
+
+        // Send to Tangkaraw
+        Log::info('Sending presidential directives to Tangkaraw:', ['payload' => $presidentialDirectivesData]);
+
+        $response = Http::post('http://127.0.0.1:8000/webhook/presidential-directive', [
+            'presidential_directives' => $presidentialDirectivesData,
+        ]);
+
+        Log::info('Response from Tangkaraw:', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        if ($response->successful()) {
+            session()->flash('message', 'All presidential directives sent successfully');
+        } else {
+            session()->flash('error', 'Failed to send presidential directives to Tangkaraw');
         }
     }
 }

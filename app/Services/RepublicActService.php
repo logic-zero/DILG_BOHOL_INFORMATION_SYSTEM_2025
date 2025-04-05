@@ -6,6 +6,8 @@ use App\Models\RepublicAct;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class RepublicActService
 {
@@ -23,7 +25,7 @@ class RepublicActService
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             ],
-            'verify' => false
+            'verify' => storage_path('cacert.pem'),
         ]);
 
         $uniqueActs = [];
@@ -143,6 +145,55 @@ class RepublicActService
                 'error' => 'Error scraping data: ' . $e->getMessage(),
                 'acts' => []
             ];
+        }
+    }
+
+    public function sendAllRepublicActsToTangkaraw()
+    {
+        $republicActs = DB::connection('dilg')->table('republic_acts')->get();
+
+        if ($republicActs->isEmpty()) {
+            Log::warning('No republic acts found in the DILG database.');
+            session()->flash('error', 'No republic acts to send.');
+            return;
+        }
+
+        Log::info('Fetched republic acts from DILG database:', $republicActs->toArray());
+
+        $republicActsData = $republicActs->map(function ($republicAct) {
+            return [
+                'title' => $republicAct->title,
+                'link' => $republicAct->link,
+                'reference' => $republicAct->reference,
+                'date' => $republicAct->date,
+                'download_link' => $republicAct->download_link,
+            ];
+        })->toArray();
+
+        Log::info('Prepared republic acts to send:', $republicActsData);
+
+        if (empty($republicActsData)) {
+            Log::warning('Mapped republic acts data is empty. Nothing to send.');
+            session()->flash('error', 'No republic acts to send.');
+            return;
+        }
+
+        // Send to Tangkaraw
+        Log::info('Sending republic acts to Tangkaraw:', ['payload' => $republicActsData]);
+
+        $response = Http::post('http://127.0.0.1:8000/webhook/republic-act', [
+            'republic_acts' => $republicActsData,
+        ]);
+
+        Log::info('Response from Tangkaraw:', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        if ($response->successful()) {
+            session()->flash('message', 'All republic acts sent successfully');
+        } else {
+            session()->flash('error', 'Failed to send republic acts to Tangkaraw');
         }
     }
 }
