@@ -42,9 +42,7 @@ const openAnyflip = (url, pdfUrl, material) => {
     currentPdfUrl.value = pdfUrl;
     currentMaterial.value = material;
     showAnyflipModal.value = true;
-    if (!isAnyflipLoaded.value) {
-        isAnyflipLoading.value = true;
-    }
+    isAnyflipLoading.value = true;
 };
 
 const handleAnyflipIframeLoad = () => {
@@ -202,7 +200,7 @@ onMounted(() => {
                 </div>
 
                 <div class="flex-1 relative">
-                    <div v-if="isAnyflipLoading && !isAnyflipLoaded" class="absolute inset-0 flex items-center justify-center">
+                    <div v-if="isAnyflipLoading" class="absolute inset-0 flex items-center justify-center">
                         <div class="spinner"></div>
                     </div>
 
