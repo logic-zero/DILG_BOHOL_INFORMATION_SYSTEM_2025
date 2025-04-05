@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed } from "vue";
-import { usePage, router, Link } from "@inertiajs/vue3";
+import { usePage, router } from "@inertiajs/vue3";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
@@ -9,7 +9,6 @@ import "swiper/css/autoplay";
 import { Pagination, Autoplay } from "swiper/modules";
 import { debounce } from "lodash";
 import NewsModal from "@/Components/NewsModal.vue";
-const isFirstLoad = ref(true);
 
 defineOptions({ layout: GuestLayout });
 
@@ -52,29 +51,18 @@ const paginationInfo = computed(() => {
     return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
 });
 
-watch([() => filters.value.from_date, () => filters.value.to_date], () => {
-    if (isFirstLoad.value) {
-        isFirstLoad.value = false;
-        return;
-    }
-    if (filters.value.from_date && filters.value.to_date) {
-        applyFilters();
-    }
-});
-
 const debouncedSearch = debounce(() => {
     applyFilters();
 }, 500);
 
-
 watch(() => filters.value.search, debouncedSearch);
 
+watch([() => filters.value.from_date, () => filters.value.to_date], () => {
+    applyFilters();
+});
+
 const applyFilters = () => {
-    router.get("/guestNews", {
-        search: filters.value.search || null,
-        from_date: filters.value.from_date || null,
-        to_date: filters.value.to_date || null,
-    }, {
+    router.get("/guestNews", filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["news", "filters"],
@@ -97,6 +85,15 @@ const goToPage = (url) => {
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
+};
+
+const clearFilters = () => {
+    filters.value = {
+        search: '',
+        from_date: '',
+        to_date: ''
+    };
+    applyFilters();
 };
 </script>
 
@@ -127,10 +124,13 @@ const goToPage = (url) => {
                     </div>
                 </div>
 
-                <Link href="/guestNews"
-                    class="text-gray-700 px-3 py-2 rounded flex items-center bg-gray-400 justify-center hover:bg-gray-500 w-full md:w-auto">
-                <i class="fas fa-sync-alt"></i>
-                </Link>
+                <button
+                    @click="clearFilters"
+                    class="bg-gray-400 text-gray-700 px-2 py-1 flex items-center justify-center md:justify-start gap-2 hover:bg-gray-400 w-full md:w-auto transition-colors"
+                >
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="inline">Clear</span>
+                </button>
             </div>
         </div>
 
@@ -179,7 +179,6 @@ const goToPage = (url) => {
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
                     }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
-
             </div>
         </div>
         <NewsModal v-if="isModalOpen" :newsItem="selectedNews" :isOpen="isModalOpen" @close="closeModal" />
