@@ -87,11 +87,6 @@ const form = useForm({
 });
 
 const openModal = (news = null) => {
-    if (news && news.status) {
-        isEditBlockedModalOpen.value = true;
-        return;
-    }
-
     isEditMode.value = !!news;
     editingNews.value = news;
     isModalOpen.value = true;
@@ -123,6 +118,12 @@ const showSuccessMessage = (message) => {
 };
 
 const submitNews = () => {
+    if (isEditMode.value && editingNews.value?.status) {
+        isEditBlockedModalOpen.value = true;
+        closeModal();
+        return;
+    }
+
     errorMessage.value = "";
 
     const title = form.title.trim();
@@ -303,7 +304,7 @@ const toggleStatus = async () => {
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="openStatusModal(news)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
+                            <button @click="isSuperAdmin && openStatusModal(news)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
                                 {{ news.status ? "Approved" : "Pending" }}
                             </button>
                         </td>
@@ -335,7 +336,7 @@ const toggleStatus = async () => {
                         </p>
                         <p class="text-xs font-bold text-gray-500 mt-1">By: {{ news.user.name }}</p>
                     </div>
-                    <button @click="openStatusModal(news)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
+                    <button @click="isSuperAdmin && openStatusModal(news)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
                         <i :class="news.status ? 'fas fa-check-circle' : 'fas fa-hourglass'"></i>
                         {{ news.status ? "Approved" : "Pending" }}
                     </button>
