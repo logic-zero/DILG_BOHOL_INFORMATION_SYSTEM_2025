@@ -21,6 +21,9 @@ const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const newsToDelete = ref(null);
 const showImagePreview = ref(false);
+const isStatusModalOpen = ref(false);
+const newsToToggle = ref(null);
+const isEditBlockedModalOpen = ref(false);
 
 const isSuperAdmin = computed(() => {
     return pageProps.auth.user.roles.some(role => role.name === 'Super-Admin');
@@ -84,6 +87,11 @@ const form = useForm({
 });
 
 const openModal = (news = null) => {
+    if (news && news.status) {
+        isEditBlockedModalOpen.value = true;
+        return;
+    }
+
     isEditMode.value = !!news;
     editingNews.value = news;
     isModalOpen.value = true;
@@ -204,18 +212,29 @@ const deleteNews = async () => {
     }
 };
 
-const toggleStatus = async (id) => {
-    if (!isSuperAdmin.value) return;
+const openStatusModal = (news) => {
+    newsToToggle.value = news;
+    isStatusModalOpen.value = true;
+};
+
+const closeStatusModal = () => {
+    newsToToggle.value = null;
+    isStatusModalOpen.value = false;
+};
+
+const toggleStatus = async () => {
+    if (!newsToToggle.value || !isSuperAdmin.value) return;
 
     try {
         await router.patch(
-            `/admin/news/${id}/toggle-status`,
+            `/admin/news/${newsToToggle.value.id}/toggle-status`,
             {},
             { preserveState: true, preserveScroll: true }
         );
-        const newsItem = newsList.value.find((n) => n.id === id);
+        const newsItem = newsList.value.find((n) => n.id === newsToToggle.value.id);
         if (newsItem) newsItem.status = !newsItem.status;
         showSuccessMessage("Status updated successfully!");
+        closeStatusModal();
     } catch (error) {
         errorMessage.value = "Failed to update status.";
     }
@@ -284,7 +303,7 @@ const toggleStatus = async (id) => {
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="toggleStatus(news.id)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
+                            <button @click="openStatusModal(news)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
                                 {{ news.status ? "Approved" : "Pending" }}
                             </button>
                         </td>
@@ -316,7 +335,7 @@ const toggleStatus = async (id) => {
                         </p>
                         <p class="text-xs font-bold text-gray-500 mt-1">By: {{ news.user.name }}</p>
                     </div>
-                    <button @click="toggleStatus(news.id)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
+                    <button @click="openStatusModal(news)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
                         <i :class="news.status ? 'fas fa-check-circle' : 'fas fa-hourglass'"></i>
                         {{ news.status ? "Approved" : "Pending" }}
                     </button>
@@ -417,6 +436,42 @@ const toggleStatus = async (id) => {
                     </button>
                     <button @click="closeDeleteModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
                         Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="isStatusModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+                <h2 class="text-xl mb-4 text-center">Confirm Status Change</h2>
+                <p class="text-center mb-4">
+                    Are you sure you want to change the status of
+                    <strong>{{ newsToToggle?.title }}</strong> to
+                    <strong>{{ newsToToggle?.status ? 'Pending' : 'Approved' }}</strong>?
+                </p>
+
+                <div class="flex justify-center gap-2">
+                    <button @click="toggleStatus" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+                        Yes, Change
+                    </button>
+                    <button @click="closeStatusModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="isEditBlockedModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+                <h2 class="text-xl mb-4 text-center">Edit Not Allowed</h2>
+                <p class="text-center mb-4">
+                    This news item has been approved and can no longer be edited.
+                    <br>
+                    <span class="text-sm text-gray-600">Only pending news can be edited.</span>
+                </p>
+                <div class="flex justify-center">
+                    <button @click="isEditBlockedModalOpen = false" class="px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Close
                     </button>
                 </div>
             </div>

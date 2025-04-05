@@ -74,6 +74,10 @@ class AdminNewsController extends Controller
             abort(403, 'Access denied: This news was published by another user and cannot be modified. Only administrators and super administrators have the necessary permissions to update news content.');
         }
 
+        if ($news->status) {
+            abort(403, 'Only pending news can be updated. This news has already been approved.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string',
             'caption' => 'required|string',
