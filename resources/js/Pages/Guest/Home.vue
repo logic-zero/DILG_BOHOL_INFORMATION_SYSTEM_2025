@@ -105,7 +105,11 @@
 
             <p v-else class="text-center text-gray-500 mt-4">No news found.</p>
 
-            <NewsModal v-if="isModalOpen" :newsItem="selectedNews" :isOpen="isModalOpen" @close="closeModal" />
+            <NewsModal
+                :newsItem="selectedNews"
+                :isOpen="isModalOpen"
+                @close="closeModal"
+            />
         </div>
 
         <div class="p-6 w-full">

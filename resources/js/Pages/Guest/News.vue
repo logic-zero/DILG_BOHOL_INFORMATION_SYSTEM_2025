@@ -181,6 +181,10 @@ const clearFilters = () => {
                 </button>
             </div>
         </div>
-        <NewsModal v-if="isModalOpen" :newsItem="selectedNews" :isOpen="isModalOpen" @close="closeModal" />
+        <NewsModal
+            :newsItem="selectedNews"
+            :isOpen="isModalOpen"
+            @close="closeModal"
+        />
     </div>
 </template>
