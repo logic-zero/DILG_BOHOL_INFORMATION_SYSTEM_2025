@@ -221,7 +221,7 @@ const deleteUser = async () => {
                 <tbody>
                     <tr v-for="user in usersList" :key="user.id" class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-600 break-words flex justify-center">
-                            <img v-if="user.profile_image" :src="`/storage/${user.profile_image}`" class="w-20 h-20 rounded-full object-cover" alt="Profile Image" />
+                            <img v-if="user.profile_image" :src="`/storage/profile_images/${user.profile_image}`" class="w-20 h-20 rounded-full object-cover" alt="Profile Image" />
                             <span v-else>No Image</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
@@ -255,7 +255,7 @@ const deleteUser = async () => {
             <div v-for="user in usersList" :key="user.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-center mb-4">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img v-if="user.profile_image" :src="`/storage/${user.profile_image}`" class="w-full h-full object-cover" alt="Profile Image" />
+                        <img v-if="user.profile_image" :src="`/storage/profile_images/${user.profile_image}`" class="w-full h-full object-cover" alt="Profile Image" />
                         <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600">
                             No Image
                         </div>
