@@ -58,6 +58,10 @@ const goToPage = (url) => {
 const toggleIssuance = (issuanceId) => {
     selectedIssuanceId.value = selectedIssuanceId.value === issuanceId ? null : issuanceId;
 };
+
+const openFullScreen = (fileUrl) => {
+    window.open('/issuance_files/' + fileUrl, '_blank');
+};
 </script>
 
 <template>
@@ -119,10 +123,14 @@ const toggleIssuance = (issuanceId) => {
                     class="overflow-hidden transition-max-height duration-300 ease-out">
                     <div class="mt-4 border-t pt-4">
                         <div class="relative">
-                            <div
-                                class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
-                                <i class="fas fa-search-plus mr-1"></i>
-                                Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                            <div class="absolute top-2 right-5 flex gap-2">
+                                <div class="hidden md:block bg-white text-xs px-3 py-1 rounded shadow-md">
+                                    <i class="fas fa-search-plus mr-1"></i>
+                                    Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                                </div>
+                                <button @click.stop="openFullScreen(issuance.file)" class="bg-white text-xs px-3 py-1 rounded shadow-md hover:bg-gray-100">
+                                    <i class="fas fa-expand mr-1"></i> Fullscreen
+                                </button>
                             </div>
 
                             <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
