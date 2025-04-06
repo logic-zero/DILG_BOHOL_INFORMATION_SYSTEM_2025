@@ -14,10 +14,14 @@ defineProps({
     status: {
         type: String,
     },
+    pdMessage: {
+        type: Object,
+    },
 });
 
 const user = usePage().props.auth.user;
 const showImageModal = ref(false);
+const showPDMessageModal = ref(false);
 const imagePreview = ref(null);
 const fileInput = ref(null);
 
@@ -30,6 +34,11 @@ const profileForm = useForm({
 const imageForm = useForm({
     profile_image: null,
     _method: 'patch'
+});
+
+const pdMessageForm = useForm({
+    message: usePage().props.pdMessage?.message || '',
+    _method: 'post'
 });
 
 const handleImageChange = (event) => {
@@ -60,6 +69,15 @@ const updateProfileImage = () => {
         preserveScroll: true,
         onSuccess: () => {
             window.location.reload();
+        }
+    });
+};
+
+const submitPDMessage = () => {
+    pdMessageForm.post(route('profile.PDMessage'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showPDMessageModal.value = false;
         }
     });
 };
@@ -129,8 +147,15 @@ const updateProfileImage = () => {
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex justify-between items-center gap-4">
                         <PrimaryButton :disabled="profileForm.processing">Save</PrimaryButton>
+                        <PrimaryButton
+                            v-if="user.position.toLowerCase() === 'provincial director'"
+                            @click="showPDMessageModal = true"
+                            type="button"
+                        >
+                            PD Message
+                        </PrimaryButton>
                         <Transition
                             enter-active-class="transition ease-in-out"
                             enter-from-class="opacity-0"
@@ -212,6 +237,35 @@ const updateProfileImage = () => {
                     <button @click="resetImage" class="text-gray-600 hover:text-gray-800 text-sm">
                         Cancel
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showPDMessageModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-2xl mx-4">
+                <h2 class="text-xl mb-4 text-center">Provincial Director's Message</h2>
+
+                <div class="mb-6">
+                    <InputLabel for="message" value="Message" />
+                    <textarea
+                        id="message"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-96"
+                        v-model="pdMessageForm.message"
+                        required
+                    ></textarea>
+                    <InputError class="mt-2" :message="pdMessageForm.errors.message" />
+                </div>
+
+                <div class="flex justify-center gap-2">
+                    <SecondaryButton @click="showPDMessageModal = false">
+                        Cancel
+                    </SecondaryButton>
+                    <PrimaryButton
+                        @click="submitPDMessage"
+                        :disabled="pdMessageForm.processing"
+                    >
+                        Save Message
+                    </PrimaryButton>
                 </div>
             </div>
         </div>

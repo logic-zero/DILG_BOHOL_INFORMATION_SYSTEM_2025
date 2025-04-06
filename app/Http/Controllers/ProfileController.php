@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\ProvincialDirector;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class ProfileController extends Controller
     {
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'pdMessage' => ProvincialDirector::first(),
             'status' => session('status'),
             'auth' => [
                 'user' => $request->user()->load('roles')
@@ -82,5 +84,22 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    //PD message only
+    public function storePDMessage(Request $request)
+    {
+        if (strtolower(auth()->user()->position) !== strtolower('Provincial Director')) {
+            return redirect()->route('dashboard')->with('error', 'You are not authorized to perform this action!');
+        }
+
+        $validated = $request->validate([
+            'message' => 'required|string',
+            ]);
+
+        ProvincialDirector::truncate();
+        ProvincialDirector::create($validated);
+
+        return redirect()->route('profile.edit')->with('success', "Provincial Director's Message Added Successfully!");
     }
 }

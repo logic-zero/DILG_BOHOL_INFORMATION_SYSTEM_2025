@@ -31,6 +31,7 @@ use App\Http\Controllers\LegalOpinionController;
 use App\Http\Controllers\PresidentialDirectiveController;
 use App\Http\Controllers\PageVisitController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProvincialDirectorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RepublicActController;
 use Illuminate\Foundation\Application;
@@ -87,11 +88,11 @@ Route::get('/citizens-charter/download-pdf', [GuestCitizens_CharterController::c
 Route::get('/legalOpinions', [LegalOpinionController::class, 'index'])->name('guest.legalOpinions');
 Route::get('/republicActs', [RepublicActController::class, 'index'])->name('guest.republicActs');
 Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, 'index'])->name('guest.presidentialDirectives');
-Route::inertia('/provincialDirector', 'Guest/ProvincialDirector')->name('guest.provincialDirector');
 Route::get('/knowledgeMaterials', [GuestKnowledge_MaterialsController::class, 'index'])->name('guest.knowledgeMaterials');
 Route::get('/knowledgeMaterials/download/{knowledgeMaterial}', [GuestKnowledge_MaterialsController::class, 'download'])->name('guest.knowledgeMaterials.download');
 Route::get('/aboutUs', [AboutController::class, 'index'])->name('AboutUs');
 
+Route::get('/provincialDirector', [ProvincialDirectorController::class, 'index'])->name('guest.provincialDirector');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
 Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
@@ -109,6 +110,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/image', [ProfileController::class, 'updateImage'])->name('profile.image.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/PDMessage', [ProfileController::class, 'storePDMessage'])->name('profile.PDMessage');
 
     Route::middleware('role:Publisher|Admin|Super-Admin')->group(function () {
         //News Admin Routes

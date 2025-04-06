@@ -24,7 +24,7 @@
                 <div class="flex flex-col md:flex-row flex-wrap">
                     <div class="w-full md:w-1/2 p-2 md:p-4 order-2 md:order-1">
                         <div class="flex flex-col items-center md:items-start justify-center h-full space-y-3">
-                            <Link :href="route('guest.provincialDirector')" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md w-full sm:w-96 px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center">
+                            <Link href="/provincialDirector" class="btn rounded bg-blue-800 hover:bg-blue-900 text-white btn-md w-full sm:w-96 px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center">
                                 <span class="text-sm sm:text-base">THE PROVINCIAL DIRECTOR</span>
                                 <span class="fas fa-arrow-right text-xs sm:text-sm"></span>
                             </Link>
