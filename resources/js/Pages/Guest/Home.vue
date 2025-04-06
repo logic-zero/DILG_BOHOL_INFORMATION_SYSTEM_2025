@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <Link href="/guestNews"
+                    <Link href="/News"
                         class="text-white text-sm px-2 py-1 rounded bg-blue-800 hover:bg-blue-900 inline-flex items-center">
                     Discover More News...
                     </Link>
