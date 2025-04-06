@@ -74,9 +74,9 @@ Route::prefix('api')->group(function () {
 
 //Guest Routes
 Route::get('/', [HomeController::class, 'Index'])->name('home');
-Route::get('/guestNews', [GuestNewsController::class, 'index'])->name('guest.news');
-Route::get('/guestNews/{id}', [GuestNewsController::class, 'show'])->name('guest.news.show');
-Route::get('/guestLGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
+Route::get('/News', [GuestNewsController::class, 'index'])->name('guest.news');
+Route::get('/News/{id}', [GuestNewsController::class, 'show'])->name('guest.news.show');
+Route::get('/LGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
 Route::get('/FAQs', [GuestFaqController::class, 'index'])->name('guest.faqs');

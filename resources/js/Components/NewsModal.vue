@@ -10,7 +10,7 @@
                 {{ formattedDate }}
               </p>
               <div>
-                <Link :href="`/guestNews/${newsItem.id}`" class="text-blue-500 text-xs uppercase font-bold underline">
+                <Link :href="`/News/${newsItem.id}`" class="text-blue-500 text-xs uppercase font-bold underline">
                   View Full Page
                 </Link>
                 <button
@@ -47,7 +47,7 @@
 
   const shareOnFacebook = (newsId) => {
     const baseUrl = window.location.origin;
-    const shareUrl = `${baseUrl}/guestNews/${newsId}`;
+    const shareUrl = `${baseUrl}/News/${newsId}`;
     const encodedUrl = encodeURIComponent(shareUrl);
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank', 'width=600,height=400');
   }

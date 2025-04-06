@@ -11,7 +11,7 @@
 
                 <div class="hidden xl:flex xl:items-center">
                     <Link href="/" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">Home</Link>
-                    <Link href="/guestNews" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">News</Link>
+                    <Link href="/News" class="px-4 py-2 md:px-4 md:py-3 hover:bg-blue-900 hover:underline">News</Link>
 
                     <div v-for="(menu, index) in menus" :key="index" class="relative"
                         @mouseenter="setDropdown(index, true)" @mouseleave="setDropdown(index, false)">
@@ -42,8 +42,8 @@
                         class="xl:hidden absolute top-full left-0 w-full bg-blue-800 flex flex-col shadow-md z-50">
                         <Link href="/" :class="{ 'bg-blue-900 text-white underline': page.url === '/' }"
                             class="px-4 py-2 hover:bg-blue-900 hover:underline" @click="closeMenu">Home</Link>
-                        <Link href="/guestNews"
-                            :class="{ 'bg-blue-900 text-white underline': page.url === '/guestNews' }"
+                        <Link href="/News"
+                            :class="{ 'bg-blue-900 text-white underline': page.url === '/News' }"
                             class="px-4 py-2 hover:bg-blue-900 hover:underline" @click="closeMenu">News</Link>
 
                         <div v-for="(menu, index) in menus" :key="index" class="relative">
@@ -217,7 +217,7 @@ onUnmounted(() => {
 });
 
 const menus = [
-    { name: "Officials", dropdown: [{ name: "LGUs", link: "/guestLGUs" }, { name: "Provincial Officials", link: "/provincialOfficials" }] },
+    { name: "Officials", dropdown: [{ name: "LGUs", link: "/LGUs" }, { name: "Provincial Officials", link: "/provincialOfficials" }] },
     { name: "LGRRC", dropdown: [{ name: "DILG E-Library", link: "https://library.dilg.gov.ph/" }, { name: "Knowledge Materials", link: "/knowledgeMaterials" }] },
     {
         name: "Issuances", dropdown: [

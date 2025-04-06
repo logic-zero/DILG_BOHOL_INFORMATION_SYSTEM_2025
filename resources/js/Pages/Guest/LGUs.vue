@@ -26,7 +26,7 @@ const debouncedSearch = debounce(() => {
 watch(() => filters.value.search, debouncedSearch);
 
 const applyFilters = () => {
-    router.get("/guestLGUs", {
+    router.get("/LGUs", {
         search: filters.value.search || null,
         municipality_id: filters.value.municipality_id || null,
     }, {

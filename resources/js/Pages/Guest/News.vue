@@ -62,7 +62,7 @@ watch([() => filters.value.from_date, () => filters.value.to_date], () => {
 });
 
 const applyFilters = () => {
-    router.get("/guestNews", filters.value, {
+    router.get("/News", filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["news", "filters"],
