@@ -100,9 +100,15 @@ const filteredNavLinks = navLinks.filter(link => hasRole(link.roles));
         </div>
         <div :class="{ 'lg:ml-64': isSidebarExpanded, 'lg:ml-20': !isSidebarExpanded }"
             class="flex-1 overflow-auto transition-all duration-300 ease-in-out">
-            <nav class="bg-white shadow-md px-6 py-3 flex justify-end items-center relative">
+            <nav class="bg-white shadow-md px-6 py-2 flex justify-end items-center relative">
                 <div class="relative">
                     <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-4 py-2 rounded">
+                        <span class="w-8 h-8 rounded-full overflow-hidden border border-black"><img
+                            :src="`/storage/profile_images/${$page.props.auth.user.profile_image}`"
+                            class="w-full h-full object-cover"
+                            alt="No Image"
+                        />
+                        </span>
                         <span>{{ $page.props.auth.user.name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
                             :class="{ 'rotate-180': isDropdownOpen }" viewBox="0 0 20 20" fill="currentColor">
