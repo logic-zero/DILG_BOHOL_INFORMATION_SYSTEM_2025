@@ -113,7 +113,7 @@
                 <p class="text-xs text-gray-500 mt-4">&copy; DILG-BOHOL PROVINCE 2023</p>
             </div>
 
-            <div class="w-full bg-gray-300 py-6">
+            <div class="w-full bg-gray-300 py-6 relative">
                 <div class="max-w-screen-lg mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="flex flex-col items-center">
                         <p class="text-xs font-medium uppercase">Republic of the Philippines</p>
@@ -137,6 +137,13 @@
                         <VisitorCounter />
                     </div>
                 </div>
+                <button
+                    @click="isModalOpen = true"
+                    class="text-[0.5rem] absolute bottom-4 left-6 bg-gray-400 text-gray-700 py-1 px-2 rounded shadow-lg hover:bg-gray-500 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none"
+                    aria-label="Open Modal"
+                >
+                    <i class="fa fa-code mr-1"></i>Developers
+                </button>
             </div>
         </footer>
 
@@ -156,6 +163,67 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
         </button>
+
+        <div v-show="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="fixed inset-0 bg-black bg-opacity-50" @click="isModalOpen = false"></div>
+
+            <transition name="slide-up">
+                <div v-if="isModalOpen" class="relative bg-white shadow-lg w-[90vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] my-8 mx-auto">
+                    <div class="px-4 py-3 bg-blue-800 text-white border-b flex justify-between items-center">
+                        <div class="text-center w-full">
+                            <h1>Developed by:</h1>
+                            <h1>Mater Dei College Information Technology Interns</h1>
+                        </div>
+                        <button @click="isModalOpen = false" class="text-gray-100 font-bold ml-4 hover:text-gray-200">
+                            <i class="fa-solid fa-xmark text-lg cursor-pointer"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="bg-white rounded-lg p-6 max-w-4xl mx-auto">
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <div class="flex flex-col items-center md:w-1/2">
+                                    <p class="text-2xl font-serif text-gray-700 mb-4">Mater Dei College</p>
+                                    <img
+                                        src="/img/MDC_LOGO.png"
+                                        alt="Mater Dei College Logo"
+                                        class="w-64 h-64 object-contain -mt-3"
+                                    />
+                                </div>
+
+                                <div class="md:w-1/2 space-y-4">
+                                    <a href="https://github.com/viennarose" target="_blank" class="flex items-center group">
+                                        <img src="/img/vienna.jpg" class="w-16 h-16 rounded object-cover" />
+                                        <span class="ml-3 text-gray-600 group-hover:text-gray-900 transition-colors">Vienna Rose Pepito</span>
+                                    </a>
+
+                                    <a href="https://github.com/xplct-cont" target="_blank" class="flex items-center group">
+                                        <img src="/img/kenn.jpg" class="w-16 h-16 rounded object-cover" />
+                                        <span class="ml-3 text-gray-600 group-hover:text-gray-900 transition-colors">Kenn Secusana</span>
+                                    </a>
+
+                                    <a href="https://github.com/chadiegil" target="_blank" class="flex items-center group">
+                                        <img src="/img/chadie.jpg" class="w-16 h-16 rounded object-cover" />
+                                        <span class="ml-3 text-gray-600 group-hover:text-gray-900 transition-colors">Chadie Gil Augis</span>
+                                    </a>
+
+                                    <a href="https://github.com/dfkhin" target="_blank" class="flex items-center group">
+                                        <img src="/img/franklin.jpg" class="w-16 h-16 rounded object-cover" />
+                                        <span class="ml-3 text-gray-600 group-hover:text-gray-900 transition-colors">Franklin Pogoy</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <hr class="my-6 border-gray-200">
+
+                            <p class="text-center text-xs text-gray-600">
+                                Contact No: 09096027312
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </div>
     </div>
 
     <div class="bg"></div>
@@ -173,6 +241,7 @@ const page = usePage();
 const isMenuOpen = ref(false);
 const activeDropdown = ref(null);
 const showBackToTop = ref(false);
+const isModalOpen = ref(false);
 
 const isDropdownActive = (menu) => {
     return menu.dropdown.some(item => page.url.startsWith(item.link));
@@ -306,6 +375,14 @@ const menus = [
 
 .bg3 {
     animation-duration: 30s;
+}
+
+.slide-up-enter-active {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide-up-enter-from {
+    transform: translateY(100%);
 }
 
 @keyframes slide {
