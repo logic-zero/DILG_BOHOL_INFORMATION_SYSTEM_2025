@@ -1,9 +1,9 @@
 <template>
-    <div v-show="isOpen" class="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center sm:p-0">
-      <div class="absolute inset-0 bg-black bg-opacity-50" @click="closeModal"></div>
+    <div v-show="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeModal"></div>
 
       <transition name="slide-up">
-        <div v-if="isOpen && newsItem" class="relative bg-white shadow-lg w-full sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] max-h-[95vh] flex flex-col">
+        <div v-if="isOpen && newsItem" class="relative bg-white shadow-lg w-full sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] my-8 mx-auto">
           <div class="px-4 py-3 border-b flex justify-between items-center">
             <div class="flex flex-wrap items-center">
               <p class="text-sm uppercase text-gray-700 font-black flex-shrink-0 mr-2">
@@ -28,7 +28,7 @@
             </button>
           </div>
 
-          <div class="p-4 overflow-y-auto flex-grow">
+          <div class="p-4">
             <h5 class="text-xl text-blue-900 font-black mb-5">{{ newsItem.title }}</h5>
             <p class="text-gray-500 text-md whitespace-pre-line">{{ newsItem.caption }}</p>
             <div v-if="newsItem.images.length" class="mt-4 space-y-4">
@@ -42,7 +42,7 @@
   </template>
 
   <script setup>
-  import { computed, defineProps, defineEmits } from "vue";
+  import { computed, defineProps, defineEmits, watch } from "vue";
   import { Link } from '@inertiajs/vue3'
 
   const shareOnFacebook = (newsId) => {
@@ -78,6 +78,17 @@
   const closeModal = () => {
     emit("close");
   };
+
+  watch(() => props.isOpen, (newVal) => {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (newVal) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+  });
   </script>
 
   <style scoped>
