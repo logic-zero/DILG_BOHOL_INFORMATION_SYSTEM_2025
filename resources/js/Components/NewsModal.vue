@@ -23,7 +23,7 @@
               </div>
             </div>
 
-            <button @click="closeModal" class="text-gray-500 font-bold hover:text-gray-700">
+            <button @click="closeModal" class="text-gray-500 font-bold ml-4 hover:text-gray-700">
               <i class="fa-solid fa-xmark text-lg cursor-pointer"></i>
             </button>
           </div>
