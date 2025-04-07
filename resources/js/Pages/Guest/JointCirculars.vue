@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
-            Presidential Directives
+            Joint Circulars
         </h1>
 
         <div class="bg-gray-500 bg-opacity-20 p-2 shadow-md mb-6">
@@ -31,28 +31,28 @@
             </div>
         </div>
 
-        <div v-if="filteredDirectives.length > 0" class="space-y-4 md:px-12">
-            <div v-for="(directive, index) in filteredDirectives" :key="directive.id"
+        <div v-if="filteredCirculars.length > 0" class="space-y-4 md:px-12">
+            <div v-for="(circular, index) in filteredCirculars" :key="circular.id"
                 class="border border-gray-300 p-4 shadow-lg rounded cursor-pointer transition-all duration-300 bg-white"
-                @click="toggleDirective(directive.id)">
+                @click="toggleCircular(circular.id)">
 
                 <div class="flex justify-between items-center">
                     <div class="flex-1 flex items-start">
                         <span class="text-sm font-bold text-gray-500 mr-2">{{ getDisplayIndex(index) }}.</span>
                         <div class="flex-1">
-                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ directive.title || 'No Title Available' }}</h2>
+                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ circular.title || 'No Title Available' }}</h2>
                             <p class="text-xs text-gray-600 font-sm">
-                                <span class="text-red-600">Date:</span> {{ formatDate(directive.date) || 'Date not available' }}
+                                <span class="text-red-600">Date:</span> {{ formatDate(circular.date) || 'Date not available' }}
                             </p>
                         </div>
                         <p class="text-xs font-bold text-gray-700 w-40 text-right">
-                            <span class="text-red-600">Reference No:</span> {{ directive.reference || 'None' }}
+                            <span class="text-red-600">Reference No:</span> {{ circular.reference || 'None' }}
                         </p>
                     </div>
                 </div>
 
                 <div class="mt-2">
-                    <a v-if="directive.download_link" :href="directive.download_link" target="_blank" download
+                    <a v-if="circular.download_link" :href="circular.download_link" target="_blank" download
                         class="text-red-600 font-bold hover:underline" @click.stop>
                         <i class="fas fa-file-pdf"></i> Download PDF
                     </a>
@@ -60,12 +60,12 @@
 
                 <div class="flex justify-between items-center mt-2">
                     <span class="text-xs text-gray-600 font-medium">Click to View Document</span>
-                    <i :class="{ 'fas fa-chevron-down': selectedDirectiveId === directive.id, 'fas fa-chevron-right': selectedDirectiveId !== directive.id }"
+                    <i :class="{ 'fas fa-chevron-down': selectedCircularId === circular.id, 'fas fa-chevron-right': selectedCircularId !== circular.id }"
                         class="text-gray-600 text-lg transition-transform duration-300"
-                        :style="{ transform: selectedDirectiveId === directive.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
+                        :style="{ transform: selectedCircularId === circular.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
                 </div>
 
-                <div :style="{ maxHeight: selectedDirectiveId === directive.id ? '500px' : '0' }"
+                <div :style="{ maxHeight: selectedCircularId === circular.id ? '500px' : '0' }"
                     class="overflow-hidden transition-max-height duration-300 ease-out">
                     <div class="mt-4 border-t pt-4">
                         <div v-if="isMobile"
@@ -79,14 +79,14 @@
                             </div>
                         </div>
 
-                        <div class="relative" v-if="directive.link">
+                        <div class="relative" v-if="circular.link">
                             <div
                                 class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
                                 <i class="fas fa-search-plus mr-1"></i>
                                 Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                             </div>
                             <iframe
-                                :src="directive.link"
+                                :src="circular.link"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 allowfullscreen>
@@ -97,14 +97,14 @@
             </div>
             
             <div class="text-center mt-8">
-                <a href="https://www.dilg.gov.ph/issuances-archive/pd/" target="_blank" 
+                <a href="https://www.dilg.gov.ph/issuances-archive/jc/" target="_blank" 
                    class="inline-block bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
                    <i class="fas fa-external-link-alt mr-2"></i>Visit Official DILG Website
                 </a>
             </div>
         </div>
 
-        <p v-else class="text-center text-gray-500 mt-4">No presidential directives found matching your criteria.</p>
+        <p v-else class="text-center text-gray-500 mt-4">No joint circulars found matching your criteria.</p>
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
@@ -129,7 +129,7 @@ import GuestLayout from "@/Layouts/GuestLayout.vue";
 defineOptions({ layout: GuestLayout });
 
 const pageProps = usePage().props;
-const directives = ref(pageProps.pagination.data ?? []);
+const circulars = ref(pageProps.pagination.data ?? []);
 const pagination = ref(pageProps.pagination);
 const dates = ref(pageProps.dates ?? []);
 
@@ -138,7 +138,7 @@ const filters = ref({
     date: pageProps.filters?.date ?? "",
 });
 
-const selectedDirectiveId = ref(null);
+const selectedCircularId = ref(null);
 const isMobile = computed(() => window.innerWidth <= 768);
 
 const getDisplayIndex = (index) => {
@@ -147,9 +147,9 @@ const getDisplayIndex = (index) => {
         : index + 1;
 };
 
-const filteredDirectives = computed(() => {
-    const sortedDirectives = [...directives.value];
-    return sortedDirectives.sort((a, b) => {
+const filteredCirculars = computed(() => {
+    const sortedCirculars = [...circulars.value];
+    return sortedCirculars.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         return dateB - dateA;
@@ -157,13 +157,13 @@ const filteredDirectives = computed(() => {
 });
 
 const applyFilters = () => {
-    router.get("/presidentialDirectives", filters.value, {
+    router.get("/jointCirculars", filters.value, {
         preserveState: true,
         preserveScroll: true,
         only: ["pagination", "filters"],
         onSuccess: ({ props }) => {
             pagination.value = props.pagination;
-            directives.value = props.pagination.data;
+            circulars.value = props.pagination.data;
         },
     });
 };
@@ -186,14 +186,14 @@ const goToPage = (url) => {
         only: ["pagination"],
         onSuccess: ({ props }) => {
             pagination.value = props.pagination;
-            directives.value = props.pagination.data;
+            circulars.value = props.pagination.data;
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     });
 };
 
-const toggleDirective = (directiveId) => {
-    selectedDirectiveId.value = selectedDirectiveId.value === directiveId ? null : directiveId;
+const toggleCircular = (circularId) => {
+    selectedCircularId.value = selectedCircularId.value === circularId ? null : circularId;
 };
 
 const formatDate = (dateString) => {

@@ -27,6 +27,7 @@ use App\Http\Controllers\GuestOrganizational_StructureController;
 use App\Http\Controllers\GuestProvincial_OfficialsController;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JointCircularController;
 use App\Http\Controllers\LegalOpinionController;
 use App\Http\Controllers\PresidentialDirectiveController;
 use App\Http\Controllers\PageVisitController;
@@ -88,6 +89,7 @@ Route::get('/citizens-charter/download-pdf', [GuestCitizens_CharterController::c
 Route::get('/legalOpinions', [LegalOpinionController::class, 'index'])->name('guest.legalOpinions');
 Route::get('/republicActs', [RepublicActController::class, 'index'])->name('guest.republicActs');
 Route::get('/presidentialDirectives', [PresidentialDirectiveController::class, 'index'])->name('guest.presidentialDirectives');
+Route::get('/jointCirculars', [JointCircularController::class, 'index'])->name('guest.jointCirculars');
 Route::get('/knowledgeMaterials', [GuestKnowledge_MaterialsController::class, 'index'])->name('guest.knowledgeMaterials');
 Route::get('/knowledgeMaterials/download/{knowledgeMaterial}', [GuestKnowledge_MaterialsController::class, 'download'])->name('guest.knowledgeMaterials.download');
 Route::get('/aboutUs', [AboutController::class, 'index'])->name('AboutUs');

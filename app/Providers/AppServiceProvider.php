@@ -6,8 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Services\ScraperService;
 use App\Services\RepublicActService;
-use App\Services\PresidentialDirectiveService;
 use App\Services\LegalOpinionService;
+use App\Services\JointCircularService;
+use App\Services\PresidentialDirectiveService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
             $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
             $republicActService->sendAllRepublicActsToTangkaraw();
 
+            $jointCircularService = app(JointCircularService::class);
+            $jointCircularService->scrapeJointCirculars('https://dilg.gov.ph/issuances-archive/jc/');
+            $jointCircularService->sendJointCircularsToTangkaraw();
+
             $presidentialdirectiveService = app(PresidentialDirectiveService::class);
             $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
             $presidentialdirectiveService->sendPresidentialDirectivesToTangkaraw();
@@ -43,7 +48,3 @@ class AppServiceProvider extends ServiceProvider
         })->everySixHours();
     }
 }
-
-
-// $sendLegalOpinions = app(LegalOpinionService::class);
-// $sendLegalOpinions->sendAllLegalOpinionsToTangkaraw();

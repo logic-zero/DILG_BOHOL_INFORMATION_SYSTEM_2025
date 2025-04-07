@@ -90,6 +90,13 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="text-center mt-8">
+                <a href="https://www.dilg.gov.ph/issuances-archive/ra/" target="_blank" 
+                   class="inline-block bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                   <i class="fas fa-external-link-alt mr-2"></i>Visit Official DILG Website
+                </a>
+            </div>
         </div>
 
         <p v-else class="text-center text-gray-500 mt-4">No republic acts found matching your criteria.</p>
