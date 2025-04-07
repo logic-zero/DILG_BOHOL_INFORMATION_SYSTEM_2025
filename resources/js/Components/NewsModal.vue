@@ -42,7 +42,7 @@
   </template>
 
   <script setup>
-  import { computed, defineProps, defineEmits, watch } from "vue";
+  import { computed, defineProps, defineEmits, watch, onBeforeUnmount } from "vue";
   import { Link } from '@inertiajs/vue3'
 
   const shareOnFacebook = (newsId) => {
@@ -79,15 +79,23 @@
     emit("close");
   };
 
+  const enableScroll = () => {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  };
+
   watch(() => props.isOpen, (newVal) => {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     if (newVal) {
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      enableScroll();
     }
+  });
+
+  onBeforeUnmount(() => {
+    enableScroll();
   });
   </script>
 
