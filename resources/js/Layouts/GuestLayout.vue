@@ -4,7 +4,7 @@
             <nav class="bg-blue-800 text-white text-sm flex items-center justify-between xl:justify-center xl:px-32 relative">
                 <Link href="/" class="font-bold text-lg mr-10 px-4 py-2 whitespace-nowrap">DILG-BOHOL PROVINCE</Link>
 
-                <button @click="isMenuOpen = !isMenuOpen" class="xl:hidden text-white focus:outline-none px-3 py-2">
+                <button @click="isMenuOpen = !isMenuOpen" class="text-xl xl:hidden border border-gray-400 rounded text-gray-400 focus:outline-none mx-2 px-3 py-1">
                     <span v-if="!isMenuOpen">☰</span>
                     <span v-else>✕</span>
                 </button>
