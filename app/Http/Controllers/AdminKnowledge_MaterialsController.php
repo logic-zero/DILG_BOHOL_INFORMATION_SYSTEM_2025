@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Knowledge_Materials;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminKnowledge_MaterialsController extends Controller
@@ -38,8 +40,13 @@ class AdminKnowledge_MaterialsController extends Controller
             'file' => 'nullable|file|mimes:pdf|max:102400',
         ]);
 
+        $uploadPath = public_path('knowledge_materials');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('knowledge_materials', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($uploadPath, $fileName);
+            $validated['file'] = $fileName;
         }
 
         Knowledge_Materials::create($validated);
@@ -56,11 +63,18 @@ class AdminKnowledge_MaterialsController extends Controller
             'file' => 'nullable|file|mimes:pdf|max:102400',
         ]);
 
+        $uploadPath = public_path('knowledge_materials');
+
         if ($request->hasFile('file')) {
             if ($knowledgeMaterial->file) {
-                Storage::disk('public')->delete($knowledgeMaterial->file);
+                $filePath = public_path('knowledge_materials/' . $knowledgeMaterial->file);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $validated['file'] = $request->file('file')->store('knowledge_materials', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($uploadPath, $fileName);
+            $validated['file'] = $fileName;
         } else {
             unset($validated['file']);
         }
@@ -73,7 +87,10 @@ class AdminKnowledge_MaterialsController extends Controller
     public function destroy(Knowledge_Materials $knowledgeMaterial)
     {
         if ($knowledgeMaterial->file) {
-            Storage::disk('public')->delete($knowledgeMaterial->file);
+            $filePath = public_path('knowledge_materials/' . $knowledgeMaterial->file);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $knowledgeMaterial->delete();
@@ -87,6 +104,11 @@ class AdminKnowledge_MaterialsController extends Controller
             abort(404);
         }
 
-        return Storage::disk('public')->download($knowledgeMaterial->file);
+        $filePath = public_path('knowledge_materials/' . $knowledgeMaterial->file);
+        if (!File::exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath);
     }
 }
