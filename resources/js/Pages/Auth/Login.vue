@@ -38,7 +38,7 @@ const submit = () => {
                 <div class="flex justify-center items-center mb-2">
                     <img src="/img/dilg-main.png" class="rounded-full h-[125px] w-[125px] shadow-lg" alt="bohol-seal">
                 </div>
-                <h2 class="text-xl font-extrabold text-gray-900 whitespace-nowrap">Department of the Interior and Local Government</h2>
+                <h2 class="text-lg md:text-xl font-extrabold text-gray-900 whitespace-normal md:whitespace-nowrap">Department of the Interior and Local Government</h2>
                 <p class="mt-1 text-md font-semibold text-gray-800">
                     Bohol Province
                 </p>
