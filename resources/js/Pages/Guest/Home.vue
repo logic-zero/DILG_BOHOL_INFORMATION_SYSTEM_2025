@@ -11,7 +11,7 @@
                     <swiper-slide v-for="(image, index) in images" :key="index">
                         <div class="w-full h-full flex justify-center items-center bg-transparent">
                             <img
-                                :src="`/storage/${image}`"
+                                :src="`/home_images/${image}`"
                                 alt="Cover Photo"
                                 class="w-full h-full object-contain"
                             />
