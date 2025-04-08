@@ -11,7 +11,7 @@ let audio = null;
 
 onMounted(() => {
     if (props.audio) {
-        audio = new Audio('/storage/' + props.audio.file);
+        audio = new Audio('/audios/' + props.audio.file);
         audio.volume = 1;
         audio.loop = true;
         audio.play().catch(e => console.log('Autoplay prevented:', e));

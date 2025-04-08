@@ -125,17 +125,24 @@ class AdminDashboardController extends Controller
             'audio' => 'required|file|mimes:mp3,wav,aac|max:10240',
         ]);
 
+        $uploadPath = public_path('audios');
+        File::ensureDirectoryExists($uploadPath);
+
         $existingAudio = Audio::first();
 
         if ($existingAudio) {
-            Storage::disk('public')->delete($existingAudio->file);
+            $filePath = public_path('audios/' . $existingAudio->file);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
             $existingAudio->delete();
         }
 
-        $audioPath = $request->file('audio')->store('audios', 'public');
+        $fileName = Str::random(20) . '.' . $request->file('audio')->extension();
+        $request->file('audio')->move($uploadPath, $fileName);
 
         Audio::create([
-            'file' => $audioPath,
+            'file' => $fileName,
         ]);
 
         return redirect()->back()->with('success', 'Audio updated successfully.');
