@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PDMUs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminPDMUController extends Controller
@@ -40,8 +42,13 @@ class AdminPDMUController extends Controller
             'position' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('pdmus');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('profile_img')) {
-            $validated['profile_img'] = $request->file('profile_img')->store('pdmus', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         }
 
         PDMUs::create($validated);
@@ -59,14 +66,24 @@ class AdminPDMUController extends Controller
             'position' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('pdmus');
+
         if ($request->hasFile('profile_img')) {
             if ($pdmu->profile_img) {
-                Storage::disk('public')->delete($pdmu->profile_img);
+                $filePath = public_path('pdmus/' . $pdmu->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $validated['profile_img'] = $request->file('profile_img')->store('pdmus', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         } elseif ($request->has('remove_image')) {
             if ($pdmu->profile_img) {
-                Storage::disk('public')->delete($pdmu->profile_img);
+                $filePath = public_path('pdmus/' . $pdmu->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
             $validated['profile_img'] = null;
         }
@@ -79,7 +96,10 @@ class AdminPDMUController extends Controller
     public function destroy(PDMUs $pdmu)
     {
         if ($pdmu->profile_img) {
-            Storage::disk('public')->delete($pdmu->profile_img);
+            $filePath = public_path('pdmus/' . $pdmu->profile_img);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $pdmu->delete();

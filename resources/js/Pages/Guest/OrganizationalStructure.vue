@@ -165,7 +165,7 @@
                 <div class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-72 h-72 border border-black overflow-hidden rounded-full">
-                            <img v-if="pdmuProvincialDirector.profile_img" :src="`/storage/${pdmuProvincialDirector.profile_img}`"
+                            <img v-if="pdmuProvincialDirector.profile_img" :src="`/pdmus/${pdmuProvincialDirector.profile_img}`"
                                 :alt="pdmuProvincialDirector.fname + ' ' + pdmuProvincialDirector.lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -188,7 +188,7 @@
                 <div v-for="member in pdmus" :key="member.id" class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-40 h-40 border border-black overflow-hidden rounded-full">
-                            <img v-if="member.profile_img" :src="`/storage/${member.profile_img}`"
+                            <img v-if="member.profile_img" :src="`/pdmus/${member.profile_img}`"
                                 :alt="member.fname + ' ' + member.lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
