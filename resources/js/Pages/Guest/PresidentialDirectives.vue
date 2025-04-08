@@ -78,19 +78,44 @@
                                 </p>
                             </div>
                         </div>
-
+                        
                         <div class="relative" v-if="directive.link">
-                            <div
-                                class="absolute top-2 right-5 bg-white text-xs px-3 py-1 rounded shadow-md">
-                                <i class="fas fa-search-plus mr-1"></i>
-                                Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                            <div class="absolute top-2 right-5 flex gap-2">
+                                <div class="hidden md:block bg-white text-xs px-3 py-1 rounded shadow-md">
+                                    <i class="fas fa-search-plus mr-1"></i>
+                                    Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                                </div>
+                                <button @click.stop="openFullScreen(directive.link)" 
+                                        class="bg-white text-xs px-3 py-1 rounded shadow-md hover:bg-gray-100">
+                                    <i class="fas fa-expand mr-1"></i> Fullscreen
+                                </button>
                             </div>
-                            <iframe
-                                :src="directive.link"
+                            
+                            <iframe 
+                                :src="directive.file ? '/storage/presidential_directives/' + directive.file + '#toolbar=0' : ''" 
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
-                                allowfullscreen>
+                                @load="iframeLoaded"
+                                @error="iframeError">
                             </iframe>
+                            
+                            <!-- <iframe :src="'/storage/presidential_directives/' + directive.file + '#toolbar=0'" 
+                                class="w-full h-[500px] border border-gray-300"
+                                frameborder="0">
+                            </iframe> -->
+                            
+                            <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            </div>
+                            
+                            <div v-if="error" class="absolute inset-0 flex items-center justify-center bg-red-100">
+                                <div class="text-red-600 text-center p-4">
+                                    <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                                    <p>Failed to load the document. 
+                                        <a :href="directive.download_link" class="text-blue-600 hover:underline">Download it instead</a>.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,6 +157,22 @@ const pageProps = usePage().props;
 const directives = ref(pageProps.pagination.data ?? []);
 const pagination = ref(pageProps.pagination);
 const dates = ref(pageProps.dates ?? []);
+const loading = ref(false);
+const error = ref(false);
+
+const iframeLoaded = () => {
+    loading.value = false;
+    error.value = false;
+};
+
+const iframeError = () => {
+    loading.value = false;
+    error.value = true;
+};
+
+const openFullScreen = (url) => {
+    window.open(url, '_blank', 'fullscreen=yes');
+};
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",

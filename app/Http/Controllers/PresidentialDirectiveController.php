@@ -7,6 +7,7 @@ use App\Models\PresidentialDirective;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PresidentialDirectiveController extends Controller
 {
@@ -25,9 +26,11 @@ class PresidentialDirectiveController extends Controller
             $query->where('date', $request->date);
         }
 
-        $directives = $query->paginate(10);
+        $directives = $query->orderBy('date', 'desc')->paginate(10);
 
-        $dates = PresidentialDirective::distinct('date')
+        $dates = PresidentialDirective::select('date')
+            ->distinct()
+            ->orderBy('date', 'desc')
             ->pluck('date');
 
         $response = [
