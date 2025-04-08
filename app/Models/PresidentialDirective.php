@@ -12,5 +12,6 @@ class PresidentialDirective extends Model
         'reference',
         'date',
         'download_link',
+        'file',
     ];
 }

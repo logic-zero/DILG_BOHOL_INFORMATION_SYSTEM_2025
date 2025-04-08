@@ -5,9 +5,11 @@ namespace App\Services;
 use App\Models\PresidentialDirective;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class PresidentialDirectiveService
 {
@@ -18,10 +20,11 @@ class PresidentialDirectiveService
      * @param string|null $search Optional search term to filter results.
      * @return array An array of legal opinions (titles, links, references, and dates).
      */
+
     public function scrapePresidentialdirectives(string $url, $search = null)
     {
         $client = new Client([
-            'timeout' => 60,  // Increase timeout to 60 seconds
+            'timeout' => 60,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             ],
@@ -41,25 +44,13 @@ class PresidentialDirectiveService
                 $html = $response->getBody()->getContents();
                 $crawler = new Crawler($html);
 
-                // Log full HTML to check if content is loaded
-                Log::info("Full HTML content: " . substr($html, 0, 500)); // Logs first 500 chars for debugging
-
-                // Check if the table exists
                 if ($crawler->filter('table.view_details')->count() === 0) {
                     Log::warning("Table 'view_details' not found on page.");
-                    break; // Stop scraping if table is missing
+                    break;
                 }
 
-                // Log first row HTML
-                $firstRow = $crawler->filter('table.view_details tr')->first();
-                if ($firstRow->count() > 0) {
-                    Log::info("First row HTML: " . $firstRow->html());
-                }
-
-                // Scrape all rows
                 $directives = $crawler->filter('table.view_details tr')->each(function (Crawler $node) use ($client, $search) {
                     try {
-                        // Extract main data
                         $title = $node->filter('td a')->count() > 0 ? $node->filter('td a')->text() : null;
                         $link = $node->filter('td a')->count() > 0 ? $node->filter('td a')->attr('href') : null;
                         $reference = $node->filter('td strong')->count() > 0 ? $node->filter('td strong')->text() : null;
@@ -82,29 +73,50 @@ class PresidentialDirectiveService
                             return null;
                         }
 
-                        // **Step 2: Scrape the download link from the individual page**
                         $downloadLink = null;
+                        $pdfFilename = null;
+
                         try {
                             $response = $client->request('GET', $link);
                             $detailHtml = $response->getBody()->getContents();
                             $detailCrawler = new Crawler($detailHtml);
 
-                            // Extract the actual PDF download link
                             $downloadNode = $detailCrawler->filter('a.btn_download');
                             if ($downloadNode->count() > 0) {
                                 $downloadLink = $downloadNode->attr('href');
 
-                                // Ensure the link is fully qualified
                                 if ($downloadLink && !str_starts_with($downloadLink, 'http')) {
                                     $downloadLink = 'https://dilg.gov.ph' . $downloadLink;
                                 }
+
+                                $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
+
+                                $originalFilename = basename(parse_url($downloadLink, PHP_URL_PATH));
+                                if (empty($originalFilename)) {
+                                    $originalFilename = Str::slug($title) . '.pdf';
+                                }
+
+                                if (!str_ends_with(strtolower($originalFilename), '.pdf')) {
+                                    $originalFilename .= '.pdf';
+                                }
+
+                                $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
+                                $directory = 'presidential_directives';
+
+                                Storage::disk('public')->put($directory . '/' . $pdfFilename, $pdfContent, 'public');
                             }
                         } catch (\Exception $e) {
-                            Log::warning("Failed to fetch download link for {$title}: " . $e->getMessage());
+                            Log::warning("Failed to fetch/download PDF for {$title}: " . $e->getMessage());
                         }
 
-                        // Return scraped data
-                        return compact('title', 'link', 'reference', 'date', 'downloadLink');
+                        return [
+                            'title' => $title,
+                            'link' => $link,
+                            'reference' => $reference,
+                            'date' => $date,
+                            'download_link' => $downloadLink,
+                            'file' => $pdfFilename
+                        ];
                     } catch (\Exception $e) {
                         Log::warning("Skipping a row due to error: " . $e->getMessage());
                         return null;
@@ -112,42 +124,42 @@ class PresidentialDirectiveService
                 });
 
                 $directives = array_filter($directives);
+
                 foreach ($directives as $directive) {
                     if (!array_key_exists($directive['reference'], $uniqueDirectives)) {
                         $uniqueDirectives[$directive['reference']] = $directive;
 
-                        // **Store the download link in the database**
-                        PresidentialDirective::updateOrCreate(
-                            ['reference' => $directive['reference']], // Unique constraint
-                            [
-                                'title' => $directive['title'],
-                                'link' => $directive['link'],
-                                'date' => $directive['date'],
-                                'download_link' => $directive['downloadLink'], // <-- Store the download link
-                            ]
-                        );
+                        $fileValue = $directive['file'] ?? null;
+
+                        $record = PresidentialDirective::firstOrNew(['reference' => $directive['reference']]);
+
+                        $record->title = $directive['title'];
+                        $record->link = $directive['link'];
+                        $record->date = $directive['date'];
+                        $record->download_link = $directive['download_link'];
+                        $record->file = $fileValue;
+
+                        $record->save();
+
+                        $saved = PresidentialDirective::where('reference', $directive['reference'])->first();
+                        Log::info("Saved record file value:", ['file' => $saved->file]);
+
+
                     }
                 }
 
-                // **Improved Pagination Handling**
                 $nextPageNode = $crawler->filter('li.pWord a:contains("next")');
                 if ($nextPageNode->count() > 0) {
                     $nextPageHref = $nextPageNode->attr('href');
-                    if ($nextPageHref) {
-                        $url = str_starts_with($nextPageHref, 'http') ? $nextPageHref : 'https://dilg.gov.ph' . $nextPageHref;
-                    } else {
-                        Log::info('Next page link found, but no valid href attribute.');
+                    $url = $nextPageHref ? (str_starts_with($nextPageHref, 'http') ? $nextPageHref : 'https://dilg.gov.ph' . $nextPageHref) : null;
+                    if (!$url)
                         break;
-                    }
                 } else {
                     $url = null;
-                    Log::info('No more pages to scrape.');
                 }
             }
 
-            return [
-                'acts' => array_values($uniqueDirectives),
-            ];
+            return ['acts' => array_values($uniqueDirectives)];
         } catch (\Exception $e) {
             Log::error('Error scraping data: ' . $e->getMessage());
             return ['error' => 'Error scraping data: ' . $e->getMessage()];
