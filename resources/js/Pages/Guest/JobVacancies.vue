@@ -131,7 +131,7 @@ const toggleDetails = (job) => {
                     <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
                         <div class="w-full sm:w-1/4">
                             <img
-                                :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`"
+                                :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/hiring_images/${job.hiring_img}`"
                                 alt="Job Image"
                                 class="w-full h-32 sm:h-48 object-cover rounded-lg"
                             />

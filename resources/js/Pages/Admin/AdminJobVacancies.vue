@@ -86,7 +86,7 @@ const goToPage = (url) => url && fetchJobs(url);
 
 const form = useForm({
     id: null,
-    hiring_img: null, 
+    hiring_img: null,
     position: "",
     details: "",
     link: "",
@@ -107,7 +107,7 @@ const openModal = (job = null) => {
         form.link = job.link;
     } else {
         form.reset();
-        form.remarks = "Available"; 
+        form.remarks = "Available";
     }
 };
 
@@ -248,12 +248,12 @@ const toggleDetails = (job) => {
                             <span class="text-white bg-green-400 px-3 py-2 rounded-sm">{{ job.remarks }}</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            <button @click="openImageModal(job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`)" 
+                            <button @click="openImageModal(job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/hiring_images/${job.hiring_img}`)"
                                     class="focus:outline-none">
-                                <img 
-                                    :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/storage/${job.hiring_img}`" 
-                                    alt="Hiring Image" 
-                                    class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                <img
+                                    :src="job.hiring_img === 'default' ? '/img/hiring_img.jpg' : `/hiring_images/${job.hiring_img}`"
+                                    alt="Hiring Image"
+                                    class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
                                 />
                             </button>
                         </td>
@@ -275,9 +275,9 @@ const toggleDetails = (job) => {
                         </td>
                         <td class="p-3 text-gray-600">
                             <div class="w-[200px]">
-                                <a 
-                                    :href="job.link" 
-                                    target="_blank" 
+                                <a
+                                    :href="job.link"
+                                    target="_blank"
                                     class="text-blue-500 hover:underline block truncate"
                                     :title="job.link"
                                 >
@@ -324,7 +324,7 @@ const toggleDetails = (job) => {
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     {{ errorMessage }}
                 </div>
-                
+
                 <label class="font-bold block text-gray-700">Position</label>
                 <input v-model="form.position" placeholder="Enter Position" class="border p-2 w-full my-2" />
 
@@ -372,7 +372,7 @@ const toggleDetails = (job) => {
         <div v-if="isImageModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
              @click.self="closeImageModal">
           <div class="relative max-w-4xl max-h-screen">
-            <button @click="closeImageModal" 
+            <button @click="closeImageModal"
                     class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none">
               <i class="fas fa-times text-2xl"></i>
             </button>
