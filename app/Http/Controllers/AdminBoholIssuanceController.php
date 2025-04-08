@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bohol_Issuance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminBoholIssuanceController extends Controller
@@ -42,11 +43,13 @@ class AdminBoholIssuanceController extends Controller
             'file' => 'nullable|mimes:pdf',
         ]);
 
+        $uploadPath = public_path('issuance_files');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('issuance_files'), $filename);
-            $validated['file'] = $filename;
+            $fileName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($uploadPath, $fileName);
+            $validated['file'] = $fileName;
         }
 
         Bohol_Issuance::create($validated);
@@ -65,16 +68,18 @@ class AdminBoholIssuanceController extends Controller
             'file' => 'nullable|mimes:pdf',
         ]);
 
-        if ($request->hasFile('file')) {
-            $destination = public_path('issuance_files/' . $issuances->file);
-            if (File::exists($destination)) {
-                File::delete($destination);
-            }
+        $uploadPath = public_path('issuance_files');
 
-            $file = $request->file('file');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('issuance_files'), $filename);
-            $validated['file'] = $filename;
+        if ($request->hasFile('file')) {
+            if ($issuances->file) {
+                $filePath = public_path('issuance_files/' . $issuances->file);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
+            }
+            $fileName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($uploadPath, $fileName);
+            $validated['file'] = $fileName;
         }
 
         $issuances->update($validated);
@@ -84,9 +89,11 @@ class AdminBoholIssuanceController extends Controller
 
     public function destroy(Bohol_Issuance $issuances)
     {
-        $destination = public_path('issuance_files/' . $issuances->file);
-        if (File::exists($destination)) {
-            File::delete($destination);
+        if ($issuances->file) {
+            $filePath = public_path('issuance_files/' . $issuances->file);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $issuances->delete();
