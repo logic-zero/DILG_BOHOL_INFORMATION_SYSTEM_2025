@@ -30,8 +30,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Define your scheduled tasks here
         $schedule->call(function () {
-            $republicActService = app(RepublicActService::class);
-            $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
+            // $republicActService = app(RepublicActService::class);
+            // $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
             // $republicActService->sendAllRepublicActsToTangkaraw();
 
             // $jointCircularService = app(JointCircularService::class);
@@ -42,8 +42,8 @@ class AppServiceProvider extends ServiceProvider
             // $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
             // $presidentialdirectiveService->sendPresidentialDirectivesToTangkaraw();
 
-            // $scraperService = app(LegalOpinionService::class);
-            // $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
+            $scraperService = app(LegalOpinionService::class);
+            $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
             // $scraperService->sendAllLegalOpinionsToTangkaraw();
         })->everyMinute();
     }

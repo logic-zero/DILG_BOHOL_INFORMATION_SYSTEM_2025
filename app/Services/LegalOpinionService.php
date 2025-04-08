@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use App\Models\LegalOpinion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -58,14 +59,14 @@ class LegalOpinionService
                             return null;
                         }
 
-                        // **Step 2: Scrape the download link from the individual legal opinion page**
                         $downloadLink = null;
+                        $pdfFilename = null;
+
                         try {
                             $response = $client->request('GET', $link);
                             $detailHtml = $response->getBody()->getContents();
                             $detailCrawler = new Crawler($detailHtml);
 
-                            // Extract the actual PDF download link
                             $downloadNode = $detailCrawler->filter('a.btn_download');
                             if ($downloadNode->count() > 0) {
                                 $downloadLink = $downloadNode->attr('href');
@@ -73,29 +74,34 @@ class LegalOpinionService
                                 if ($downloadLink && !str_starts_with($downloadLink, 'http')) {
                                     $downloadLink = 'https://dilg.gov.ph' . $downloadLink;
                                 }
+                                $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
+
+                                $originalFilename = basename(parse_url($downloadLink, PHP_URL_PATH));
+                                if (empty($originalFilename)) {
+                                    $originalFilename = Str::slug($title) . '.pdf';
+                                }
+
+                                if (!str_ends_with(strtolower($originalFilename), '.pdf')) {
+                                    $originalFilename .= '.pdf';
+                                }
+
+                                $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
+                                $directory = 'legal_opinions';
+
+                                Storage::disk('public')->put($directory . '/' . $pdfFilename, $pdfContent, 'public');
                             }
                         } catch (\Exception $e) {
                             Log::warning("Failed to fetch download link for {$title}: " . $e->getMessage());
                         }
-
-                        // **Download and Save PDF if it matches the title condition**
-                        $pdfPath = null;
-                        if ($downloadLink && (str_starts_with($title, 'LO-') || str_starts_with($title, 'DILG LO No.'))) {
-                            try {
-                                $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
-                                $fileName = str_replace([' ', '/', '\\'], '_', $title) . '.pdf'; // Clean filename
-                                $filePath = 'public/legal_opinions/' . $fileName;
-
-                                Storage::put($filePath, $pdfContent);
-                                $pdfPath = Storage::url($filePath);
-
-                                Log::info("PDF saved: {$pdfPath}");
-                            } catch (\Exception $e) {
-                                Log::warning("Failed to download PDF for {$title}: " . $e->getMessage());
-                            }
-                        }
-
-                        return compact('title', 'link', 'category', 'reference', 'date', 'downloadLink', 'pdfPath');
+                        return [
+                            'title' => $title,
+                            'link' => $link,
+                            'category' => $category,
+                            'reference' => $reference,
+                            'date' => $date,
+                            'download_link' => $downloadLink,
+                            'file' => $pdfFilename
+                        ];
                     } catch (\Exception $e) {
                         Log::warning("Skipping a row due to error: " . $e->getMessage());
                         return null;
@@ -107,18 +113,33 @@ class LegalOpinionService
                     if (!array_key_exists($opinion['reference'], $uniqueOpinions)) {
                         $uniqueOpinions[$opinion['reference']] = $opinion;
 
-                        // **Store the opinion and PDF path in the database**
-                        LegalOpinion::updateOrCreate(
-                            ['reference' => $opinion['reference']],
-                            [
-                                'title' => $opinion['title'],
-                                'link' => $opinion['link'],
-                                'category' => $opinion['category'],
-                                'date' => $opinion['date'],
-                                'download_link' => $opinion['downloadLink'],
-                                'pdf_path' => $opinion['pdfPath'], // Store PDF path
-                            ]
-                        );
+
+                        $fileValue = $opinion['file'] ?? null;
+
+                        $record = LegalOpinion::firstOrNew(['reference' => $opinion['reference']]);
+
+                        $record->title = $opinion['title'];
+                        $record->link = $opinion['link'];
+                        $record->date = $opinion['date'];
+                        $record->download_link = $opinion['download_link'];
+                        $record->file = $fileValue;
+
+                        $record->save();
+
+                        $saved = LegalOpinion::where('reference', $opinion['reference'])->first();
+                        Log::info("Saved record file value:", ['file' => $saved->file]);
+
+                        // LegalOpinion::updateOrCreate(
+                        //     ['reference' => $opinion['reference']],
+                        //     [
+                        //         'title' => $opinion['title'],
+                        //         'link' => $opinion['link'],
+                        //         'category' => $opinion['category'],
+                        //         'date' => $opinion['date'],
+                        //         'download_link' => $opinion['downloadLink'],
+                        //         'pdf_path' => $opinion['pdfPath'], // Store PDF path
+                        //     ]
+                        // );
                     }
                 }
 
@@ -142,6 +163,7 @@ class LegalOpinionService
             }
 
             return [
+                'success' => true,
                 'opinions' => array_values($uniqueOpinions),
                 'categories' => $categories,
             ];
