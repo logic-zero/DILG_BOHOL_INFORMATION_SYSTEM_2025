@@ -66,7 +66,7 @@ const setThumbsSwiper = (swiper) => {
                     }" :thumbs="{ swiper: thumbsSwiper }" class="relative overflow-hidden mb-4 shadow-lg main-swiper">
                         <swiper-slide v-for="(image, index) in newsItem.images" :key="index">
                             <div class="aspect-w-4 aspect-h-3 bg-gray-200">
-                                <img :src="`/storage/${image}`" :alt="`News image ${index + 1}`"
+                                <img :src="`/news_images/${image}`" :alt="`News image ${index + 1}`"
                                     class="object-contain w-full h-full p-1 bg-white select-none" draggable="false" />
                             </div>
                         </swiper-slide>
@@ -93,7 +93,7 @@ const setThumbsSwiper = (swiper) => {
                             class="cursor-pointer opacity-50 hover:opacity-100 transition thumbnail-slide">
                             <div
                                 class="aspect-w-1 aspect-h-1 bg-gray-200 overflow-hidden border-2 border-transparent hover:border-blue-500">
-                                <img :src="`/storage/${image}`" :alt="`Thumbnail ${index + 1}`"
+                                <img :src="`/news_images/${image}`" :alt="`Thumbnail ${index + 1}`"
                                     class="object-cover w-full h-full p-1 bg-white select-none" draggable="false" />
                             </div>
                         </swiper-slide>

@@ -46,7 +46,7 @@ const previewImages = computed(() => {
   if (form.images.length > 0) {
     return Array.from(form.images).map(image => URL.createObjectURL(image));
   } else if (isEditMode.value && editingNews.value?.images) {
-    return editingNews.value.images.map(image => `/storage/${image}`);
+    return editingNews.value.images.map(image => `/news_images/${image}`);
   }
   return [];
 });
@@ -300,7 +300,7 @@ const toggleStatus = async () => {
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center flex-wrap gap-1 max-w-[160px]">
-                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index" :src="`/storage/${image}`" alt="News Image" class="w-12 h-12 object-cover border border-gray-300" />
+                                <img v-for="(image, index) in news.images.slice(0, 5)" :key="index" :src="`/news_images/${image}`" alt="News Image" class="w-12 h-12 object-cover border border-gray-300" />
                             </div>
                         </td>
                         <td class="p-3 text-center">
@@ -343,7 +343,7 @@ const toggleStatus = async () => {
                 </div>
 
                 <div v-if="news.images.length" class="flex flex-wrap gap-2 mt-3">
-                    <img v-for="(image, index) in news.images" :key="index" :src="`/storage/${image}`" alt="News Image" class="w-16 h-16 object-cover border border-gray-300" />
+                    <img v-for="(image, index) in news.images" :key="index" :src="`/news_images/${image}`" alt="News Image" class="w-16 h-16 object-cover border border-gray-300" />
                 </div>
 
                 <div class="mt-3 flex gap-2">

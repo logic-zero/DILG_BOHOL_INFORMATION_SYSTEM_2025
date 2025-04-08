@@ -6,6 +6,8 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class AdminNewsController extends Controller
@@ -50,16 +52,21 @@ class AdminNewsController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        $imagePaths = [];
+        $uploadPath = public_path('news_images');
+        File::ensureDirectoryExists($uploadPath);
+
+        $imageNames = [];
         foreach ($request->file('images') as $image) {
-            $imagePaths[] = $image->store('news_images', 'public');
+            $fileName = Str::random(20) . '.' . $image->extension();
+            $image->move($uploadPath, $fileName);
+            $imageNames[] = $fileName;
         }
 
         News::create([
             'user_id' => Auth::id(),
             'title' => $validated['title'],
             'caption' => $validated['caption'],
-            'images' => json_encode($imagePaths),
+            'images' => json_encode($imageNames),
             'status' => false,
         ]);
 
@@ -85,26 +92,32 @@ class AdminNewsController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $imagePaths = json_decode($news->images, true) ?? [];
+        $uploadPath = public_path('news_images');
+        $imageNames = json_decode($news->images, true) ?? [];
 
         if ($request->has('existing_images')) {
-            $imagePaths = json_decode($request->input('existing_images'), true);
+            $imageNames = json_decode($request->input('existing_images'), true);
         }
 
         if ($request->hasFile('images')) {
-            foreach ($imagePaths as $oldImage) {
-                Storage::disk('public')->delete($oldImage);
+            foreach ($imageNames as $oldImage) {
+                $filePath = public_path('news_images/' . $oldImage);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $imagePaths = [];
+            $imageNames = [];
             foreach ($request->file('images') as $image) {
-                $imagePaths[] = $image->store('news_images', 'public');
+                $fileName = Str::random(20) . '.' . $image->extension();
+                $image->move($uploadPath, $fileName);
+                $imageNames[] = $fileName;
             }
         }
 
         $news->update([
             'title' => $validated['title'],
             'caption' => $validated['caption'],
-            'images' => json_encode($imagePaths),
+            'images' => json_encode($imageNames),
         ]);
 
         return redirect()->route('AdminNews')->with('success', 'News updated successfully.');
@@ -119,7 +132,10 @@ class AdminNewsController extends Controller
         }
 
         foreach (json_decode($news->images, true) as $image) {
-            Storage::disk('public')->delete($image);
+            $filePath = public_path('news_images/' . $image);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $news->delete();

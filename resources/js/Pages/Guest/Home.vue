@@ -86,8 +86,8 @@
                                 class="p-2 border border-gray-300">
                                 <div class="relative flex justify-center items-center h-[250px] w-full overflow-hidden">
                                     <div class="absolute inset-0 bg-cover bg-center blur-lg scale-110"
-                                        :style="{ backgroundImage: `url(/storage/${image})` }"></div>
-                                    <img :src="`/storage/${image}`" alt="News Image"
+                                        :style="{ backgroundImage: `url(/news_images/${image})` }"></div>
+                                    <img :src="`/news_images/${image}`" alt="News Image"
                                         class="max-h-full max-w-full object-contain relative z-10" />
                                 </div>
                             </swiper-slide>
