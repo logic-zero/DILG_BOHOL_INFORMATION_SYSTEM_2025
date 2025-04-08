@@ -101,9 +101,18 @@ class PresidentialDirectiveService
                                 }
 
                                 $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
-                                $directory = 'presidential_directives';
+                                $directory = public_path('presidential_directives');
 
-                                Storage::disk('public')->put($directory . '/' . $pdfFilename, $pdfContent, 'public');
+                                if (!file_exists($directory)) {
+                                    mkdir($directory, 0755, true);
+                                }
+
+                                // Save file directly to public directory
+                                file_put_contents($directory . '/' . $pdfFilename, $pdfContent);
+
+                                if (!file_exists($directory . '/' . $pdfFilename)) {
+                                    Log::error("Failed to save PDF: " . $directory . '/' . $pdfFilename);
+                                }
                             }
                         } catch (\Exception $e) {
                             Log::warning("Failed to fetch/download PDF for {$title}: " . $e->getMessage());
