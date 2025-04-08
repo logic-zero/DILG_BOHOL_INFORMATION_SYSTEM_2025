@@ -80,12 +80,34 @@
                         </div>
 
                         <div class="relative" v-if="act.link">
-                            <iframe
-                                :src="act.link"
+                            <div class="absolute top-2 right-5 flex gap-2">
+                                <div class="hidden md:block bg-white text-xs px-3 py-1 rounded shadow-md">
+                                    <i class="fas fa-search-plus mr-1"></i>
+                                    Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
+                                </div>
+                            </div>
+                            
+                            <iframe 
+                                :src="act.file ? '/storage/republic_acts/' + act.file + '#toolbar=0' : ''" 
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
+                                @load="iframeLoaded"
+                                @error="iframeError"
                                 allowfullscreen>
                             </iframe>
+                            
+                            <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            </div>
+                            
+                            <div v-if="error" class="absolute inset-0 flex items-center justify-center bg-red-100">
+                                <div class="text-red-600 text-center p-4">
+                                    <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                                    <p>Failed to load the document. 
+                                        <a :href="act.download_link" class="text-blue-600 hover:underline">Download it instead</a>.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -127,6 +149,18 @@ const pageProps = usePage().props;
 const acts = ref(pageProps.pagination.data ?? []);
 const pagination = ref(pageProps.pagination);
 const dates = ref(pageProps.dates ?? []);
+const loading = ref(false);
+const error = ref(false);
+
+const iframeLoaded = () => {
+    loading.value = false;
+    error.value = false;
+};
+
+const iframeError = () => {
+    loading.value = false;
+    error.value = true;
+};
 
 const filters = ref({
     search: pageProps.filters?.search ?? "",
