@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Provincial_Official;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminProvincial_OfficialsController extends Controller
@@ -48,8 +50,13 @@ class AdminProvincial_OfficialsController extends Controller
             'position' => 'required|string',
         ]);
 
+        $uploadPath = public_path('provincial_officials');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('profile_image')) {
-            $validated['profile_image'] = $request->file('profile_image')->store('provincial_officials', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_image')->extension();
+            $request->file('profile_image')->move($uploadPath, $fileName);
+            $validated['profile_image'] = $fileName;
         }
 
         Provincial_Official::create($validated);
@@ -65,14 +72,24 @@ class AdminProvincial_OfficialsController extends Controller
             'position' => 'required|string',
         ]);
 
+        $uploadPath = public_path('provincial_officials');
+
         if ($request->hasFile('profile_image')) {
             if ($provincial_official->profile_image) {
-                Storage::disk('public')->delete($provincial_official->profile_image);
+                $filePath = public_path('provincial_officials/' . $provincial_official->profile_image);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $validated['profile_image'] = $request->file('profile_image')->store('provincial_officials', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_image')->extension();
+            $request->file('profile_image')->move($uploadPath, $fileName);
+            $validated['profile_image'] = $fileName;
         } elseif ($request->has('remove_image')) {
             if ($provincial_official->profile_image) {
-                Storage::disk('public')->delete($provincial_official->profile_image);
+                $filePath = public_path('provincial_officials/' . $provincial_official->profile_image);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
             $validated['profile_image'] = null;
         }
@@ -85,7 +102,10 @@ class AdminProvincial_OfficialsController extends Controller
     public function destroy(Provincial_Official $provincial_official)
     {
         if ($provincial_official->profile_image) {
-            Storage::disk('public')->delete($provincial_official->profile_image);
+            $filePath = public_path('provincial_officials/' . $provincial_official->profile_image);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $provincial_official->delete();
