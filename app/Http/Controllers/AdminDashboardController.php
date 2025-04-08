@@ -82,42 +82,42 @@ class AdminDashboardController extends Controller
     }
 
     public function storeImage(Request $request)
-{
-    $validated = $request->validate([
-        'images' => 'required|array|min:1|max:3',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-    ]);
+    {
+        $validated = $request->validate([
+            'images' => 'required|array|min:1|max:3',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
 
-    $uploadPath = public_path('home_images');
-    File::ensureDirectoryExists($uploadPath);
+        $uploadPath = public_path('home_images');
+        File::ensureDirectoryExists($uploadPath);
 
-    $existingImages = Home_Image::all();
-    if ($existingImages->isNotEmpty()) {
-        foreach ($existingImages as $image) {
-            $storedImages = json_decode($image->images, true);
-            foreach ($storedImages as $storedImage) {
-                $fullPath = public_path($storedImage);
-                if (File::exists($fullPath)) {
-                    File::delete($fullPath);
+        $existingImages = Home_Image::all();
+        if ($existingImages->isNotEmpty()) {
+            foreach ($existingImages as $image) {
+                $storedImages = json_decode($image->images, true);
+                foreach ($storedImages as $storedImage) {
+                    $filePath = public_path('home_images/' . $storedImage);
+                    if (File::exists($filePath)) {
+                        File::delete($filePath);
+                    }
                 }
             }
+            Home_Image::truncate();
         }
-        Home_Image::truncate();
+
+        $imageNames = [];
+        foreach ($request->file('images') as $image) {
+            $fileName = Str::random(20) . '.' . $image->extension();
+            $image->move($uploadPath, $fileName);
+            $imageNames[] = $fileName;
+        }
+
+        Home_Image::create([
+            'images' => json_encode($imageNames),
+        ]);
+
+        return redirect()->back()->with('success', 'Home images updated successfully.');
     }
-
-    $imagePaths = [];
-    foreach ($request->file('images') as $image) {
-        $filename = Str::random(20) . '.' . $image->extension();
-        $image->move($uploadPath, $filename);
-        $imagePaths[] = 'home_images/' . $filename;
-    }
-
-    Home_Image::create([
-        'images' => json_encode($imagePaths),
-    ]);
-
-    return redirect()->back()->with('success', 'Home images updated successfully.');
-}
 
     public function storeAudio(Request $request)
     {
