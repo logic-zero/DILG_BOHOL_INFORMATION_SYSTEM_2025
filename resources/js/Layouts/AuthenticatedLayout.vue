@@ -104,7 +104,7 @@ const filteredNavLinks = navLinks.filter(link => hasRole(link.roles));
                 <div class="relative">
                     <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-4 py-2 rounded">
                         <span class="w-8 h-8 rounded-full overflow-hidden border border-black"><img
-                            :src="`/storage/profile_images/${$page.props.auth.user.profile_image}`"
+                            :src="`/profile_images/${$page.props.auth.user.profile_image}`"
                             class="w-full h-full object-cover"
                             alt="No Image"
                         />

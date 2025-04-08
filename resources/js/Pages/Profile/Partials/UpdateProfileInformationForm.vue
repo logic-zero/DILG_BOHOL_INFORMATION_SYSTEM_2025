@@ -179,7 +179,7 @@ const submitPDMessage = () => {
                             <div class="h-40 w-40 rounded-full overflow-hidden border border-black group-hover:border-indigo-500 transition-all duration-200 flex items-center justify-center">
                                 <img
                                     v-if="user.profile_image"
-                                    :src="`/storage/profile_images/${user.profile_image}`"
+                                    :src="`/profile_images/${user.profile_image}`"
                                     class="h-full w-full object-cover"
                                 />
                                 <div v-else class="h-full w-full bg-gray-200 flex items-center justify-center">

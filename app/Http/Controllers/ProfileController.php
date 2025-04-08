@@ -9,6 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -53,13 +55,19 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        $uploadPath = public_path('profile_images');
+        File::ensureDirectoryExists($uploadPath);
 
         if ($user->profile_image) {
-            Storage::disk('public')->delete('profile_images/' . $user->profile_image);
+            $oldImagePath = public_path('profile_images/' . $user->profile_image);
+            if (File::exists($oldImagePath)) {
+                File::delete($oldImagePath);
+            }
         }
 
-        $imagePath = $request->file('profile_image')->store('profile_images', 'public');
-        $user->profile_image = basename($imagePath);
+        $fileName = Str::random(20) . '.' . $request->file('profile_image')->extension();
+        $request->file('profile_image')->move($uploadPath, $fileName);
+        $user->profile_image = $fileName;
         $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'image-updated');
