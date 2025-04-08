@@ -22,8 +22,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class AdminDashboardController extends Controller
 {
@@ -88,32 +86,25 @@ class AdminDashboardController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        $uploadPath = public_path('home_images');
-        File::ensureDirectoryExists($uploadPath);
-
         $existingImages = Home_Image::all();
+
         if ($existingImages->isNotEmpty()) {
             foreach ($existingImages as $image) {
                 $storedImages = json_decode($image->images, true);
                 foreach ($storedImages as $storedImage) {
-                    $filePath = public_path('home_images/' . $storedImage);
-                    if (File::exists($filePath)) {
-                        File::delete($filePath);
-                    }
+                    Storage::disk('public')->delete($storedImage);
                 }
             }
             Home_Image::truncate();
         }
 
-        $imageNames = [];
+        $imagePaths = [];
         foreach ($request->file('images') as $image) {
-            $fileName = Str::random(20) . '.' . $image->extension();
-            $image->move($uploadPath, $fileName);
-            $imageNames[] = $fileName;
+            $imagePaths[] = $image->store('home_images', 'public');
         }
 
         Home_Image::create([
-            'images' => json_encode($imageNames),
+            'images' => json_encode($imagePaths),
         ]);
 
         return redirect()->back()->with('success', 'Home images updated successfully.');
