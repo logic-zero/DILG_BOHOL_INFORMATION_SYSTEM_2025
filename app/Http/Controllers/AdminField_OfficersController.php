@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Field_Officer;
 use App\Models\Municipality;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -48,8 +50,13 @@ class AdminField_OfficersController extends Controller
             'cluster' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('field_officers');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('profile_img')) {
-            $validated['profile_img'] = $request->file('profile_img')->store('field_officers', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         }
 
         Field_Officer::create($validated);
@@ -69,14 +76,24 @@ class AdminField_OfficersController extends Controller
             'cluster' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('field_officers');
+
         if ($request->hasFile('profile_img')) {
             if ($field_officer->profile_img) {
-                Storage::disk('public')->delete($field_officer->profile_img);
+                $filePath = public_path('field_officers/' . $field_officer->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $validated['profile_img'] = $request->file('profile_img')->store('field_officers', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         } elseif ($request->has('remove_image')) {
             if ($field_officer->profile_img) {
-                Storage::disk('public')->delete($field_officer->profile_img);
+                $filePath = public_path('field_officers/' . $field_officer->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
             $validated['profile_img'] = null;
         }
@@ -89,7 +106,10 @@ class AdminField_OfficersController extends Controller
     public function destroy(Field_Officer $field_officer)
     {
         if ($field_officer->profile_img) {
-            Storage::disk('public')->delete($field_officer->profile_img);
+            $filePath = public_path('field_officers/' . $field_officer->profile_img);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $field_officer->delete();

@@ -75,7 +75,7 @@ const applyFilters = () => {
                 <div v-for="officer in fieldOfficers" :key="officer.id" class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-40 h-40 border border-black overflow-hidden rounded-full">
-                            <img v-if="officer.profile_img" :src="`/storage/${officer.profile_img}`" :alt="officer.fname + ' ' + officer.lname"
+                            <img v-if="officer.profile_img" :src="`/field_officers/${officer.profile_img}`" :alt="officer.fname + ' ' + officer.lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
                                 No Image
