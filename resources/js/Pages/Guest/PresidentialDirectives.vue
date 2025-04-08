@@ -85,10 +85,6 @@
                                     <i class="fas fa-search-plus mr-1"></i>
                                     Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                                 </div>
-                                <button @click.stop="openFullScreen(directive.link)" 
-                                        class="bg-white text-xs px-3 py-1 rounded shadow-md hover:bg-gray-100">
-                                    <i class="fas fa-expand mr-1"></i> Fullscreen
-                                </button>
                             </div>
                             
                             <iframe 
@@ -98,11 +94,6 @@
                                 @load="iframeLoaded"
                                 @error="iframeError">
                             </iframe>
-                            
-                            <!-- <iframe :src="'/storage/presidential_directives/' + directive.file + '#toolbar=0'" 
-                                class="w-full h-[500px] border border-gray-300"
-                                frameborder="0">
-                            </iframe> -->
                             
                             <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-100">
                                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -168,10 +159,6 @@ const iframeLoaded = () => {
 const iframeError = () => {
     loading.value = false;
     error.value = true;
-};
-
-const openFullScreen = (url) => {
-    window.open(url, '_blank', 'fullscreen=yes');
 };
 
 const filters = ref({

@@ -12,5 +12,6 @@ class RepublicAct extends Model
         'reference',
         'date',
         'download_link',
+        'file',
     ];
 }

@@ -5,9 +5,11 @@ namespace App\Services;
 use App\Models\RepublicAct;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class RepublicActService
 {
@@ -78,6 +80,8 @@ class RepublicActService
                         }
 
                         $downloadLink = null;
+                        $pdfFilename = null;
+
                         try {
                             $response = $client->request('GET', $link);
                             $detailHtml = $response->getBody()->getContents();
@@ -90,12 +94,35 @@ class RepublicActService
                                 if ($downloadLink && !str_starts_with($downloadLink, 'http')) {
                                     $downloadLink = 'https://dilg.gov.ph' . $downloadLink;
                                 }
+                                $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
+
+                                $originalFilename = basename(parse_url($downloadLink, PHP_URL_PATH));
+                                if (empty($originalFilename)) {
+                                    $originalFilename = Str::slug($title) . '.pdf';
+                                }
+
+                                if (!str_ends_with(strtolower($originalFilename), '.pdf')) {
+                                    $originalFilename .= '.pdf';
+                                }
+
+                                $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
+                                $directory = 'republic_acts';
+
+                                Storage::disk('public')->put($directory . '/' . $pdfFilename, $pdfContent, 'public');
                             }
                         } catch (\Exception $e) {
                             Log::warning("Failed to fetch download link for {$title}: " . $e->getMessage());
                         }
 
-                        return compact('title', 'link', 'reference', 'date', 'downloadLink');
+                        return [
+                            'title' => $title,
+                            'link' => $link,
+                            'reference' => $reference,
+                            'date' => $date,
+                            'download_link' => $downloadLink,
+                            'file' => $pdfFilename
+                        ];
+                        // return compact('title', 'link', 'reference', 'date', 'downloadLink');
                     } catch (\Exception $e) {
                         Log::warning("Skipping a row due to error: " . $e->getMessage());
                         return null;
@@ -107,15 +134,30 @@ class RepublicActService
                     if (!array_key_exists($act['reference'], $uniqueActs)) {
                         $uniqueActs[$act['reference']] = $act;
 
-                        RepublicAct::updateOrCreate(
-                            ['reference' => $act['reference']],
-                            [
-                                'title' => $act['title'],
-                                'link' => $act['link'],
-                                'date' => $act['date'],
-                                'download_link' => $act['downloadLink'],
-                            ]
-                        );
+                        $fileValue = $act['file'] ?? null;
+
+                        $record = RepublicAct::firstOrNew(['reference' => $act['reference']]);
+
+                        $record->title = $act['title'];
+                        $record->link = $act['link'];
+                        $record->date = $act['date'];
+                        $record->download_link = $act['download_link'];
+                        $record->file = $fileValue;
+
+                        $record->save();
+
+                        $saved = RepublicAct::where('reference', $act['reference'])->first();
+                        Log::info("Saved record file value:", ['file' => $saved->file]);
+
+                        // RepublicAct::updateOrCreate(
+                        //     ['reference' => $act['reference']],
+                        //     [
+                        //         'title' => $act['title'],
+                        //         'link' => $act['link'],
+                        //         'date' => $act['date'],
+                        //         'download_link' => $act['downloadLink'],
+                        //     ]
+                        // );
                     }
                 }
 

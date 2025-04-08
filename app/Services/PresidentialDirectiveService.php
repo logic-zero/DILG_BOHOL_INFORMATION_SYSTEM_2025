@@ -156,10 +156,14 @@ class PresidentialDirectiveService
                         break;
                 } else {
                     $url = null;
+                    Log::info('No more pages to scrape.');
                 }
             }
 
-            return ['acts' => array_values($uniqueDirectives)];
+            return [
+                'success' => true,
+                'acts' => array_values($uniqueDirectives)
+            ];
         } catch (\Exception $e) {
             Log::error('Error scraping data: ' . $e->getMessage());
             return ['error' => 'Error scraping data: ' . $e->getMessage()];
