@@ -102,7 +102,7 @@ const openModal = (charter = null) => {
         form.file = null;
         form.thumbnail = null;
         if (charter.thumbnail) {
-            thumbnailPreview.value = `/storage/${charter.thumbnail}`;
+            thumbnailPreview.value = `/citizens_charters/thumbnails/${charter.thumbnail}`;
         }
     } else {
         form.reset();
@@ -317,10 +317,10 @@ const downloadPdf = () => {
                     <video
                         controls
                         class="w-full aspect-[3/2]"
-                        :poster="charter.thumbnail ? `/storage/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
+                        :poster="charter.thumbnail ? `/citizens_charters/thumbnails/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
                         preload="none"
                     >
-                        <source :src="`/storage/${charter.file}`" type="video/mp4">
+                        <source :src="`/citizens_charters/${charter.file}`" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>

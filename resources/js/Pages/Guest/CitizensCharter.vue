@@ -58,10 +58,10 @@ const goToPage = (url) => {
                     <video
                         controls
                         class="w-full aspect-[3/2]"
-                        :poster="charter.thumbnail ? `/storage/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
+                        :poster="charter.thumbnail ? `/citizens_charters/thumbnails/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
                         preload="none"
                     >
-                        <source :src="`/storage/${charter.file}`" type="video/mp4">
+                        <source :src="`/citizens_charters/${charter.file}`" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>

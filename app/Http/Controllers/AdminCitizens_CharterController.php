@@ -6,6 +6,8 @@ use App\Models\Citizens_Charter;
 use App\Models\Citizens_Charter_PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminCitizens_CharterController extends Controller
@@ -39,12 +41,21 @@ class AdminCitizens_CharterController extends Controller
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
+        $videoPath = public_path('citizens_charters');
+        $thumbnailPath = public_path('citizens_charters/thumbnails');
+        File::ensureDirectoryExists($videoPath);
+        File::ensureDirectoryExists($thumbnailPath);
+
         if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('citizens_charters', 'public');
+            $videoName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($videoPath, $videoName);
+            $validated['file'] = $videoName;
         }
 
         if ($request->hasFile('thumbnail')) {
-            $validated['thumbnail'] = $request->file('thumbnail')->store('citizens_charters/thumbnails', 'public');
+            $thumbnailName = Str::random(20) . '.' . $request->file('thumbnail')->extension();
+            $request->file('thumbnail')->move($thumbnailPath, $thumbnailName);
+            $validated['thumbnail'] = $thumbnailName;
         }
 
         Citizens_Charter::create($validated);
@@ -60,20 +71,33 @@ class AdminCitizens_CharterController extends Controller
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
+        $videoPath = public_path('citizens_charters');
+        $thumbnailPath = public_path('citizens_charters/thumbnails');
+
         if ($request->hasFile('file')) {
             if ($citizens_charter->file) {
-                Storage::disk('public')->delete($citizens_charter->file);
+                $oldFilePath = public_path('citizens_charters/' . $citizens_charter->file);
+                if (File::exists($oldFilePath)) {
+                    File::delete($oldFilePath);
+                }
             }
-            $validated['file'] = $request->file('file')->store('citizens_charters', 'public');
+            $videoName = Str::random(20) . '.' . $request->file('file')->extension();
+            $request->file('file')->move($videoPath, $videoName);
+            $validated['file'] = $videoName;
         } else {
             unset($validated['file']);
         }
 
         if ($request->hasFile('thumbnail')) {
             if ($citizens_charter->thumbnail) {
-                Storage::disk('public')->delete($citizens_charter->thumbnail);
+                $oldThumbPath = public_path('citizens_charters/thumbnails/' . $citizens_charter->thumbnail);
+                if (File::exists($oldThumbPath)) {
+                    File::delete($oldThumbPath);
+                }
             }
-            $validated['thumbnail'] = $request->file('thumbnail')->store('citizens_charters/thumbnails', 'public');
+            $thumbnailName = Str::random(20) . '.' . $request->file('thumbnail')->extension();
+            $request->file('thumbnail')->move($thumbnailPath, $thumbnailName);
+            $validated['thumbnail'] = $thumbnailName;
         } else {
             unset($validated['thumbnail']);
         }
@@ -86,11 +110,17 @@ class AdminCitizens_CharterController extends Controller
     public function destroy(Citizens_Charter $citizens_charter)
     {
         if ($citizens_charter->file) {
-            Storage::disk('public')->delete($citizens_charter->file);
+            $filePath = public_path('citizens_charters/' . $citizens_charter->file);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         if ($citizens_charter->thumbnail) {
-            Storage::disk('public')->delete($citizens_charter->thumbnail);
+            $thumbPath = public_path('citizens_charters/thumbnails/' . $citizens_charter->thumbnail);
+            if (File::exists($thumbPath)) {
+                File::delete($thumbPath);
+            }
         }
 
         $citizens_charter->delete();
@@ -104,16 +134,23 @@ class AdminCitizens_CharterController extends Controller
             'file' => 'required|file|mimes:pdf|max:51200',
         ]);
 
+        $pdfPath = public_path('citizens_charters_pdf');
+        File::ensureDirectoryExists($pdfPath);
+
         $existingPdf = Citizens_Charter_PDF::first();
         if ($existingPdf && $existingPdf->file) {
-            Storage::disk('public')->delete($existingPdf->file);
+            $oldPdfPath = public_path('citizens_charters_pdf/' . $existingPdf->file);
+            if (File::exists($oldPdfPath)) {
+                File::delete($oldPdfPath);
+            }
             $existingPdf->delete();
         }
 
-        $filePath = $request->file('file')->store('citizens_charters_pdf', 'public');
+        $fileName = Str::random(20) . '.' . $request->file('file')->extension();
+        $request->file('file')->move($pdfPath, $fileName);
 
         Citizens_Charter_PDF::create([
-            'file' => $filePath,
+            'file' => $fileName,
         ]);
 
         return response()->json(['success' => 'PDF uploaded successfully.']);
@@ -127,6 +164,11 @@ class AdminCitizens_CharterController extends Controller
             abort(404);
         }
 
-        return Storage::disk('public')->download($pdf->file);
+        $filePath = public_path('citizens_charters_pdf/' . $pdf->file);
+        if (!File::exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath);
     }
 }
