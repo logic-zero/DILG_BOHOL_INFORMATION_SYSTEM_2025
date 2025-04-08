@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Oragnizational_Structure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminOrganizational_StructureController extends Controller
@@ -42,8 +44,13 @@ class AdminOrganizational_StructureController extends Controller
             'management_and_administrative_roles' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('organizational_structure');
+        File::ensureDirectoryExists($uploadPath);
+
         if ($request->hasFile('profile_img')) {
-            $validated['profile_img'] = $request->file('profile_img')->store('organizational_structure', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         }
 
         Oragnizational_Structure::create($validated);
@@ -62,14 +69,24 @@ class AdminOrganizational_StructureController extends Controller
             'management_and_administrative_roles' => 'nullable|string',
         ]);
 
+        $uploadPath = public_path('organizational_structure');
+
         if ($request->hasFile('profile_img')) {
             if ($organizational_structure->profile_img) {
-                Storage::disk('public')->delete($organizational_structure->profile_img);
+                $filePath = public_path('organizational_structure/' . $organizational_structure->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
-            $validated['profile_img'] = $request->file('profile_img')->store('organizational_structure', 'public');
+            $fileName = Str::random(20) . '.' . $request->file('profile_img')->extension();
+            $request->file('profile_img')->move($uploadPath, $fileName);
+            $validated['profile_img'] = $fileName;
         } elseif ($request->has('remove_image')) {
             if ($organizational_structure->profile_img) {
-                Storage::disk('public')->delete($organizational_structure->profile_img);
+                $filePath = public_path('organizational_structure/' . $organizational_structure->profile_img);
+                if (File::exists($filePath)) {
+                    File::delete($filePath);
+                }
             }
             $validated['profile_img'] = null;
         }
@@ -82,7 +99,10 @@ class AdminOrganizational_StructureController extends Controller
     public function destroy(Oragnizational_Structure $organizational_structure)
     {
         if ($organizational_structure->profile_img) {
-            Storage::disk('public')->delete($organizational_structure->profile_img);
+            $filePath = public_path('organizational_structure/' . $organizational_structure->profile_img);
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
         }
 
         $organizational_structure->delete();

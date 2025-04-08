@@ -211,7 +211,7 @@ const deleteOrganizationalStructure = async () => {
                 <tbody>
                     <tr v-for="organizationalStructure in organizationalStructuresList" :key="organizationalStructure.id" class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-600 break-words flex justify-center">
-                            <img v-if="organizationalStructure.profile_img" :src="`/storage/${organizationalStructure.profile_img}`" class="w-20 h-20 rounded-full object-cover" alt="Profile Image" />
+                            <img v-if="organizationalStructure.profile_img" :src="`/organizational_structure/${organizationalStructure.profile_img}`" class="w-20 h-20 rounded-full object-cover" alt="Profile Image" />
                             <span v-else>No Image</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
@@ -242,7 +242,7 @@ const deleteOrganizationalStructure = async () => {
             <div v-for="organizationalStructure in organizationalStructuresList" :key="organizationalStructure.id" class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-center mb-4">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img v-if="organizationalStructure.profile_img" :src="`/storage/${organizationalStructure.profile_img}`" class="w-full h-full object-cover" alt="Profile Image" />
+                        <img v-if="organizationalStructure.profile_img" :src="`/organizational_structure/${organizationalStructure.profile_img}`" class="w-full h-full object-cover" alt="Profile Image" />
                         <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600">
                             No Image
                         </div>

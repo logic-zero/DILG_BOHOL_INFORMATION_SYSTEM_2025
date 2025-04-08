@@ -10,7 +10,7 @@
                 <div class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-72 h-72 border border-black overflow-hidden rounded-full">
-                            <img v-if="provincialDirector.profile_img" :src="`/storage/${provincialDirector.profile_img}`"
+                            <img v-if="provincialDirector.profile_img" :src="`/organizational_structure/${provincialDirector.profile_img}`"
                                 :alt="provincialDirector.fname + ' ' + provincialDirector.lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -33,7 +33,7 @@
                 <div v-for="head in [...(groupedData['Cluster Head, D\'One'] || []), ...(groupedData['Cluster Head, M&M'] || [])]" :key="head.id" class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-64 h-64 border border-black overflow-hidden rounded-full">
-                            <img v-if="head.profile_img" :src="`/storage/${head.profile_img}`"
+                            <img v-if="head.profile_img" :src="`/organizational_structure/${head.profile_img}`"
                                 :alt="head.fname + ' ' + head.lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -56,7 +56,7 @@
                 <div class="group">
                     <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                         <div class="w-64 h-64 border border-black overflow-hidden rounded-full">
-                            <img v-if="groupedData['Program Manager'][0].profile_img" :src="`/storage/${groupedData['Program Manager'][0].profile_img}`"
+                            <img v-if="groupedData['Program Manager'][0].profile_img" :src="`/organizational_structure/${groupedData['Program Manager'][0].profile_img}`"
                                 :alt="groupedData['Program Manager'][0].fname + ' ' + groupedData['Program Manager'][0].lname"
                                 class="w-full h-full object-cover rounded-full" />
                             <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -81,7 +81,7 @@
                     <div v-for="coordinator in groupedData['Program Coordinators']" :key="coordinator.id" class="group">
                         <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                             <div class="w-40 h-40 border border-black overflow-hidden rounded-full">
-                                <img v-if="coordinator.profile_img" :src="`/storage/${coordinator.profile_img}`"
+                                <img v-if="coordinator.profile_img" :src="`/organizational_structure/${coordinator.profile_img}`"
                                     :alt="coordinator.fname + ' ' + coordinator.lname"
                                     class="w-full h-full object-cover rounded-full" />
                                 <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -107,7 +107,7 @@
                     <div v-for="admin in groupedData['Admin Services']" :key="admin.id" class="group">
                         <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                             <div class="w-40 h-40 border border-black overflow-hidden rounded-full">
-                                <img v-if="admin.profile_img" :src="`/storage/${admin.profile_img}`"
+                                <img v-if="admin.profile_img" :src="`/organizational_structure/${admin.profile_img}`"
                                     :alt="admin.fname + ' ' + admin.lname"
                                     class="w-full h-full object-cover rounded-full" />
                                 <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
@@ -133,7 +133,7 @@
                     <div v-for="member in nonGroupData" :key="member.id" class="group">
                         <div class="flex flex-col items-center space-y-2 transform transition-transform duration-300 hover:scale-105">
                             <div class="w-40 h-40 border border-black overflow-hidden rounded-full">
-                                <img v-if="member.profile_img" :src="`/storage/${member.profile_img}`"
+                                <img v-if="member.profile_img" :src="`/organizational_structure/${member.profile_img}`"
                                     :alt="member.fname + ' ' + member.lname"
                                     class="w-full h-full object-cover rounded-full" />
                                 <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-full">
