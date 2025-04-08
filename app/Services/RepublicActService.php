@@ -94,6 +94,7 @@ class RepublicActService
                                 if ($downloadLink && !str_starts_with($downloadLink, 'http')) {
                                     $downloadLink = 'https://dilg.gov.ph' . $downloadLink;
                                 }
+
                                 $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
 
                                 $originalFilename = basename(parse_url($downloadLink, PHP_URL_PATH));
@@ -106,9 +107,18 @@ class RepublicActService
                                 }
 
                                 $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
-                                $directory = 'republic_acts';
+                                $directory = public_path('republic_acts');
 
-                                Storage::disk('public')->put($directory . '/' . $pdfFilename, $pdfContent, 'public');
+                                if (!file_exists($directory)) {
+                                    mkdir($directory, 0755, true);
+                                }
+
+                                // Save file directly to public directory
+                                file_put_contents($directory . '/' . $pdfFilename, $pdfContent);
+
+                                if (!file_exists($directory . '/' . $pdfFilename)) {
+                                    Log::error("Failed to save PDF: " . $directory . '/' . $pdfFilename);
+                                }
                             }
                         } catch (\Exception $e) {
                             Log::warning("Failed to fetch download link for {$title}: " . $e->getMessage());
@@ -122,7 +132,6 @@ class RepublicActService
                             'download_link' => $downloadLink,
                             'file' => $pdfFilename
                         ];
-                        // return compact('title', 'link', 'reference', 'date', 'downloadLink');
                     } catch (\Exception $e) {
                         Log::warning("Skipping a row due to error: " . $e->getMessage());
                         return null;
@@ -148,16 +157,6 @@ class RepublicActService
 
                         $saved = RepublicAct::where('reference', $act['reference'])->first();
                         Log::info("Saved record file value:", ['file' => $saved->file]);
-
-                        // RepublicAct::updateOrCreate(
-                        //     ['reference' => $act['reference']],
-                        //     [
-                        //         'title' => $act['title'],
-                        //         'link' => $act['link'],
-                        //         'date' => $act['date'],
-                        //         'download_link' => $act['downloadLink'],
-                        //     ]
-                        // );
                     }
                 }
 

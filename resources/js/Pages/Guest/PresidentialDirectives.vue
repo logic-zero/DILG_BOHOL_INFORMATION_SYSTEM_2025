@@ -88,7 +88,7 @@
                             </div>
                             
                             <iframe 
-                                :src="directive.file ? '/storage/presidential_directives/' + directive.file + '#toolbar=0' : ''" 
+                                :src="directive.file ? '/presidential_directives/' + directive.file + '#toolbar=0' : ''" 
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"

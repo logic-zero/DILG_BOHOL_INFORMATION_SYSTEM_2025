@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('date')->nullable();
             $table->text('download_link')->nullable();
             $table->longText('extracted_texts')->nullable();
+            $table->string('file')->nullable();
             $table->timestamps();
         });
     }
