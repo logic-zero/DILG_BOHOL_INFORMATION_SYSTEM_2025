@@ -19,7 +19,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-xl font-semibold text-gray-800">
-                                {{ provincialDirector.fname }} {{ provincialDirector.mid_initial }}. {{ provincialDirector.lname }}
+                                {{ provincialDirector.fname }} {{ provincialDirector.mid_initial }} {{ provincialDirector.lname }}
                             </p>
                             <p class="text-sm text-gray-600">
                                 {{ provincialDirector.position }}
@@ -42,7 +42,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-lg font-semibold text-gray-800">
-                                {{ head.fname }} {{ head.mid_initial }}. {{ head.lname }}
+                                {{ head.fname }} {{ head.mid_initial }} {{ head.lname }}
                             </p>
                             <p class="text-sm text-gray-600">
                                 {{ head.position }} / {{ head.management_and_administrative_roles }}
@@ -65,7 +65,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-lg font-semibold text-gray-800">
-                                {{ groupedData['Program Manager'][0].fname }} {{ groupedData['Program Manager'][0].mid_initial }}. {{ groupedData['Program Manager'][0].lname }}
+                                {{ groupedData['Program Manager'][0].fname }} {{ groupedData['Program Manager'][0].mid_initial }} {{ groupedData['Program Manager'][0].lname }}
                             </p>
                             <p class="text-sm text-gray-600">
                                 {{ groupedData['Program Manager'][0].position }} / {{ groupedData['Program Manager'][0].management_and_administrative_roles }}
@@ -90,7 +90,7 @@
                             </div>
                             <div class="text-center">
                                 <p class="text-sm font-semibold text-gray-800">
-                                    {{ coordinator.fname }} {{ coordinator.mid_initial }}. {{ coordinator.lname }}
+                                    {{ coordinator.fname }} {{ coordinator.mid_initial }} {{ coordinator.lname }}
                                 </p>
                                 <p class="text-xs text-gray-600">
                                     {{ coordinator.position }}
@@ -116,7 +116,7 @@
                             </div>
                             <div class="text-center">
                                 <p class="text-sm font-semibold text-gray-800">
-                                    {{ admin.fname }} {{ admin.mid_initial }}. {{ admin.lname }}
+                                    {{ admin.fname }} {{ admin.mid_initial }} {{ admin.lname }}
                                 </p>
                                 <p class="text-xs text-gray-600">
                                     {{ admin.position }}
@@ -142,7 +142,7 @@
                             </div>
                             <div class="text-center">
                                 <p class="text-sm font-semibold text-gray-800">
-                                    {{ member.fname }} {{ member.mid_initial }}. {{ member.lname }}
+                                    {{ member.fname }} {{ member.mid_initial }} {{ member.lname }}
                                 </p>
                                 <p class="text-xs text-gray-600">
                                     {{ member.position }} / {{ member.management_and_administrative_roles }}
@@ -174,7 +174,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-xl font-semibold text-gray-800">
-                                {{ pdmuProvincialDirector.fname }} {{ pdmuProvincialDirector.mid_initial }}. {{ pdmuProvincialDirector.lname }}
+                                {{ pdmuProvincialDirector.fname }} {{ pdmuProvincialDirector.mid_initial }} {{ pdmuProvincialDirector.lname }}
                             </p>
                             <p class="text-sm text-gray-600">
                                 {{ pdmuProvincialDirector.position }}
@@ -197,7 +197,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-sm font-semibold text-gray-800">
-                                {{ member.fname }} {{ member.mid_initial }}. {{ member.lname }}
+                                {{ member.fname }} {{ member.mid_initial }} {{ member.lname }}
                             </p>
                             <p class="text-xs text-gray-600">
                                 {{ member.position }}
