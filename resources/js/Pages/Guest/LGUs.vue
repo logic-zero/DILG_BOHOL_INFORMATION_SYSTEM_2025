@@ -50,7 +50,7 @@ const getSbMembers = (lgu) => {
 
 <template>
     <div>
-        <div class="container mx-auto p-6">
+        <div class="container mx-auto p-2 lg:p-6">
             <div class="flex justify-center items-center mt-2 mb-4">
                 <img src="/img/bohol_seal.png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="bohol-seal">
             </div>

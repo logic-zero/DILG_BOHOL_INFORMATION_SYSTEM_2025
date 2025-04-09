@@ -93,7 +93,7 @@ const toggleDetails = (job) => {
 </script>
 
 <template>
-    <div class="p-4 sm:p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <div class="bg-blue-800 text-white py-2 sm:py-4 mb-4 sm:mb-6">
             <div class="container mx-auto px-4 text-center">
                 <h1 class="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Join Our Team</h1>

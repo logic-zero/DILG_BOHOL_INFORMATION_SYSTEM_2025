@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="mx-auto p-6">
+        <div class="mx-auto p-2 lg:p-6">
             <div class="flex justify-center items-center mb-6">
                 <img src="/img/dilg-main.png" class="rounded-full h-[200px] w-[200px] shadow-lg" alt="DILG Logo">
             </div>

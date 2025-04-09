@@ -28,7 +28,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <div class="text-center mb-6">
             <img src="/img/Background.png" class="max-w-full h-auto mx-auto" alt="Background Image">
         </div>

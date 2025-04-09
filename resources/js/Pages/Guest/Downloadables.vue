@@ -107,7 +107,7 @@ const getFileIcon = (fileName) => {
 </script>
 
 <template>
-    <div class="p-4 sm:p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
             Downloadable Resources
         </h1>

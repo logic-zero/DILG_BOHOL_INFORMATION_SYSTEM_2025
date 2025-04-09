@@ -103,7 +103,7 @@ onMounted(() => {
     <Head>
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     </Head>
-    <div class="p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
             Knowledge Materials
         </h1>
@@ -127,7 +127,7 @@ onMounted(() => {
                             {{ new Date(material.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
                         </p>
                     </div>
-                    <div class="py-4 flex-[2]">
+                    <div class="py-4 px-2 flex-[2]">
                         <button @click="openAnyflip(material.link, material.file ? route('guest.knowledgeMaterials.download', material) : null, material)" class="w-full">
                             <h2 class="text-sm text-center font-semibold text-blue-900 hover:underline">{{ material.title }}</h2>
                         </button>

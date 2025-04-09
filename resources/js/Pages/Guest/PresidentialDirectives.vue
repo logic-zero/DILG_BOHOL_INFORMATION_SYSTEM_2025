@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
             Presidential Directives
         </h1>
@@ -78,7 +78,7 @@
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div class="relative" v-if="directive.link">
                             <div class="absolute top-2 right-5 flex gap-2">
                                 <div class="hidden md:block bg-white text-xs px-3 py-1 rounded shadow-md">
@@ -86,23 +86,23 @@
                                     Hold <span class="font-bold">Ctrl</span> + <span class="font-bold">Scroll</span> to zoom
                                 </div>
                             </div>
-                            
-                            <iframe 
-                                :src="directive.file ? '/presidential_directives/' + directive.file + '#toolbar=0' : ''" 
+
+                            <iframe
+                                :src="directive.file ? '/presidential_directives/' + directive.file + '#toolbar=0' : ''"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"
                                 @error="iframeError">
                             </iframe>
-                            
+
                             <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-100">
                                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                             </div>
-                            
+
                             <div v-if="error" class="absolute inset-0 flex items-center justify-center bg-red-100">
                                 <div class="text-red-600 text-center p-4">
                                     <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                                    <p>Failed to load the document. 
+                                    <p>Failed to load the document.
                                         <a :href="directive.download_link" class="text-blue-600 hover:underline">Download it instead</a>.
                                     </p>
                                 </div>
@@ -111,9 +111,9 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="text-center mt-8">
-                <a href="https://www.dilg.gov.ph/issuances-archive/pd/" target="_blank" 
+                <a href="https://www.dilg.gov.ph/issuances-archive/pd/" target="_blank"
                    class="inline-block bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
                    <i class="fas fa-external-link-alt mr-2"></i>Visit Official DILG Website
                 </a>
