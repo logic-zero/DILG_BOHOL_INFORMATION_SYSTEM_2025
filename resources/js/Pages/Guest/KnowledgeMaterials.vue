@@ -15,27 +15,11 @@ const filters = ref({
     search: pageProps.filters?.search ?? "",
 });
 
-const showModal = ref(false);
-const currentFlipbookUrl = ref("");
-const isLoading = ref(false);
-
 const showAnyflipModal = ref(false);
 const currentAnyflipUrl = ref("");
 const currentPdfUrl = ref("");
 const isAnyflipLoading = ref(false);
 const isAnyflipLoaded = ref(false);
-
-const openFlipbook = (pdfUrl) => {
-    const encodedPdfUrl = encodeURIComponent(pdfUrl);
-    const randomParam = Math.random().toString(36).substring(7);
-    currentFlipbookUrl.value = `https://heyzine.com/api1?pdf=${encodedPdfUrl}&k=0b55f138ea199759&r=${randomParam}`;
-    showModal.value = true;
-    isLoading.value = true;
-};
-
-const handleIframeLoad = () => {
-    isLoading.value = false;
-};
 
 const openAnyflip = (url, pdfUrl, material) => {
     currentAnyflipUrl.value = url;
@@ -48,11 +32,6 @@ const openAnyflip = (url, pdfUrl, material) => {
 const handleAnyflipIframeLoad = () => {
     isAnyflipLoading.value = false;
     isAnyflipLoaded.value = true;
-};
-
-const switchToFlipbook = () => {
-    showAnyflipModal.value = false;
-    openFlipbook(currentPdfUrl.value);
 };
 
 const applyFilters = () => {
@@ -90,14 +69,8 @@ const goToPage = (url) => {
     });
 };
 
-const closeAnyflipModal = (event) => {
-    if (event.target.classList.contains('modal-overlay')) {
-        showAnyflipModal.value = false;
-    }
-};
-
-const openInFullPage = () => {
-    window.open(currentFlipbookUrl.value, '_blank');
+const closeAnyflipModal = () => {
+    showAnyflipModal.value = false;
 };
 
 onMounted(() => {
@@ -160,40 +133,11 @@ onMounted(() => {
             </div>
         </div>
 
-        <div v-if="showModal" class="fixed inset-0 z-50 bg-black bg-opacity-5 flex items-center justify-center p-0">
-            <div class="absolute inset-0 flex flex-col">
-                <div class="bg-white p-2 flex justify-end">
-                    <div class="space-x-2">
-                        <button @click="openInFullPage"
-                                class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 rounded">
-                            <i class="fas fa-expand mr-1"></i> Full Page
-                        </button>
-                        <button @click="showModal = false"
-                                class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-300 rounded">
-                            <i class="fas fa-times mr-1"></i> Close
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="isLoading" class="flex-1 flex items-center justify-center">
-                    <div class="spinner"></div>
-                </div>
-
-                <iframe
-                    :src="currentFlipbookUrl"
-                    @load="handleIframeLoad"
-                    class="flex-1 border-0 w-full h-full"
-                    :class="{ 'hidden': isLoading }"
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-
-        <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click="closeAnyflipModal">
+        <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
             <div class="relative bg-white shadow-xl w-full max-w-6xl h-[95vh] mx-auto flex flex-col">
                 <div class="flex items-center justify-between py-2 px-4 border-b border-gray-200">
                     <h3 class="text-md font-bold text-blue-900">{{ currentMaterial?.title }}</h3>
-                    <button @click="showAnyflipModal = false"
+                    <button @click="closeAnyflipModal"
                             class="text-gray-400 hover:text-gray-500 focus:outline-none">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -206,24 +150,15 @@ onMounted(() => {
 
                     <div class="absolute bottom-2 left-4 z-10 bg-white text-gray-800 px-3 py-2 rounded-md text-sm shadow-lg border border-gray-200">
                         <div class="font-medium text-gray-700 mb-1">Having trouble viewing?</div>
-                        <div class="flex items-center">
-                            <template v-if="currentPdfUrl">
-                                <button @click="switchToFlipbook" class="flex items-center text-blue-700 hover:text-blue-800 hover:underline">
-                                    <i class="fas fa-sync-alt mr-2 text-sm"></i>
-                                    Alternative viewer
-                                </button>
-                                <span class="text-gray-500 mx-2">or</span>
-                                <a :href="currentPdfUrl" class="flex items-center text-red-600 hover:text-red-700 hover:underline">
-                                    <i class="fas fa-download mr-2 text-sm"></i>
-                                    Download PDF
-                                </a>
-                            </template>
-                            <template v-else>
-                                <a :href="currentAnyflipUrl" target="_blank" class="flex items-center text-blue-700 hover:text-blue-800 hover:underline">
-                                    <i class="fas fa-external-link-alt mr-2 text-sm"></i>
-                                    Open this link
-                                </a>
-                            </template>
+                        <div class="flex items-center space-x-4">
+                            <a :href="currentAnyflipUrl" target="_blank" class="flex items-center text-blue-700 hover:text-blue-800 hover:underline">
+                                <i class="fas fa-external-link-alt mr-2 text-sm"></i>
+                                Open in new tab
+                            </a>
+                            <a v-if="currentPdfUrl" :href="currentPdfUrl" class="flex items-center text-red-600 hover:text-red-700 hover:underline">
+                                <i class="fas fa-download mr-2 text-sm"></i>
+                                Download PDF
+                            </a>
                         </div>
                     </div>
 
@@ -273,16 +208,5 @@ onMounted(() => {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-.modal-overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
-}
-
-@media (max-width: 768px) {
-    .modal-overlay {
-        padding: 1rem;
-    }
 }
 </style>
