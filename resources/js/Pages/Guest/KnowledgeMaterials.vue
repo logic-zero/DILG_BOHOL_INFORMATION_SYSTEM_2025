@@ -20,18 +20,29 @@ const currentAnyflipUrl = ref("");
 const currentPdfUrl = ref("");
 const isAnyflipLoading = ref(false);
 const isAnyflipLoaded = ref(false);
+const iframeCache = ref(new Map());
 
 const openAnyflip = (url, pdfUrl, material) => {
     currentAnyflipUrl.value = url;
     currentPdfUrl.value = pdfUrl;
     currentMaterial.value = material;
     showAnyflipModal.value = true;
-    isAnyflipLoading.value = true;
+
+    if (iframeCache.value.has(url)) {
+        isAnyflipLoading.value = false;
+        isAnyflipLoaded.value = true;
+    } else {
+        isAnyflipLoading.value = true;
+        isAnyflipLoaded.value = false;
+    }
 };
 
-const handleAnyflipIframeLoad = () => {
-    isAnyflipLoading.value = false;
-    isAnyflipLoaded.value = true;
+const handleAnyflipIframeLoad = (url) => {
+    iframeCache.value.set(url, true);
+    if (url === currentAnyflipUrl.value) {
+        isAnyflipLoading.value = false;
+        isAnyflipLoaded.value = true;
+    }
 };
 
 const applyFilters = () => {
@@ -76,10 +87,14 @@ const closeAnyflipModal = () => {
 onMounted(() => {
     if (materials.value.length > 0) {
         const firstMaterial = materials.value[0];
-        currentAnyflipUrl.value = firstMaterial.link;
-        currentPdfUrl.value = firstMaterial.file ? route('guest.knowledgeMaterials.download', firstMaterial) : null;
-        currentMaterial.value = firstMaterial;
-        isAnyflipLoading.value = true;
+        const url = firstMaterial.link;
+        if (!iframeCache.value.has(url)) {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.display = 'none';
+            iframe.onload = () => handleAnyflipIframeLoad(url);
+            document.body.appendChild(iframe);
+        }
     }
 });
 </script>
@@ -103,7 +118,6 @@ onMounted(() => {
         <div v-if="materials.length > 0" class="md:px-12">
             <div v-for="material in materials" :key="material.id"
                 class="border border-gray-300 shadow-lg bg-white">
-
                 <div class="flex flex-row gap-2 w-full">
                     <div class="py-4 bg-blue-800 flex-1">
                         <p class="text-sm text-white text-center whitespace-nowrap">
@@ -144,7 +158,7 @@ onMounted(() => {
                 </div>
 
                 <div class="flex-1 relative">
-                    <div v-if="isAnyflipLoading" class="absolute inset-0 flex items-center justify-center">
+                    <div v-if="isAnyflipLoading && !iframeCache.has(currentAnyflipUrl)" class="absolute inset-0 flex items-center justify-center">
                         <div class="spinner"></div>
                     </div>
 
@@ -162,35 +176,19 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="w-full h-full flex items-center justify-center px-4">
-                        <iframe
-                            v-if="showAnyflipModal"
-                            :src="currentAnyflipUrl"
-                            @load="handleAnyflipIframeLoad"
-                            class="w-full h-full max-w-full max-h-full border-0"
-                            :class="{ 'hidden': isAnyflipLoading && !isAnyflipLoaded }"
-                            seamless="seamless"
-                            scrolling="no"
-                            frameborder="0"
-                            allowtransparency="true"
-                            allowfullscreen="true">
-                        </iframe>
-                    </div>
+                    <iframe
+                        v-show="!isAnyflipLoading || iframeCache.has(currentAnyflipUrl)"
+                        :src="currentAnyflipUrl"
+                        @load="handleAnyflipIframeLoad(currentAnyflipUrl)"
+                        class="w-full h-full border-0"
+                        seamless="seamless"
+                        scrolling="no"
+                        frameborder="0"
+                        allowtransparency="true"
+                        allowfullscreen="true">
+                    </iframe>
                 </div>
             </div>
-        </div>
-
-        <div v-if="materials.length > 0" class="hidden">
-            <iframe
-                :src="currentAnyflipUrl"
-                @load="handleAnyflipIframeLoad"
-                class="w-0 h-0 border-0"
-                seamless="seamless"
-                scrolling="no"
-                frameborder="0"
-                allowtransparency="true"
-                allowfullscreen="true">
-            </iframe>
         </div>
     </div>
 </template>
