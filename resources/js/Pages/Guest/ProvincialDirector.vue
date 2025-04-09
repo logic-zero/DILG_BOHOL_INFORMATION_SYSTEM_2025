@@ -7,7 +7,7 @@
                     <div class="transform hover:-rotate-3 transition duration-500 mb-4">
                         <img
                             v-if="pdinfo.profile_image"
-                            :src="`/profile_images/${pdinfo.profile_image}`"
+                            :src="`/organizational_structure/${pdinfo.profile_image}`"
                             alt="Provincial Director"
                             class="shadow-lg border h-96 w-96 object-cover"
                         >

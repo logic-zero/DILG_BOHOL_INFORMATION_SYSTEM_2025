@@ -98,7 +98,7 @@ const clearFilters = () => {
 </script>
 
 <template>
-    <div class="p-6 w-full">
+    <div class="p-2 lg:p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
             News & Updates
         </h1>
@@ -153,14 +153,13 @@ const clearFilters = () => {
                 <div v-if="news.images.length" class="w-full md:w-2/5 flex justify-center">
                     <swiper :modules="[Pagination, Autoplay]" :pagination="{ clickable: false }"
                         :allowTouchMove="false" :autoplay="{ delay: 3000, disableOnInteraction: false }"
-                        class="w-full max-w-[400px] shadow-lg shadow-black/50">
+                        class="w-full max-w-[400px]">
                         <swiper-slide v-for="(image, index) in news.images" :key="index"
-                            class="p-2 border border-gray-300">
-                            <div class="relative flex justify-center items-center h-[250px] w-full overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center blur-lg scale-110"
-                                    :style="{ backgroundImage: `url(/news_images/${image})` }"></div>
+                            class="">
+                            <div class="flex justify-center items-center h-[250px] w-full overflow-hidden">
                                 <img :src="`/news_images/${image}`" alt="News Image"
-                                    class="max-h-full max-w-full object-contain relative z-10" />
+                                    class="max-h-full max-w-full p-1 border border-gray-300 object-contain transition-transform duration-300 hover:scale-90"
+                                    style="box-shadow: 1px 0px 10px rgba(0, 0, 0, 0.75);" />
                             </div>
                         </swiper-slide>
                     </swiper>
@@ -177,7 +176,7 @@ const clearFilters = () => {
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                    }" class="px-4 py-1 mt-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
             </div>
         </div>
