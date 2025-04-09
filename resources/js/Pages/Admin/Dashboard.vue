@@ -1,10 +1,11 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm, router } from "@inertiajs/vue3";
+import { Head, useForm, router, Link } from "@inertiajs/vue3";
 import TotalCountCard from "@/Components/TotalCountCard.vue";
 import PageVisitCard from "@/Components/PageVisitCard.vue";
 import PageVisitsChart from "@/Components/PageVisitsChart.vue";
 import { ref, computed } from "vue";
+import { usePage } from '@inertiajs/vue3';
 
 defineOptions({ layout: AuthenticatedLayout });
 
@@ -23,6 +24,12 @@ const props = defineProps({
     knowledge_materials: Number,
     jobs: Number,
 });
+
+const page = usePage();
+
+const hasRole = (roles) => {
+    return page.props.auth.user.roles.some(userRole => roles.includes(userRole.name));
+};
 
 const isModalOpen = ref(false);
 const isAudioModalOpen = ref(false);
@@ -193,30 +200,55 @@ const submitHomeAudio = () => {
 
         <div class="flex-1">
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 justify-items-center">
-                <TotalCountCard title="Total News" :count="newsStats.total" icon="fas fa-newspaper" color="indigo" />
-                <TotalCountCard title="Approved News" :count="newsStats.approved" icon="fas fa-check-circle"
-                    color="green" />
-                <TotalCountCard title="Pending News" :count="newsStats.pending" icon="fas fa-clock" color="yellow" />
+                <Link v-if="hasRole(['Publisher', 'Admin', 'Super-Admin'])" href="/admin/news" class="w-full">
+                    <TotalCountCard title="Total News" :count="newsStats.total" icon="fas fa-newspaper" color="indigo" />
+                </Link>
+                <Link v-if="hasRole(['Publisher', 'Admin', 'Super-Admin'])" href="/admin/news" class="w-full">
+                    <TotalCountCard title="Approved News" :count="newsStats.approved" icon="fas fa-check-circle" color="green" />
+                </Link>
+                <Link v-if="hasRole(['Publisher', 'Admin', 'Super-Admin'])" href="/admin/news" class="w-full">
+                    <TotalCountCard title="Pending News" :count="newsStats.pending" icon="fas fa-clock" color="yellow" />
+                </Link>
 
-                <TotalCountCard title="Organizational Structure" :count="organizational_structure" icon="fas fa-sitemap"
-                    color="fuchsia" />
-                <TotalCountCard title="PDMUs" :count="pdmu" icon="fas fa-user-friends" color="pink" />
-                <TotalCountCard title="Field Officers" :count="field_officers" icon="fas fa-users" color="violet" />
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/organizational-structure" class="w-full">
+                    <TotalCountCard title="Organizational Structure" :count="organizational_structure" icon="fas fa-sitemap" color="fuchsia" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/pdmu" class="w-full">
+                    <TotalCountCard title="PDMUs" :count="pdmu" icon="fas fa-user-friends" color="pink" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/field-officers" class="w-full">
+                    <TotalCountCard title="Field Officers" :count="field_officers" icon="fas fa-users" color="violet" />
+                </Link>
 
-                <TotalCountCard title="LGUs" :count="lgu" icon="fas fa-city" color="red" />
-                <TotalCountCard title="FAQs" :count="faq" icon="fas fa-question-circle" color="orange" />
-                <TotalCountCard title="Issuances" :count="issuances" icon="fas fa-file-alt" color="amber" />
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/lgus" class="w-full">
+                    <TotalCountCard title="LGUs" :count="lgu" icon="fas fa-city" color="red" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/faqs" class="w-full">
+                    <TotalCountCard title="FAQs" :count="faq" icon="fas fa-question-circle" color="orange" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/issuances" class="w-full">
+                    <TotalCountCard title="Issuances" :count="issuances" icon="fas fa-file-alt" color="amber" />
+                </Link>
 
-                <TotalCountCard title="Provincial Officials" :count="prov_officials" icon="fas fa-user-tie"
-                    color="lime" />
-                <TotalCountCard title="Citizens Charter" :count="citizens_charter" icon="fas fa-file-signature"
-                    color="emerald" />
-                <TotalCountCard title="Users" :count="users" icon="fas fa-user-cog" color="teal" />
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/provincial-officials" class="w-full">
+                    <TotalCountCard title="Provincial Officials" :count="prov_officials" icon="fas fa-user-tie" color="lime" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/citizens-charter" class="w-full">
+                    <TotalCountCard title="Citizens Charter" :count="citizens_charter" icon="fas fa-file-signature" color="emerald" />
+                </Link>
+                <Link v-if="hasRole(['Super-Admin'])" href="/admin/users" class="w-full">
+                    <TotalCountCard title="Users" :count="users" icon="fas fa-user-cog" color="teal" />
+                </Link>
 
-                <TotalCountCard title="Downloadables" :count="prov_officials" icon="fas fa-download" color="cyan" />
-                <TotalCountCard title="Knowledge Materials" :count="knowledge_materials" icon="fas fa-book"
-                    color="violet" />
-                <TotalCountCard title="Job Vacancies" :count="jobs" icon="fas fa-briefcase" color="purple" />
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/adminDownloadables" class="w-full">
+                    <TotalCountCard title="Downloadables" :count="prov_officials" icon="fas fa-download" color="cyan" />
+                </Link>
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/knowledge-materials" class="w-full">
+                    <TotalCountCard title="Knowledge Materials" :count="knowledge_materials" icon="fas fa-book" color="violet" />
+                </Link>
+                <Link v-if="hasRole(['Publisher', 'Admin', 'Super-Admin'])" href="/admin/jobs" class="w-full">
+                    <TotalCountCard title="Job Vacancies" :count="jobs" icon="fas fa-briefcase" color="purple" />
+                </Link>
             </div>
         </div>
 
