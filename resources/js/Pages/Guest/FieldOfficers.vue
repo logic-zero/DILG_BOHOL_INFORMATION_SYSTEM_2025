@@ -83,7 +83,7 @@ const applyFilters = () => {
                         </div>
                         <div class="text-center">
                             <p class="text-sm font-semibold text-gray-800">
-                                {{ officer.fname }} {{ officer.lname }}
+                                {{ officer.fname }} {{ officer.mid_initial }} {{ officer.lname }}
                             </p>
                             <p class="text-xs text-gray-600">
                                 {{ officer.position }}

@@ -228,7 +228,7 @@ const deleteFieldOfficer = async () => {
                             <span v-else>No Image</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            {{ fieldOfficer.fname }} {{ fieldOfficer.mid_initial }}. {{ fieldOfficer.lname }}
+                            {{ fieldOfficer.fname }} {{ fieldOfficer.mid_initial }} {{ fieldOfficer.lname }}
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ fieldOfficer.municipality.municipality }}
@@ -267,7 +267,7 @@ const deleteFieldOfficer = async () => {
 
                 <div class="text-center">
                     <h2 class="text-xl font-extrabold text-gray-900 mb-2">
-                        {{ fieldOfficer.fname }} {{ fieldOfficer.mid_initial }}. {{ fieldOfficer.lname }}
+                        {{ fieldOfficer.fname }} {{ fieldOfficer.mid_initial }} {{ fieldOfficer.lname }}
                     </h2>
                     <p class="text-sm text-gray-600">
                         <span class="font-bold">Municipality:</span> {{ fieldOfficer.municipality.municipality }}

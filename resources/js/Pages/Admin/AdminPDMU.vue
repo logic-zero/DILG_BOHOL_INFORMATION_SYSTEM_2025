@@ -190,7 +190,7 @@ const deletePDMU = async () => {
                             <span v-else>No Image</span>
                         </td>
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            {{ pdmu.fname }} {{ pdmu.mid_initial }}. {{ pdmu.lname }}
+                            {{ pdmu.fname }} {{ pdmu.mid_initial }} {{ pdmu.lname }}
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ pdmu.position }}
@@ -223,7 +223,7 @@ const deletePDMU = async () => {
 
                 <div class="text-center">
                     <h2 class="text-xl font-extrabold text-gray-900 mb-2">
-                        {{ pdmu.fname }} {{ pdmu.mid_initial }}. {{ pdmu.lname }}
+                        {{ pdmu.fname }} {{ pdmu.mid_initial }} {{ pdmu.lname }}
                     </h2>
                     <p class="text-sm text-gray-600">
                         <span class="font-bold">Position:</span> {{ pdmu.position }}
