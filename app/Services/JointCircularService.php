@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\JointCircular;
-use App\Models\PresidentialDirective;
-use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
+use App\Models\JointCircular;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -19,6 +19,150 @@ class JointCircularService
      * @param string|null $search Optional search term to filter results.
      * @return array An array of legal opinions (titles, links, references, and dates).
      */
+    // public function scrapeJointCirculars(string $url, $search = null)
+    // {
+    //     $client = new Client([
+    //         'timeout' => 180,
+    //         'headers' => [
+    //             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    //         ],
+    //         'verify' => storage_path('cacert.pem'),
+    //     ]);
+
+    //     $uniqueCirculars = [];
+
+    //     try {
+    //         $currentPage = 1;
+
+    //         while ($url) {
+    //             Log::info("Scraping URL (Page {$currentPage}): {$url}");
+    //             $currentPage++;
+
+    //             $response = $client->request('GET', $url);
+    //             $html = $response->getBody()->getContents();
+    //             $crawler = new Crawler($html);
+
+    //             Log::info("Full HTML content: " . substr($html, 0, 500));
+
+    //             if ($crawler->filter('table.view_details')->count() === 0) {
+    //                 Log::warning("Table 'view_details' not found on page.");
+    //                 break;
+    //             }
+
+    //             $firstRow = $crawler->filter('table.view_details tr')->first();
+    //             if ($firstRow->count() > 0) {
+    //                 Log::info("First row HTML: " . $firstRow->html());
+    //             }
+
+    //             $circulars = $crawler->filter('table.view_details tr')->each(function (Crawler $node) use ($client, $search) {
+    //                 try {
+    //                     $data = [
+    //                         'title' => '',
+    //                         'link' => '',
+    //                         'reference' => '',
+    //                         'date' => '',
+    //                         'downloadLink' => ''
+    //                     ];
+
+    //                     $anchor = $node->filter('td a');
+    //                     $data['title'] = $anchor->count() > 0 ? trim($anchor->text()) : '';
+    //                     $data['link'] = $anchor->count() > 0 ? $anchor->attr('href') : '';
+
+    //                     $referenceNode = $node->filter('td strong');
+    //                     if ($referenceNode->count() > 0) {
+    //                         $referenceText = trim($referenceNode->text());
+    //                         $data['reference'] = trim(str_replace('Reference No:', '', $referenceText));
+    //                     }
+
+    //                     $dateNode = $node->filter('td[nowrap]');
+    //                     $data['date'] = $dateNode->count() > 0 ? trim($dateNode->text()) : '';
+
+    //                     if ($data['link'] && !str_starts_with($data['link'], 'http')) {
+    //                         $data['link'] = 'https://dilg.gov.ph' . $data['link'];
+    //                     }
+
+    //                     if (
+    //                         $search &&
+    //                         stripos($data['title'], $search) === false &&
+    //                         stripos($data['reference'], $search) === false
+    //                     ) {
+    //                         return null;
+    //                     }
+
+    //                     if (!empty($data['link'])) {
+    //                         try {
+    //                             $response = $client->request('GET', $data['link']);
+    //                             $detailHtml = $response->getBody()->getContents();
+    //                             $detailCrawler = new Crawler($detailHtml);
+
+    //                             $downloadNode = $detailCrawler->filter('a.btn_download');
+    //                             if ($downloadNode->count() > 0) {
+    //                                 $data['downloadLink'] = $downloadNode->attr('href');
+    //                                 if ($data['downloadLink'] && !str_starts_with($data['downloadLink'], 'http')) {
+    //                                     $data['downloadLink'] = 'https://dilg.gov.ph' . $data['downloadLink'];
+    //                                 }
+    //                             }
+    //                         } catch (\Exception $e) {
+    //                             Log::warning("Failed to fetch download link for {$data['title']}: " . $e->getMessage());
+    //                         }
+    //                     }
+
+    //                     return $data;
+    //                 } catch (\Exception $e) {
+    //                     Log::warning("Error processing a row: " . $e->getMessage());
+    //                     return null;
+    //                 }
+    //             });
+
+    //             $circulars = array_filter($circulars);
+
+    //             foreach ($circulars as $circular) {
+    //                 $uniqueKey = $circular['reference'] ?: null;
+
+    //                 if ($uniqueKey === null || !array_key_exists($uniqueKey, $uniqueCirculars)) {
+    //                     if ($uniqueKey === null) {
+    //                         $uniqueCirculars[] = $circular;
+    //                     } else {
+    //                         $uniqueCirculars[$uniqueKey] = $circular;
+    //                     }
+
+    //                     JointCircular::updateOrCreate(
+    //                         ['reference' => $circular['reference'] ?: null],
+    //                         [
+    //                             'title' => $circular['title'],
+    //                             'link' => $circular['link'],
+    //                             'date' => $circular['date'],
+    //                             'download_link' => $circular['downloadLink'],
+    //                         ]
+    //                     );
+    //                 }
+    //             }
+
+    //             // **Improved Pagination Handling**
+    //             $nextPageNode = $crawler->filter('li.pWord a:contains("next")');
+    //             if ($nextPageNode->count() > 0) {
+    //                 $nextPageHref = $nextPageNode->attr('href');
+    //                 if ($nextPageHref) {
+    //                     $url = str_starts_with($nextPageHref, 'http') ? $nextPageHref : 'https://dilg.gov.ph' . $nextPageHref;
+    //                 } else {
+    //                     Log::info('Next page link found, but no valid href attribute.');
+    //                     break;
+    //                 }
+    //             } else {
+    //                 $url = null;
+    //                 Log::info('No more pages to scrape.');
+    //             }
+    //         }
+
+    //         return [
+    //             'circulars' => array_values($uniqueCirculars),
+    //         ];
+    //     } catch (\Exception $e) {
+    //         Log::error('Error scraping data: ' . $e->getMessage());
+    //         return ['error' => 'Error scraping data: ' . $e->getMessage()];
+    //     }
+    // }
+
     public function scrapeJointCirculars(string $url, $search = null)
     {
         $client = new Client([
@@ -49,7 +193,6 @@ class JointCircularService
                     break;
                 }
 
-                // Log first row HTML
                 $firstRow = $crawler->filter('table.view_details tr')->first();
                 if ($firstRow->count() > 0) {
                     Log::info("First row HTML: " . $firstRow->html());
@@ -57,62 +200,82 @@ class JointCircularService
 
                 $circulars = $crawler->filter('table.view_details tr')->each(function (Crawler $node) use ($client, $search) {
                     try {
-                        $data = [
-                            'title' => '',
-                            'link' => '',
-                            'reference' => '', // Will remain empty if not found
-                            'date' => '',
-                            'downloadLink' => ''
-                        ];
+                        $title = $node->filter('td a')->count() > 0 ? trim($node->filter('td a')->text()) : null;
+                        $link = $node->filter('td a')->count() > 0 ? $node->filter('td a')->attr('href') : null;
 
-                        // Get title and link (optional)
-                        $anchor = $node->filter('td a');
-                        $data['title'] = $anchor->count() > 0 ? trim($anchor->text()) : '';
-                        $data['link'] = $anchor->count() > 0 ? $anchor->attr('href') : '';
-
-                        // Reference - only set if found, otherwise stays empty
                         $referenceNode = $node->filter('td strong');
-                        if ($referenceNode->count() > 0) {
-                            $referenceText = trim($referenceNode->text());
-                            $data['reference'] = trim(str_replace('Reference No:', '', $referenceText));
-                        }
-                        // Else: $data['reference'] remains ''
+                        $reference = $referenceNode->count() > 0 ? trim(str_replace('Reference No:', '', $referenceNode->text())) : null;
 
-                        // Date (optional)
-                        $dateNode = $node->filter('td[nowrap]');
-                        $data['date'] = $dateNode->count() > 0 ? trim($dateNode->text()) : '';
+                        $date = $node->filter('td[nowrap]')->count() > 0 ? trim($node->filter('td[nowrap]')->text()) : null;
 
-                        if ($data['link'] && !str_starts_with($data['link'], 'http')) {
-                            $data['link'] = 'https://dilg.gov.ph' . $data['link'];
-                        }
-
-                        if (
-                            $search &&
-                            stripos($data['title'], $search) === false &&
-                            stripos($data['reference'], $search) === false
-                        ) {
+                        if (!$title || !$link) {
+                            Log::warning("Skipping row due to missing title or link: " . $node->html());
                             return null;
                         }
 
-                        if (!empty($data['link'])) {
+                        if (!str_starts_with($link, 'http')) {
+                            $link = 'https://dilg.gov.ph' . $link;
+                        }
+
+                        if ($search && stripos($title, $search) === false && stripos($reference, $search) === false) {
+                            return null;
+                        }
+
+                        $downloadLink = null;
+                        $pdfFilename = null;
+
+                        if (!empty($link)) {
                             try {
-                                $response = $client->request('GET', $data['link']);
+                                $response = $client->request('GET', $link);
                                 $detailHtml = $response->getBody()->getContents();
                                 $detailCrawler = new Crawler($detailHtml);
 
                                 $downloadNode = $detailCrawler->filter('a.btn_download');
                                 if ($downloadNode->count() > 0) {
-                                    $data['downloadLink'] = $downloadNode->attr('href');
-                                    if ($data['downloadLink'] && !str_starts_with($data['downloadLink'], 'http')) {
-                                        $data['downloadLink'] = 'https://dilg.gov.ph' . $data['downloadLink'];
+                                    $downloadLink = $downloadNode->attr('href');
+
+                                    if ($downloadLink && !str_starts_with($downloadLink, 'http')) {
+                                        $downloadLink = 'https://dilg.gov.ph' . $downloadLink;
+                                    }
+
+                                    // Download and save the PDF file
+                                    $pdfContent = $client->request('GET', $downloadLink)->getBody()->getContents();
+
+                                    $originalFilename = basename(parse_url($downloadLink, PHP_URL_PATH));
+                                    if (empty($originalFilename)) {
+                                        $originalFilename = Str::slug($title) . '.pdf';
+                                    }
+
+                                    if (!str_ends_with(strtolower($originalFilename), '.pdf')) {
+                                        $originalFilename .= '.pdf';
+                                    }
+
+                                    $pdfFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalFilename);
+                                    $directory = public_path('joint_circulars');
+
+                                    if (!file_exists($directory)) {
+                                        mkdir($directory, 0755, true);
+                                    }
+
+                                    file_put_contents($directory . '/' . $pdfFilename, $pdfContent);
+
+                                    if (!file_exists($directory . '/' . $pdfFilename)) {
+                                        Log::error("Failed to save PDF: " . $directory . '/' . $pdfFilename);
                                     }
                                 }
                             } catch (\Exception $e) {
-                                Log::warning("Failed to fetch download link for {$data['title']}: " . $e->getMessage());
+                                Log::warning("Failed to fetch/download PDF for {$title}: " . $e->getMessage());
                             }
                         }
 
-                        return $data;
+                        return [
+                            'title' => $title,
+                            'link' => $link,
+                            'reference' => $reference,
+                            'date' => $date,
+                            'download_link' => $downloadLink,
+                            'file' => $pdfFilename
+                        ];
                     } catch (\Exception $e) {
                         Log::warning("Error processing a row: " . $e->getMessage());
                         return null;
@@ -122,30 +285,26 @@ class JointCircularService
                 $circulars = array_filter($circulars);
 
                 foreach ($circulars as $circular) {
-                    // Use reference if available, otherwise null (won't create duplicates)
-                    $uniqueKey = $circular['reference'] ?: null;
+                    $uniqueKey = $circular['reference'] ?? md5($circular['title'] . $circular['date']);
 
-                    if ($uniqueKey === null || !array_key_exists($uniqueKey, $uniqueCirculars)) {
-                        if ($uniqueKey === null) {
-                            // If no reference, just add to array with numeric index
-                            $uniqueCirculars[] = $circular;
-                        } else {
-                            $uniqueCirculars[$uniqueKey] = $circular;
-                        }
+                    if (!array_key_exists($uniqueKey, $uniqueCirculars)) {
+                        $uniqueCirculars[$uniqueKey] = $circular;
 
-                        JointCircular::updateOrCreate(
-                            ['reference' => $circular['reference'] ?: null], // Use NULL if empty
-                            [
-                                'title' => $circular['title'],
-                                'link' => $circular['link'],
-                                'date' => $circular['date'],
-                                'download_link' => $circular['downloadLink'],
-                            ]
-                        );
+                        $record = JointCircular::firstOrNew(['reference' => $circular['reference'] ?? null]);
+
+                        $record->title = $circular['title'];
+                        $record->link = $circular['link'];
+                        $record->date = $circular['date'];
+                        $record->download_link = $circular['download_link'];
+                        $record->file = $circular['file'] ?? null;
+
+                        $record->save();
+
+                        $saved = JointCircular::where('reference', $circular['reference'] ?? null)->first();
+                        Log::info("Saved record file value:", ['file' => $saved->file ?? 'null']);
                     }
                 }
 
-                // **Improved Pagination Handling**
                 $nextPageNode = $crawler->filter('li.pWord a:contains("next")');
                 if ($nextPageNode->count() > 0) {
                     $nextPageHref = $nextPageNode->attr('href');
@@ -162,11 +321,16 @@ class JointCircularService
             }
 
             return [
+                'success' => true,
                 'circulars' => array_values($uniqueCirculars),
             ];
         } catch (\Exception $e) {
             Log::error('Error scraping data: ' . $e->getMessage());
-            return ['error' => 'Error scraping data: ' . $e->getMessage()];
+            return [
+                'success' => false,
+                'error' => 'Error scraping data: ' . $e->getMessage(),
+                'circulars' => []
+            ];
         }
     }
 

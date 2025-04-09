@@ -10,13 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('joint_circulars', function (Blueprint $table) {
+        Schema::create('downloadables', function (Blueprint $table) {
             $table->id();
-            $table->text('title')->nullable();
-            $table->text('link')->nullable();
-            $table->string('reference')->unique()->nullable();
-            $table->string('date')->nullable();
-            $table->text('download_link')->nullable();
+            $table->string('outcome_area')->nullable();
+            $table->string('program')->nullable();
+            $table->longText('title')->nullable();
+            $table->longText('link')->nullable();
             $table->string('file')->nullable();
             $table->timestamps();
         });
@@ -27,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('joint_circulars');
+        Schema::dropIfExists('downloadables');
     }
 };

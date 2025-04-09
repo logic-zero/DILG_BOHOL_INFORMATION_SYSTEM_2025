@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
 class RepublicActService
 {
@@ -113,7 +112,6 @@ class RepublicActService
                                     mkdir($directory, 0755, true);
                                 }
 
-                                // Save file directly to public directory
                                 file_put_contents($directory . '/' . $pdfFilename, $pdfContent);
 
                                 if (!file_exists($directory . '/' . $pdfFilename)) {
