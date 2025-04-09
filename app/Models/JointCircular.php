@@ -12,5 +12,6 @@ class JointCircular extends Model
         'reference',
         'date',
         'download_link',
+        'file',
     ];
 }

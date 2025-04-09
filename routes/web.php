@@ -5,6 +5,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminBoholIssuanceController;
 use App\Http\Controllers\AdminCitizens_CharterController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminDownloadableController;
 use App\Http\Controllers\AdminFaqController;
 use App\Http\Controllers\AdminField_OfficersController;
 use App\Http\Controllers\AdminJobController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\AdminProvincial_OfficialsController;
 
 use App\Http\Controllers\GuestBoholIssuanceController;
 use App\Http\Controllers\GuestCitizens_CharterController;
+use App\Http\Controllers\GuestDownloadableController;
 use App\Http\Controllers\GuestFaqController;
 use App\Http\Controllers\GuestField_OfficersController;
 use App\Http\Controllers\GuestJobController;
@@ -39,40 +41,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// routes/api.php
-Route::prefix('api')->group(function () {
-    Route::get('/proxy-pdf', function () {
-        $url = request()->query('url');
-
-        if (!$url) {
-            return response()->json(['error' => 'No URL provided'], 400);
-        }
-
-        try {
-            Log::info("Fetching PDF from: " . $url);
-
-            $response = Http::withOptions([
-                'verify' => storage_path('cacert.pem'), // Path to the CA bundle
-            ])->withHeaders([
-                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-                    ])->get($url);
-
-            if ($response->successful()) {
-                return response($response->body(), 200, [
-                    'Content-Type' => $response->header('Content-Type'),
-                    'Content-Disposition' => 'inline; filename="document.pdf"',
-                ]);
-            }
-
-            Log::error("Failed to fetch PDF. Status: " . $response->status());
-            return response()->json(['error' => 'Failed to fetch PDF'], $response->status());
-        } catch (\Exception $e) {
-            Log::error("Exception: " . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    });
-});
-
 //Guest Routes
 Route::get('/', [HomeController::class, 'Index'])->name('home');
 Route::get('/News', [GuestNewsController::class, 'index'])->name('guest.news');
@@ -81,6 +49,7 @@ Route::get('/LGUs', [GuestLguController::class, 'index'])->name('guest.lgus');
 Route::get('/latestIssuances', [GuestBoholIssuanceController::class, 'index'])->name('guest.latestIssuances');
 Route::get('/provincialOfficials', [GuestProvincial_OfficialsController::class, 'index'])->name('guest.provincialOfficials');
 Route::get('/FAQs', [GuestFaqController::class, 'index'])->name('guest.faqs');
+Route::get('/downloadables', [GuestDownloadableController::class, 'index'])->name('guest.downloadables');
 Route::get('/jobVacancies', [GuestJobController::class, 'index'])->name('guest.job');
 Route::get('/fieldOfficers', [GuestField_OfficersController::class, 'index'])->name('guest.fieldOfficers');
 Route::get('organizationalStructure', [GuestOrganizational_StructureController::class, 'index'])->name('guest.organizationalStructure');
@@ -97,7 +66,7 @@ Route::get('/aboutUs', [AboutController::class, 'index'])->name('AboutUs');
 Route::get('/provincialDirector', [ProvincialDirectorController::class, 'index'])->name('guest.provincialDirector');
 Route::inertia('/DILGFAMILY', 'Guest/DILGFAMILY')->name('DILGFAMILY');
 Route::inertia('/contactInformation', 'Guest/ContactInformation')->name('ContactInformation');
-Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
+// Route::inertia('/downloadables', 'Guest/Downloadables')->name('Downloadables');
 
 Route::post('/track-visit', [PageVisitController::class, 'trackVisit']);
 Route::get('/visit-count', [PageVisitController::class, 'getVisitCount']);
@@ -167,7 +136,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/issuances/{issuances}', [AdminBoholIssuanceController::class, 'destroy'])->name('issuances.destroy');
 
         //Downloadables Admin Routes
-        Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
+        // Route::inertia('/adminDownloadables', 'Admin/AdminDownloadables')->name('AdminDownloadables');
+
+        //Job Vacancies Admin Routes
+        Route::get('/admin/downloadables', [AdminDownloadableController::class, 'index'])->name('AdminDownloadables');
+        Route::post('/admin/downloadables', [AdminDownloadableController::class, 'store'])->name('downloadables.store');
+        Route::post('/admin/downloadables/{downloadable}', [AdminDownloadableController::class, 'update'])->name('downloadables.update');
+        Route::delete('/admin/downloadables/{downloadable}', [AdminDownloadableController::class, 'destroy'])->name('downloadables.destroy');
+
 
         //Knowledge Materials Admin Routes
         Route::get('/admin/knowledge-materials', [AdminKnowledge_MaterialsController::class, 'index'])->name('AdminKnowledgeMaterials');
