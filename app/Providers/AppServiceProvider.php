@@ -34,9 +34,6 @@ class AppServiceProvider extends ServiceProvider
             $republicActService->scrapeRepublicActs('https://dilg.gov.ph/issuances-archive/ra/');
             $republicActService->sendAllRepublicActsToTangkaraw();
 
-            $jointCircularService = app(JointCircularService::class);
-            // $jointCircularService->scrapeJointCirculars('https://dilg.gov.ph/issuances-archive/jc/');
-            $jointCircularService->sendJointCircularsToTangkaraw();
 
             $presidentialdirectiveService = app(PresidentialDirectiveService::class);
             $presidentialdirectiveService->scrapePresidentialdirectives('https://dilg.gov.ph/issuances-archive/pd/');
@@ -45,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
             $scraperService = app(LegalOpinionService::class);
             $scraperService->scrapeLegalOpinions('https://dilg.gov.ph/legal-opinions-archive/');
             $scraperService->sendAllLegalOpinionsToTangkaraw();
-        })->everyMinute();
+
+            $jointCircularService = app(JointCircularService::class);
+            $jointCircularService->scrapeJointCirculars('https://dilg.gov.ph/issuances-archive/jc/');
+            $jointCircularService->sendJointCircularsToTangkaraw();
+        })->everySixHours();
     }
 }

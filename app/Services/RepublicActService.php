@@ -220,7 +220,7 @@ class RepublicActService
         // Send to Tangkaraw
         Log::info('Sending republic acts to Tangkaraw:', ['payload' => $republicActsData]);
 
-        $response = Http::post('http://127.0.0.1:8000/webhook/republic-act', [
+        $response = Http::post('https://issuances.dilgbohol.com/webhook/republic-act', [
             'republic_acts' => $republicActsData,
         ]);
 

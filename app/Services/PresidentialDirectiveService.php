@@ -212,7 +212,7 @@ class PresidentialDirectiveService
         // Send to Tangkaraw
         Log::info('Sending presidential directives to Tangkaraw:', ['payload' => $presidentialDirectivesData]);
 
-        $response = Http::post('http://127.0.0.1:8000/webhook/presidential-directive', [
+        $response = Http::post('https://issuances.dilgbohol.com/webhook/presidential-directive', [
             'presidential_directives' => $presidentialDirectivesData,
         ]);
 

@@ -220,7 +220,7 @@ class LegalOpinionService
 
         Log::info('Sending legal opinions to Tangkaraw:', ['payload' => $legalOpinionsData]);
 
-        $response = Http::post('http://127.0.0.1:8000/webhook/legal-opinion', [
+        $response = Http::post('https://issuances.dilgbohol.com/webhook/legal-opinion', [
             'legal_opinions' => $legalOpinionsData,
         ]);
 
