@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(MunicipalitySeeder::class);
-        $this->call(FieldOfficerSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(LegalOpinionSeeder::class);
