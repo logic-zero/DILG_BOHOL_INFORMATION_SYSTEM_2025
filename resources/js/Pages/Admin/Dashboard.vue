@@ -240,7 +240,7 @@ const submitHomeAudio = () => {
                     <TotalCountCard title="Users" :count="users" icon="fas fa-user-cog" color="teal" />
                 </Link>
 
-                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/adminDownloadables" class="w-full">
+                <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/downloadables" class="w-full">
                     <TotalCountCard title="Downloadables" :count="prov_officials" icon="fas fa-download" color="cyan" />
                 </Link>
                 <Link v-if="hasRole(['Admin', 'Super-Admin'])" href="/admin/knowledge-materials" class="w-full">

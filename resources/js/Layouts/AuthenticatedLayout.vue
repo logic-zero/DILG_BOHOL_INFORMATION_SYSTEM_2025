@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
+import AdminClock from '@/Components/AdminClock.vue';
 
 const isSidebarExpanded = ref(true);
 const isDropdownOpen = ref(false);
@@ -100,9 +101,12 @@ const filteredNavLinks = navLinks.filter(link => hasRole(link.roles));
         </div>
         <div :class="{ 'lg:ml-64': isSidebarExpanded, 'lg:ml-20': !isSidebarExpanded }"
             class="flex-1 overflow-auto transition-all duration-300 ease-in-out">
-            <nav class="bg-white shadow-md px-6 py-2 flex justify-end items-center relative">
+            <nav class="bg-white shadow-md px-4 py-2 flex justify-between items-center relative">
+                <div>
+                    <AdminClock />
+                </div>
                 <div class="relative">
-                    <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-4 py-2 rounded">
+                    <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-1 py-2 rounded">
                         <span class="w-8 h-8 rounded-full overflow-hidden border border-black"><img
                             :src="`/profile_images/${$page.props.auth.user.profile_image}`"
                             class="w-full h-full object-cover"
