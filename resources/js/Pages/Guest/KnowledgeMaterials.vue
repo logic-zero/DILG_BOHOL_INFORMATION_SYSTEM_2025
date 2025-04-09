@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed, onMounted } from "vue";
-import { usePage, router } from "@inertiajs/vue3";
+import { usePage, router, Head } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 
@@ -100,6 +100,9 @@ onMounted(() => {
 </script>
 
 <template>
+    <Head>
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    </Head>
     <div class="p-6 w-full">
         <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
             Knowledge Materials
