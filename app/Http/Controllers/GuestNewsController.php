@@ -50,7 +50,7 @@ class GuestNewsController extends Controller
             'meta' => [
                 'title' => $news->title,
                 'description' => $news->caption ?: Str::limit(strip_tags($news->content), 160),
-                'image' => $news->images ? asset('storage/'.$news->images[0]) : null,
+                'image' => $news->images ? asset('news_images/'.$news->images[0]) : null,
             ]
         ]);
     }
