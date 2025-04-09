@@ -20,6 +20,12 @@ const showSuccess = ref(false);
 const successMessage = ref("");
 const isDeleteModalOpen = ref(false);
 const materialToDelete = ref(null);
+const isUploadModalOpen = ref(false);
+const uploadProgress = ref(0);
+const isUploading = ref(false);
+const cancelUpload = ref(() => {});
+const uploadStartTime = ref(null);
+const estimatedTimeRemaining = ref('');
 
 const paginationInfo = computed(() => {
     const { from, to, total } = pagination.value;
@@ -100,9 +106,10 @@ const submitMaterial = () => {
     if (!form.date) return (errorMessage.value = "Date is required.");
     if (!isEditMode.value && !form.file && !form.link) return (errorMessage.value = "File or Link is required.");
 
-    const url = isEditMode.value
-        ? `/admin/knowledge-materials/${form.id}`
-        : "/admin/knowledge-materials";
+    isUploadModalOpen.value = true;
+    isUploading.value = true;
+    uploadProgress.value = 0;
+    uploadStartTime.value = new Date();
 
     const formattedData = new FormData();
     formattedData.append("title", form.title);
@@ -110,24 +117,53 @@ const submitMaterial = () => {
     formattedData.append("date", form.date);
     if (form.file) formattedData.append("file", form.file);
 
-    router.post(url, formattedData, {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: ({ props }) => {
-            pagination.value = props.materials;
-            materialsList.value = [...props.materials.data];
-            showSuccessMessage(
-                isEditMode.value
-                    ? "Material updated successfully!"
-                    : "Material added successfully!"
+    const source = axios.CancelToken.source();
+    cancelUpload.value = () => {
+        source.cancel("Upload cancelled by user");
+        isUploading.value = false;
+        isUploadModalOpen.value = false;
+    };
+
+    const calculateETA = () => {
+        if (uploadProgress.value > 0 && uploadProgress.value < 100) {
+            const timeElapsed = (new Date() - uploadStartTime.value) / 1000;
+            const totalEstimatedTime = timeElapsed * (100 / uploadProgress.value);
+            const remainingTime = totalEstimatedTime - timeElapsed;
+            estimatedTimeRemaining.value = `${Math.ceil(remainingTime)}s remaining`;
+        }
+    };
+
+    const config = {
+        onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
             );
+            uploadProgress.value = percentCompleted;
+            calculateETA();
+        },
+        cancelToken: source.token,
+    };
+
+    const url = isEditMode.value
+        ? `/admin/knowledge-materials/${form.id}`
+        : "/admin/knowledge-materials";
+
+    axios
+        .post(url, formattedData, config)
+        .then((response) => {
+            showSuccessMessage(response.data.success);
+            fetchMaterials();
             closeModal();
-        },
-        onError: (errors) => {
-            errorMessage.value =
-                Object.values(errors).flat().join(", ") || "An error occurred.";
-        },
-    });
+        })
+        .catch((error) => {
+            if (!axios.isCancel(error)) {
+                errorMessage.value =
+                    error.response?.data?.message || "An error occurred during upload.";
+            }
+        })
+        .finally(() => {
+            isUploading.value = false;
+        });
 };
 
 const openDeleteModal = (material) => {
@@ -343,6 +379,71 @@ const downloadFile = (material) => {
                     </button>
                     <button @click="closeModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
                         Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="isUploadModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md mx-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        {{ isUploading ? 'Uploading File' : 'Upload Complete' }}
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-600">
+                            {{ uploadProgress }}%
+                        </span>
+                        <span v-if="isUploading" class="text-xs text-gray-500">
+                            {{ estimatedTimeRemaining }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="relative pt-1 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="inline-block h-3 w-3 rounded-full bg-blue-500 animate-pulse" v-if="isUploading"></span>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden h-3 mb-2 text-xs flex rounded-full bg-gray-200">
+                        <div
+                            :style="`width: ${uploadProgress}%`"
+                            class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>File:</span>
+                        <span class="font-medium truncate max-w-xs">{{ form.file?.name || 'No file selected' }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Status:</span>
+                        <span :class="{
+                            'text-blue-600': isUploading,
+                            'text-green-600': !isUploading
+                        }">
+                            {{ isUploading ? 'Uploading...' : 'Completed' }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button
+                        v-if="isUploading"
+                        @click="cancelUpload"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        v-else
+                        @click="isUploadModalOpen = false"
+                        class="px-4 py-2 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        Done
                     </button>
                 </div>
             </div>
