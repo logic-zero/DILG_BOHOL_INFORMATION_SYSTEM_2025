@@ -150,7 +150,7 @@ onMounted(() => {
             </div>
         </div>
 
-        <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-1 bg-black bg-opacity-50">
             <div class="relative bg-white shadow-xl w-full max-w-6xl h-[95vh] mx-auto flex flex-col">
                 <div class="flex items-center justify-between py-2 px-4 border-b border-gray-200">
                     <h3 class="text-md font-bold text-blue-900">{{ currentMaterial?.title }}</h3>
