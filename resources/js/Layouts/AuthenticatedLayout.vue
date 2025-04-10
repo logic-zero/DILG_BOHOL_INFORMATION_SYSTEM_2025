@@ -108,10 +108,12 @@ const filteredNavLinks = navLinks.filter(link => hasRole(link.roles));
                 <div class="relative">
                     <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none px-1 py-2 rounded">
                         <span class="w-8 h-8 rounded-full overflow-hidden border border-black"><img
+                            v-if="$page.props.auth.user.profile_image"
                             :src="`/profile_images/${$page.props.auth.user.profile_image}`"
                             class="w-full h-full object-cover"
                             alt="No Image"
                         />
+                            <img v-else src="/img/user_default_img.jpg" class="w-full h-full object-cover" alt="No Image" />
                         </span>
                         <span>{{ $page.props.auth.user.name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"

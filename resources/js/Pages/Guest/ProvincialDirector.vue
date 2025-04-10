@@ -17,7 +17,7 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-medium">{{ pdinfo.name }}</p>
+                    <p class="text-2xl font-medium">{{ pdinfo.fname }} {{ pdinfo.mid_initial }} {{ pdinfo.lname }}</p>
                     <p class="text-xl mb-2">{{ pdinfo.position }}</p>
                     <p class="text-center">
                         <img src="/img/dilg-main.png" class="h-10 w-10 inline-block" alt="DILG Logo">
