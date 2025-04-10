@@ -157,7 +157,7 @@ const clearFilters = () => {
                         <swiper-slide v-for="(image, index) in news.images" :key="index"
                             class="">
                             <div class="flex justify-center items-center h-[250px] w-full overflow-hidden">
-                                <img :src="`/news_images/${image}`" alt="News Image"
+                                <img :src="`/news_images/${image}`" loading="lazy" alt="News Image"
                                     class="max-h-full max-w-full p-1 border border-gray-300 object-contain transition-transform duration-300 hover:scale-90"
                                     style="box-shadow: 1px 0px 10px rgba(0, 0, 0, 0.75);" />
                             </div>

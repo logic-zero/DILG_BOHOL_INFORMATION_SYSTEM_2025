@@ -91,6 +91,7 @@
                                 :src="directive.file ? '/presidential_directives/' + directive.file + '#toolbar=0' : ''"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
+                                loading="lazy"
                                 @load="iframeLoaded"
                                 @error="iframeError">
                             </iframe>

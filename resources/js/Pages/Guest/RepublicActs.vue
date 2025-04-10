@@ -92,6 +92,7 @@
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"
+                                loading="lazy"
                                 @error="iframeError"
                                 allowfullscreen>
                             </iframe>

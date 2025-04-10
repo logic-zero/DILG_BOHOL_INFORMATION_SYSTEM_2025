@@ -64,7 +64,7 @@
             <div class="flex justify-center">
                 <div class="text-center">
                     <div v-for="official in exOfficio" :key="official.id" class="mb-4">
-                        <img :src="`/provincial_officials/${official.profile_image}`" class="w-40 h-40 rounded-full mx-auto object-cover shadow-lg border border-black" alt="Profile Image" />
+                        <img :src="`/provincial_officials/${official.profile_image}`" loading="lazy" class="w-40 h-40 rounded-full mx-auto object-cover shadow-lg border border-black" alt="Profile Image" />
                         <p class="mt-2 text-lg font-bold">{{ official.name }}</p>
                         <p class="text-sm text-gray-600">{{ official.position }}</p>
                     </div>

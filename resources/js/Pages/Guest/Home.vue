@@ -85,7 +85,7 @@
                             <swiper-slide v-for="(image, index) in news.images" :key="index"
                                 class="">
                                 <div class="flex justify-center items-center h-[250px] w-full overflow-hidden">
-                                    <img :src="`/news_images/${image}`" alt="News Image"
+                                    <img :src="`/news_images/${image}`" alt="News Image" loading="lazy"
                                         class="max-h-full max-w-full p-1 border border-gray-300 object-contain transition-transform duration-300 hover:scale-90"
                                         style="box-shadow: 1px 0px 10px rgba(0, 0, 0, 0.75);" />
                                 </div>
@@ -160,7 +160,7 @@
                                 </div>
 
                                 <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
-                                    height="500px"></iframe>
+                                    height="500px" loading="lazy"></iframe>
                             </div>
                             <div class="border border-gray-500 bg-gray-100 text-gray-700 p-2 rounded text-center w-full mt-2">
                                 <div class="flex items-center justify-center">
@@ -198,7 +198,7 @@
                         <iframe class="w-full h-full border-0 rounded" src="https://www.youtube.com/embed/cwAGIorJD6o"
                             title="Baya't LGOO" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
                     </div>
                 </div>
 

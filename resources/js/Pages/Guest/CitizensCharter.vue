@@ -60,6 +60,7 @@ const goToPage = (url) => {
                         class="w-full aspect-[3/2]"
                         :poster="charter.thumbnail ? `/citizens_charters/thumbnails/${charter.thumbnail}` : '/img/default-video-thumbnail.jpg'"
                         preload="none"
+                        loading="lazy"
                     >
                         <source :src="`/citizens_charters/${charter.file}`" type="video/mp4">
                         Your browser does not support the video tag.

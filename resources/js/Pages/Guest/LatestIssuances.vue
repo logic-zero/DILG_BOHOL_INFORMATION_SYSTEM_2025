@@ -134,7 +134,7 @@ const openFullScreen = (fileUrl) => {
                             </div>
 
                             <iframe :src="'/issuance_files/' + issuance.file + '#toolbar=0'" width="100%"
-                                height="500px"></iframe>
+                                height="500px" loading="lazy"></iframe>
                         </div>
                         <div class="border border-gray-500 bg-gray-100 text-gray-700 p-2 rounded text-center w-full mt-2">
                             <div class="flex items-center justify-center">

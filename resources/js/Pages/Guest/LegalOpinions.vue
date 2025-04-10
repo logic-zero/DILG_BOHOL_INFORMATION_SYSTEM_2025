@@ -104,6 +104,7 @@
                                 frameborder="0"
                                 @load="iframeLoaded"
                                 @error="iframeError"
+                                loading="lazy"
                                 allowfullscreen>
                             </iframe>
 

@@ -101,7 +101,7 @@ const getSbMembers = (lgu) => {
                 </div>
             </div>
         </div>
-        <div class="p-6 w-full">
+        <div class="p-2 lg:p-6 w-full">
             <h1 class="text-xl bg-blue-800 text-white p-2 font-bold text-center mb-6 uppercase">
                 LIST OF LOCAL ELECTIVE OFFICIALS
             </h1>
@@ -159,8 +159,8 @@ const getSbMembers = (lgu) => {
                         </div>
                     </div>
                     <div class="flex-none w-full lg:w-1/2 flex flex-col lg:flex-1">
-                        <iframe :src="lgu.municipality.gmap_url" class="w-full aspect-square"
-                            style="border: 0;"></iframe>
+                            <iframe :src="lgu.municipality.gmap_url" loading="lazy" class="w-full aspect-square"
+                                style="border: 0;"></iframe>
                         <div class="mt-4">
                             <p class="text-sm text-gray-600 text-center font-medium mb-2">
                                 No. of Barangays: {{ lgu.municipality.num_of_brgys }}
