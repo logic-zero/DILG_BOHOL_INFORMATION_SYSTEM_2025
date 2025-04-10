@@ -4,7 +4,7 @@
 
         <transition name="slide-up">
             <div v-if="isOpen && newsItem"
-                class="relative bg-white shadow-lg w-[90vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] my-8 mx-auto">
+                class="relative bg-white shadow-lg w-[95vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] my-8 mx-auto">
                 <div class="px-4 py-3 border-b flex justify-between items-center">
                     <div class="flex flex-wrap items-center">
                         <p class="text-sm uppercase text-gray-700 font-black flex-shrink-0 mr-2">

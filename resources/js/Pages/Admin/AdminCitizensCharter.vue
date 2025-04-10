@@ -380,8 +380,8 @@ const downloadPdf = () => {
             </div>
         </div>
 
-        <div v-if="isPdfModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+        <div v-if="isPdfModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4 z-50">
+            <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
                 <h2 class="text-xl mb-4 font-extrabold">
                     {{ pdfData ? 'Update PDF' : 'Upload PDF' }}
                 </h2>
@@ -447,8 +447,8 @@ const downloadPdf = () => {
             </div>
         </div>
 
-        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4 z-50">
+            <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
                 <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit Video" : "Add Video" }}
                 </h2>
@@ -500,8 +500,8 @@ const downloadPdf = () => {
             </div>
         </div>
 
-        <div v-if="isUploadModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div v-if="isUploadModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4 z-50">
+            <div class="bg-white p-2 lg:p-6 rounded-lg shadow-xl w-full max-w-md">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-bold text-gray-800">
                         {{ isUploading ? 'Uploading Video' : 'Upload Complete' }}
@@ -569,8 +569,8 @@ const downloadPdf = () => {
             </div>
         </div>
 
-        <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+        <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4 z-50">
+            <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
                 <h2 class="text-xl mb-4 text-center">Are you sure?</h2>
                 <p class="text-center mb-4">
                     Do you really want to delete

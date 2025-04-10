@@ -346,8 +346,8 @@ const toggleDetails = (job) => {
             </div>
         </div>
 
-        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
-            <div class="bg-white p-6 shadow-lg w-full max-w-lg mx-4 max-h-[95vh] overflow-y-auto">
+        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
+            <div class="bg-white p-2 lg:p-6 shadow-lg w-full max-w-lg max-h-[95vh] overflow-y-auto">
                 <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit Job" : "Add Job" }}
                 </h2>
@@ -382,8 +382,8 @@ const toggleDetails = (job) => {
         </div>
 
         <div v-if="isDeleteModalOpen"
-            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
+            <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
                 <h2 class="text-xl mb-4 text-center">Are you sure?</h2>
                 <p class="text-center mb-4">
                     Do you really want to delete
@@ -401,7 +401,7 @@ const toggleDetails = (job) => {
             </div>
         </div>
 
-        <div v-if="isImageModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+        <div v-if="isImageModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-2 py-4"
              @click.self="closeImageModal">
           <div class="relative max-w-4xl max-h-screen">
             <button @click="closeImageModal"

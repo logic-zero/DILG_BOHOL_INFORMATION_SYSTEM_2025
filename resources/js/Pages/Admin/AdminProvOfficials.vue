@@ -266,8 +266,8 @@ const deleteOfficial = async () => {
             </div>
         </div>
 
-        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
-            <div class="bg-white p-6 shadow-lg w-full max-w-lg mx-4 max-h-[95vh] overflow-y-auto">
+        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
+            <div class="bg-white p-2 lg:p-6 shadow-lg w-full max-w-lg max-h-[95vh] overflow-y-auto">
                 <h2 class="text-xl mb-4 font-extrabold">
                     {{ isEditMode ? "Edit Official" : "Add Official" }}
                 </h2>
@@ -305,8 +305,8 @@ const deleteOfficial = async () => {
         </div>
 
         <div v-if="isDeleteModalOpen"
-            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
-            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg mx-4">
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
+            <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
                 <h2 class="text-xl mb-4 text-center">Are you sure?</h2>
                 <p class="text-center mb-4">
                     Do you really want to delete
