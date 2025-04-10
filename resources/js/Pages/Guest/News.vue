@@ -171,10 +171,10 @@ const clearFilters = () => {
                 class="border border-gray-300 bg-white p-6 shadow-lg shadow-black/50 flex flex-col md:flex-row gap-6 rounded cursor-pointer"
                 @click="openModal(news)">
                 <div class="w-full md:w-3/5">
-                    <p class="text-sm uppercase font-black text-gray-700 mb-8">
+                    <p class="text-xs uppercase font-black text-blue-900 mb-8">
                         {{ formatDate(news.created_at) }}
                     </p>
-                    <h2 class="text-lg md:text-xl font-bold text-blue-900 mt-2 line-clamp-2">
+                    <h2 class="text-lg font-bold text-gray-700 mt-2 line-clamp-2">
                         {{ news.title }}
                     </h2>
                     <p class="text-md text-gray-500 mt-3 line-clamp-5">

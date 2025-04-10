@@ -102,11 +102,11 @@ const setThumbsSwiper = (swiper) => {
 
                 <div class="xl:w-1/2 p-6 md:p-8">
                     <div class="text-content">
-                        <p class="text-sm uppercase font-semibold text-gray-500 mb-4">
+                        <p class="text-sm uppercase font-semibold text-blue-900 mb-4">
                             {{ formatDate(newsItem.created_at) }}
                         </p>
 
-                        <h2 class="text-2xl font-bold text-blue-900 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">
                             {{ newsItem.title }}
                         </h2>
 

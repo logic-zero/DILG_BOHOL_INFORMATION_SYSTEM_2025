@@ -29,7 +29,7 @@ class HomeController extends Controller
                 return $news;
             });
 
-        $b_issuances = Bohol_Issuance::select('id', 'title', 'reference_num', 'outcome_area', 'file')
+        $b_issuances = Bohol_Issuance::select('id', 'title', 'reference_num', 'date', 'category', 'outcome_area', 'file')
             ->orderBy('date', 'DESC')
             ->take(5)
             ->get();

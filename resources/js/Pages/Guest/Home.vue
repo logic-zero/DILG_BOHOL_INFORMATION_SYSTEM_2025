@@ -67,10 +67,10 @@
                     class="border border-gray-300 bg-white p-6 shadow-lg shadow-black/50 flex flex-col md:flex-row gap-6 rounded cursor-pointer"
                     @click="openModal(news)">
                     <div class="w-full md:w-3/5">
-                        <p class="text-sm uppercase font-black text-gray-700 mb-8">
+                        <p class="text-xs uppercase font-black text-blue-900 mb-8">
                             {{ formatDate(news.created_at) }}
                         </p>
-                        <h2 class="text-lg md:text-xl font-bold text-blue-900 mt-2 line-clamp-2">
+                        <h2 class="text-lg font-bold text-gray-700 mt-2 line-clamp-2">
                             {{ news.title }}
                         </h2>
                         <p class="text-md text-gray-500 mt-3 line-clamp-5">
@@ -118,31 +118,43 @@
 
             <div v-if="issuances.length > 0" class="space-y-4 md:px-12">
                 <div v-for="issuance in issuances" :key="issuance.id"
-                    class="border border-gray-300 p-4 shadow-lg rounded cursor-pointer transition-all duration-300 bg-white"
+                    class="border border-gray-200 p-4 cursor-pointer transition-all duration-200 bg-white hover:shadow-md"
                     @click="toggleIssuance(issuance.id)">
 
-                    <div class="flex justify-between items-center">
-                        <div class="flex-1">
-                            <h2 class="text-sm font-semibold text-blue-900 mb-2">{{ issuance.title }}</h2>
-                            <p class="text-xs text-gray-600 font-sm">{{ issuance.outcome_area }}</p>
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+                        <div class="flex-1 space-y-1">
+                            <p class="text-xs text-gray-500 font-medium">
+                                {{ issuance.date }}
+                            </p>
+                            <h2 class="text-base font-semibold text-gray-800">{{ issuance.title }}</h2>
+                            <p class="text-xs text-gray-600">{{ issuance.outcome_area }}</p>
                         </div>
-                        <p class="text-xs font-bold text-gray-700 w-40 text-right">
-                            <span class="text-red-600">Reference No:</span> {{ issuance.reference_num }}
-                        </p>
+                        <div class="md:ml-5">
+                            <p class="text-xs font-semibold text-gray-700 md:text-right">
+                                <span class="text-red-500">Ref:</span> {{ issuance.reference_num }}
+                            </p>
+                            <p class="text-xs text-gray-600 font-bold text-right">{{ issuance.category }}</p>
+                        </div>
                     </div>
 
-                    <div class="mt-2">
+                    <div class="mt-3 flex items-center justify-between border-t pt-3">
                         <a :href="'/issuance_files/' + issuance.file" download
-                            class="text-red-600 font-bold hover:underline" @click.stop>
-                            <i class="fas fa-file-pdf"></i> Download PDF
+                            class="text-xs font-medium text-red-600 hover:text-red-700 flex items-center"
+                            @click.stop>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download PDF
                         </a>
-                    </div>
 
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-xs text-gray-600 font-medium">Click to Open PDF</span>
-                        <i :class="{ 'fas fa-chevron-down': selectedIssuanceId === issuance.id, 'fas fa-chevron-right': selectedIssuanceId !== issuance.id }"
-                            class="text-gray-600 text-lg transition-transform duration-300"
-                            :style="{ transform: selectedIssuanceId === issuance.id ? 'rotate(180deg)' : 'rotate(0deg)' }"></i>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-gray-500">Click to view</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 transition-transform duration-200"
+                                :class="{ 'transform rotate-180': selectedIssuanceId === issuance.id }"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
                     </div>
 
                     <div :style="{ maxHeight: selectedIssuanceId === issuance.id ? '600px' : '0' }"

@@ -10,7 +10,7 @@ class GuestBoholIssuanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Bohol_Issuance::select('id', 'title', 'reference_num', 'outcome_area', 'file')
+        $query = Bohol_Issuance::select('id', 'title', 'reference_num', 'outcome_area', 'file', 'date', 'category')
             ->orderBy('date', 'DESC');
 
         if ($request->filled('search')) {

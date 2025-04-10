@@ -248,7 +248,7 @@ const deleteIssuance = async () => {
                     <tr v-for="issuance in issuancesList" :key="issuance.id"
                         class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-900 font-extrabold break-words">
-                            {{ issuance.title }}
+                            <div class="line-clamp-4">{{ issuance.title }}</div>
                         </td>
                         <td class="p-3 text-gray-600 break-words">
                             {{ issuance.outcome_area }}

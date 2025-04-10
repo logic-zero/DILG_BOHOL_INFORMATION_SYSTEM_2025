@@ -7,7 +7,7 @@
                 class="relative bg-white shadow-lg w-[95vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw] xl:w-[45vw] my-8 mx-auto">
                 <div class="px-4 py-3 border-b flex justify-between items-center">
                     <div class="flex flex-wrap items-center">
-                        <p class="text-sm uppercase text-gray-700 font-black flex-shrink-0 mr-2">
+                        <p class="text-xs uppercase text-blue-900 font-black flex-shrink-0 mr-2">
                             {{ formattedDate }}
                         </p>
                         <div>
@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="p-4">
-                    <h5 class="text-xl text-blue-900 font-black mb-5">{{ newsItem.title }}</h5>
+                    <h5 class="text-lg text-gray-700 font-black mb-5">{{ newsItem.title }}</h5>
                     <p class="text-gray-500 text-md whitespace-pre-line">{{ newsItem.caption }}</p>
                     <div v-if="newsItem.images.length" class="mt-4 space-y-4">
                         <img v-for="(image, index) in newsItem.images" :key="index" :src="`/news_images/${image}`"
