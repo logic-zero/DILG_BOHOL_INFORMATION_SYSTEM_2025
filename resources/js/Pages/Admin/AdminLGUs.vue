@@ -55,6 +55,38 @@ const fetchLgus = (url = "/admin/lgus") => {
 
 const goToPage = (url) => url && fetchLgus(url);
 
+const visiblePages = computed(() => {
+    const current = pagination.value.current_page;
+    const last = pagination.value.last_page;
+    const pages = [];
+
+    if (last <= 1) return pages;
+
+    if (current !== 1) {
+        pages.push({ label: '« First', url: pagination.value.first_page_url });
+    }
+
+    if (current > 1) {
+        pages.push({ label: '‹ Prev', url: pagination.value.prev_page_url });
+    }
+
+    pages.push({
+        label: current.toString(),
+        url: pagination.value.path + '?page=' + current,
+        active: true
+    });
+
+    if (current < last) {
+        pages.push({ label: 'Next ›', url: pagination.value.next_page_url });
+    }
+
+    if (current !== last) {
+        pages.push({ label: 'Last »', url: pagination.value.last_page_url });
+    }
+
+    return pages;
+});
+
 const form = useForm({
     id: null,
     municipality_id: "",
@@ -285,12 +317,13 @@ const deleteLgu = async () => {
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
-            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+            <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
+                <button v-for="(link, index) in visiblePages" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url"></button>
+                    }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                </button>
             </div>
         </div>
 

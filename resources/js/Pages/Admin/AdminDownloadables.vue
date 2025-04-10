@@ -91,6 +91,38 @@ const fetchDownloadables = (url = "/admin/downloadables") => {
 
 const goToPage = (url) => url && fetchDownloadables(url);
 
+const visiblePages = computed(() => {
+    const current = pagination.value.current_page;
+    const last = pagination.value.last_page;
+    const pages = [];
+
+    if (last <= 1) return pages;
+
+    if (current !== 1) {
+        pages.push({ label: '« First', url: pagination.value.first_page_url });
+    }
+
+    if (current > 1) {
+        pages.push({ label: '‹ Prev', url: pagination.value.prev_page_url });
+    }
+
+    pages.push({
+        label: current.toString(),
+        url: pagination.value.path + '?page=' + current,
+        active: true
+    });
+
+    if (current < last) {
+        pages.push({ label: 'Next ›', url: pagination.value.next_page_url });
+    }
+
+    if (current !== last) {
+        pages.push({ label: 'Last »', url: pagination.value.last_page_url });
+    }
+
+    return pages;
+});
+
 const form = useForm({
     id: null,
     title: "",
@@ -335,13 +367,13 @@ const getFileIcon = (fileName) => {
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
-            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+            <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
+                <button v-for="(link, index) in visiblePages" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition"
-                    :disabled="!link.url"></button>
+                    }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                </button>
             </div>
         </div>
 
@@ -369,7 +401,7 @@ const getFileIcon = (fileName) => {
                     <option value="">Select Existing Program</option>
                     <option v-for="program in programs" :key="program" :value="program">{{ program }}</option>
                 </select>
-                
+
                 <label class="font-bold block text-gray-700">Title</label>
                 <input v-model="form.title" placeholder="Enter Title" class="border p-2 w-full my-2" />
 
@@ -418,8 +450,8 @@ const getFileIcon = (fileName) => {
                     class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none">
               <i class="fas fa-times text-2xl"></i>
             </button>
-            <iframe 
-                :src="selectedFile" 
+            <iframe
+                :src="selectedFile"
                 class="w-full h-[80vh] border-0"
                 v-if="selectedFile.endsWith('.pdf')">
             </iframe>

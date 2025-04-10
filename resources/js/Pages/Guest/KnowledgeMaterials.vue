@@ -66,6 +66,38 @@ const paginationInfo = computed(() => {
     return from && to ? `Showing ${from} to ${to} of ${total} entries` : "No results found";
 });
 
+const visiblePages = computed(() => {
+    const current = pagination.value.current_page;
+    const last = pagination.value.last_page;
+    const pages = [];
+
+    if (last <= 1) return pages;
+
+    if (current !== 1) {
+        pages.push({ label: '« First', url: pagination.value.first_page_url });
+    }
+
+    if (current > 1) {
+        pages.push({ label: '‹ Prev', url: pagination.value.prev_page_url });
+    }
+
+    pages.push({
+        label: current.toString(),
+        url: pagination.value.path + '?page=' + current,
+        active: true
+    });
+
+    if (current < last) {
+        pages.push({ label: 'Next ›', url: pagination.value.next_page_url });
+    }
+
+    if (current !== last) {
+        pages.push({ label: 'Last »', url: pagination.value.last_page_url });
+    }
+
+    return pages;
+});
+
 const goToPage = (url) => {
     if (!url) return;
     router.get(url, filters.value, {
@@ -140,18 +172,18 @@ onMounted(() => {
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
-            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-                <button v-for="(link, index) in pagination.links" :key="index" @click="goToPage(link.url)"
+            <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
+                <button v-for="(link, index) in visiblePages" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }" class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                    }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
             </div>
         </div>
 
         <div v-if="showAnyflipModal" class="fixed inset-0 z-50 flex items-center justify-center p-1 bg-black bg-opacity-50">
-            <div class="relative bg-white shadow-xl w-full max-w-6xl h-[95vh] mx-auto flex flex-col">
+            <div class="relative bg-white shadow-xl w-full max-w-6xl h-[90vh] lg:h-[95vh] mx-auto flex flex-col">
                 <div class="flex items-center justify-between py-2 px-4 border-b border-gray-200">
                     <h3 class="text-md font-bold text-blue-900">{{ currentMaterial?.title }}</h3>
                     <button @click="closeAnyflipModal"
