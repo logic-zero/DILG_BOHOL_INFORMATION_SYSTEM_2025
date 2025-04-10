@@ -365,6 +365,66 @@ const getFileIcon = (fileName) => {
             </table>
         </div>
 
+        <div class="block xl:hidden space-y-4">
+            <div v-for="item in downloadablesList" :key="item.id" 
+                class="border rounded-lg shadow-md bg-gray-100 p-4">
+                <div class="flex justify-between items-start flex-wrap gap-2">
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-lg font-extrabold mb-2 text-gray-900">
+                            {{ item.title }}
+                        </h2>
+
+                        <p class="text-sm text-gray-600">
+                            <span class="font-bold">Outcome Area:</span> {{ item.outcome_area || 'N/A' }}
+                        </p>
+
+                        <p class="text-sm text-gray-600">
+                            <span class="font-bold">Program:</span> {{ item.program || 'N/A' }}
+                        </p>
+
+                        <p class="text-sm text-gray-600">
+                            <span class="font-bold">Posted on:</span> {{ formatDate(item.created_at) }}
+                        </p>
+
+                        <p class="text-sm text-gray-600 flex">
+                            <span class="font-bold mr-1">File:</span> 
+                            <span v-if="item.file" class="flex items-center gap-1">
+                                <i :class="`fas ${getFileIcon(item.file)} text-blue-600`"></i>
+                                <button @click="openFileModal(`/downloadable_files/${item.file}`)"
+                                        class="text-blue-500 hover:underline">
+                                    View File
+                                </button>
+                            </span>
+                            <span v-else class="text-gray-400">No file</span>
+                        </p>
+
+                        <p class="text-sm text-gray-600">
+                            <span class="font-bold mr-1">Link:</span> 
+                            <a v-if="item.link" 
+                            :href="item.link" 
+                            target="_blank"
+                            class="text-blue-500 hover:underline">
+                                {{ item.link.length > 30 ? item.link.substring(0, 30) + '...' : item.link }}
+                            </a>
+                            <span v-else class="text-gray-400">No link</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-3 flex gap-2">
+                    <button @click="openModal(item)"
+                            class="flex-1 bg-blue-800 hover:bg-blue-900 text-white text-sm px-3 py-2 rounded transition">
+                        <i class="fas fa-edit mr-1"></i> View | Edit
+                    </button>
+
+                    <button @click="openDeleteModal(item)"
+                            class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-2 rounded transition">
+                        <i class="fas fa-trash mr-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
             <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
@@ -443,26 +503,50 @@ const getFileIcon = (fileName) => {
             </div>
         </div>
 
-        <div v-if="isFileModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
-             @click.self="closeFileModal">
-          <div class="relative max-w-4xl max-h-screen bg-white p-4 rounded-lg">
-            <button @click="closeFileModal"
-                    class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none">
-              <i class="fas fa-times text-2xl"></i>
-            </button>
-            <iframe
-                :src="selectedFile"
-                class="w-full h-[80vh] border-0"
-                v-if="selectedFile.endsWith('.pdf')">
-            </iframe>
-            <div v-else class="p-4 text-center">
-                <i :class="`fas ${getFileIcon(selectedFile)} text-6xl text-blue-500 mb-4`"></i>
-                <p class="mb-4">This file type cannot be previewed</p>
-                <a :href="selectedFile" download class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    <i class="fas fa-download mr-2"></i>Download File
+        <div v-if="isFileModalOpen" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-2">
+            <div class="relative w-full h-full max-w-6xl flex flex-col">
+                <div class="bg-gray-800 text-white p-3 rounded-t-lg flex justify-between items-center">
+                    <div class="truncate max-w-[80%]">
+                        <i :class="`fas ${getFileIcon(selectedFile)} mr-2`"></i>
+                        {{ selectedFile.split('/').pop() }}
+                    </div>
+                    <button @click="closeFileModal"
+                            class="text-white hover:text-gray-300 focus:outline-none ml-4">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-1 bg-gray-100 rounded-b-lg overflow-hidden">
+                    <iframe
+                        v-if="selectedFile.endsWith('.pdf')"
+                        :src="selectedFile"
+                        class="w-full h-full border-0"
+                        frameborder="0"
+                        allowfullscreen>
+                    </iframe>
+                    
+                    <div v-else class="h-full flex flex-col items-center justify-center p-6">
+                        <i :class="`fas ${getFileIcon(selectedFile)} text-6xl text-blue-500 mb-4`"></i>
+                        <p class="text-lg mb-6">This file type cannot be previewed</p>
+                        <div class="flex gap-4">
+                            <a :href="selectedFile" download 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition flex items-center gap-2">
+                                <i class="fas fa-download"></i> Download File
+                            </a>
+                            <button @click="closeFileModal"
+                                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <a v-if="selectedFile.endsWith('.pdf')" 
+                :href="selectedFile" download
+                class="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition">
+                    <i class="fas fa-download text-xl"></i>
                 </a>
             </div>
-          </div>
         </div>
     </div>
 </template>
