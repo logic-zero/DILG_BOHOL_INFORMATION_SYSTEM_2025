@@ -6,7 +6,7 @@
                     <h1 class="text-3xl font-medium mb-4">The Provincial Director</h1>
                     <div class="transform hover:-rotate-3 transition duration-500 mb-4">
                         <img
-                            v-if="pdinfo.profile_image"
+                            v-if="pdinfo.profile_img"
                             :src="`/organizational_structure/${pdinfo.profile_img}`"
                             alt="Provincial Director"
                             class="shadow-lg border h-96 w-96 object-cover"

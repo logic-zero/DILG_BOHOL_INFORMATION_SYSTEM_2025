@@ -203,7 +203,7 @@ const deleteOfficial = async () => {
                     <tr v-for="official in officialsList" :key="official.id"
                         class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-600 break-words flex justify-center">
-                            <img v-if="official.profile_image" :src="`/provincial_officials/${official.profile_image}`"
+                            <img v-if="official.profile_image" loading="lazy" :src="`/provincial_officials/${official.profile_image}`"
                                 class="w-20 h-20 rounded-full object-cover" alt="Profile Image" />
                             <span v-else>No Image</span>
                         </td>
@@ -236,7 +236,7 @@ const deleteOfficial = async () => {
                 class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-center mb-4">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img v-if="official.profile_image" :src="`/provincial_officials/${official.profile_image}`"
+                        <img v-if="official.profile_image" loading="lazy" :src="`/provincial_officials/${official.profile_image}`"
                             class="w-full h-full object-cover" alt="Profile Image" />
                         <div v-else class="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600">
                             No Image
