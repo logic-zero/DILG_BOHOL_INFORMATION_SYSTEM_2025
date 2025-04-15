@@ -105,13 +105,6 @@ const visiblePages = computed(() => {
     return pages;
 });
 
-const totalPages = computed(() => pagination.value.last_page);
-
-const goToPageNumber = (page) => {
-    const url = pagination.value.path + '?page=' + page;
-    goToPage(url);
-};
-
 const goToPage = (url) => {
     if (!url) return;
     router.get(url, { ...filters.value }, {
@@ -211,15 +204,6 @@ const clearFilters = () => {
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
             <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
-                <select
-                    v-model="pagination.current_page"
-                    @change="goToPageNumber(pagination.current_page)"
-                    class="px-2 border border-gray-300 hover:bg-gray-200 transition h-[30px]"
-                >
-                    <option v-for="page in totalPages" :key="page" :value="page">
-                        {{ page }}
-                    </option>
-                </select>
                 <button v-for="(link, index) in visiblePages" :key="index" @click="goToPage(link.url)"
                     v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
