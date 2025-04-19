@@ -16,8 +16,7 @@ class LegalOpinionService
     public function scrapeLegalOpinions(string $url, $search = null)
     {
         $client = new Client([
-            'timeout' => 60,
-            'verify' => storage_path('cacert.pem'),
+            'timeout' => 600,
         ]);
         $allOpinions = [];
         $categories = [];
@@ -128,6 +127,7 @@ class LegalOpinionService
 
                         $record->title = $opinion['title'];
                         $record->link = $opinion['link'];
+                        $record->category = $opinion['category'];
                         $record->date = $opinion['date'];
                         $record->download_link = $opinion['download_link'];
                         $record->file = $fileValue;
@@ -221,6 +221,7 @@ class LegalOpinionService
         Log::info('Sending legal opinions to Tangkaraw:', ['payload' => $legalOpinionsData]);
 
         $response = Http::post('https://issuances.dilgbohol.com/webhook/legal-opinion', [
+            // $response = Http::post('http://127.0.0.1:8000/webhook/legal-opinion', [
             'legal_opinions' => $legalOpinionsData,
         ]);
 

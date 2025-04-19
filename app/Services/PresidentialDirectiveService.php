@@ -24,11 +24,10 @@ class PresidentialDirectiveService
     public function scrapePresidentialdirectives(string $url, $search = null)
     {
         $client = new Client([
-            'timeout' => 60,
+            'timeout' => 180,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             ],
-            'verify' => storage_path('cacert.pem'),
         ]);
 
         $uniqueDirectives = [];
@@ -212,7 +211,9 @@ class PresidentialDirectiveService
         // Send to Tangkaraw
         Log::info('Sending presidential directives to Tangkaraw:', ['payload' => $presidentialDirectivesData]);
 
+        // $response = Http::post('http://127.0.0.1:8000/webhook/presidential-directive', [
         $response = Http::post('https://issuances.dilgbohol.com/webhook/presidential-directive', [
+            // $response = Http::post('http://127.0.0.1:8000/webhook/presidential-directive', [
             'presidential_directives' => $presidentialDirectivesData,
         ]);
 

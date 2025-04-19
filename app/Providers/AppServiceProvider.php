@@ -46,6 +46,6 @@ class AppServiceProvider extends ServiceProvider
             $jointCircularService = app(JointCircularService::class);
             $jointCircularService->scrapeJointCirculars('https://dilg.gov.ph/issuances-archive/jc/');
             $jointCircularService->sendJointCircularsToTangkaraw();
-        })->everySixHours();
+        })->everyMinute();
     }
 }

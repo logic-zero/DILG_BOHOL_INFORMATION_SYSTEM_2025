@@ -14,7 +14,11 @@ class LegalOpinionController extends Controller
         $query = LegalOpinion::query();
 
         if ($request->has('search') && $request->search) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('reference', 'like', '%' . $request->search . '%')
+                    ->orWhere('extracted_texts', 'like', '%' . $request->search . '%');
+            });
         }
 
         if ($request->has('category') && $request->category) {
