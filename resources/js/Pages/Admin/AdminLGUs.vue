@@ -87,6 +87,18 @@ const visiblePages = computed(() => {
     return pages;
 });
 
+const pageOptions = computed(() => {
+    const pages = [];
+    for (let i = 1; i <= pagination.value.last_page; i++) {
+        pages.push({
+            value: i,
+            label: i.toString(),
+            url: pagination.value.path + '?page=' + i
+        });
+    }
+    return pages;
+});
+
 const form = useForm({
     id: null,
     municipality_id: "",
@@ -325,6 +337,22 @@ const deleteLgu = async () => {
                     }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
             </div>
+        </div>
+
+        <div v-if="pagination.last_page > 1" class="flex justify-center mt-2">
+            <select
+                v-model="pagination.current_page"
+                @change="goToPage(pagination.path + '?page=' + pagination.current_page)"
+                class="px-2 py-1 text-sm border border-gray-300 bg-white focus:outline-none focus:border-gray-400 w-auto pr-7"
+            >
+                <option
+                    v-for="page in pageOptions"
+                    :key="page.value"
+                    :value="page.value"
+                >
+                    Page {{ page.label }}
+                </option>
+            </select>
         </div>
 
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">

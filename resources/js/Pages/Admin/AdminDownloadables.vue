@@ -123,6 +123,18 @@ const visiblePages = computed(() => {
     return pages;
 });
 
+const pageOptions = computed(() => {
+    const pages = [];
+    for (let i = 1; i <= pagination.value.last_page; i++) {
+        pages.push({
+            value: i,
+            label: i.toString(),
+            url: pagination.value.path + '?page=' + i
+        });
+    }
+    return pages;
+});
+
 const form = useForm({
     id: null,
     title: "",
@@ -366,7 +378,7 @@ const getFileIcon = (fileName) => {
         </div>
 
         <div class="block xl:hidden space-y-4">
-            <div v-for="item in downloadablesList" :key="item.id" 
+            <div v-for="item in downloadablesList" :key="item.id"
                 class="border rounded-lg shadow-md bg-gray-100 p-4">
                 <div class="flex justify-between items-start flex-wrap gap-2">
                     <div class="flex-1 min-w-0">
@@ -387,7 +399,7 @@ const getFileIcon = (fileName) => {
                         </p>
 
                         <p class="text-sm text-gray-600 flex">
-                            <span class="font-bold mr-1">File:</span> 
+                            <span class="font-bold mr-1">File:</span>
                             <span v-if="item.file" class="flex items-center gap-1">
                                 <i :class="`fas ${getFileIcon(item.file)} text-blue-600`"></i>
                                 <button @click="openFileModal(`/downloadable_files/${item.file}`)"
@@ -399,9 +411,9 @@ const getFileIcon = (fileName) => {
                         </p>
 
                         <p class="text-sm text-gray-600">
-                            <span class="font-bold mr-1">Link:</span> 
-                            <a v-if="item.link" 
-                            :href="item.link" 
+                            <span class="font-bold mr-1">Link:</span>
+                            <a v-if="item.link"
+                            :href="item.link"
                             target="_blank"
                             class="text-blue-500 hover:underline">
                                 {{ item.link.length > 30 ? item.link.substring(0, 30) + '...' : item.link }}
@@ -424,7 +436,7 @@ const getFileIcon = (fileName) => {
                 </div>
             </div>
         </div>
-        
+
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
             <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
@@ -435,6 +447,22 @@ const getFileIcon = (fileName) => {
                     }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
                 </button>
             </div>
+        </div>
+
+        <div v-if="pagination.last_page > 1" class="flex justify-center mt-2">
+            <select
+                v-model="pagination.current_page"
+                @change="goToPage(pagination.path + '?page=' + pagination.current_page)"
+                class="px-2 py-1 text-sm border border-gray-300 bg-white focus:outline-none focus:border-gray-400 w-auto pr-7"
+            >
+                <option
+                    v-for="page in pageOptions"
+                    :key="page.value"
+                    :value="page.value"
+                >
+                    Page {{ page.label }}
+                </option>
+            </select>
         </div>
 
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
@@ -515,7 +543,7 @@ const getFileIcon = (fileName) => {
                         <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
-                
+
                 <div class="flex-1 bg-gray-100 rounded-b-lg overflow-hidden">
                     <iframe
                         v-if="selectedFile.endsWith('.pdf')"
@@ -524,12 +552,12 @@ const getFileIcon = (fileName) => {
                         frameborder="0"
                         allowfullscreen>
                     </iframe>
-                    
+
                     <div v-else class="h-full flex flex-col items-center justify-center p-6">
                         <i :class="`fas ${getFileIcon(selectedFile)} text-6xl text-blue-500 mb-4`"></i>
                         <p class="text-lg mb-6">This file type cannot be previewed</p>
                         <div class="flex gap-4">
-                            <a :href="selectedFile" download 
+                            <a :href="selectedFile" download
                             class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition flex items-center gap-2">
                                 <i class="fas fa-download"></i> Download File
                             </a>
@@ -540,8 +568,8 @@ const getFileIcon = (fileName) => {
                         </div>
                     </div>
                 </div>
-                
-                <a v-if="selectedFile.endsWith('.pdf')" 
+
+                <a v-if="selectedFile.endsWith('.pdf')"
                 :href="selectedFile" download
                 class="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition">
                     <i class="fas fa-download text-xl"></i>

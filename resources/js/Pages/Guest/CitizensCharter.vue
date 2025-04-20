@@ -19,6 +19,50 @@ const paginationInfo = computed(() => {
         : "No results found";
 });
 
+const visiblePages = computed(() => {
+    const current = props.charters.current_page;
+    const last = props.charters.last_page;
+    const pages = [];
+
+    if (last <= 1) return pages;
+
+    if (current !== 1) {
+        pages.push({ label: '« First', url: props.charters.first_page_url });
+    }
+
+    if (current > 1) {
+        pages.push({ label: '‹ Prev', url: props.charters.prev_page_url });
+    }
+
+    pages.push({
+        label: current.toString(),
+        url: props.charters.path + '?page=' + current,
+        active: true
+    });
+
+    if (current < last) {
+        pages.push({ label: 'Next ›', url: props.charters.next_page_url });
+    }
+
+    if (current !== last) {
+        pages.push({ label: 'Last »', url: props.charters.last_page_url });
+    }
+
+    return pages;
+});
+
+const pageOptions = computed(() => {
+    const pages = [];
+    for (let i = 1; i <= props.charters.last_page; i++) {
+        pages.push({
+            value: i,
+            label: i.toString(),
+            url: props.charters.path + '?page=' + i
+        });
+    }
+    return pages;
+});
+
 const goToPage = (url) => {
     if (url) {
         router.visit(url, {
@@ -71,20 +115,30 @@ const goToPage = (url) => {
 
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 text-gray-700">
             <span>{{ paginationInfo }}</span>
-            <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-                <button
-                    v-for="(link, index) in charters.links"
-                    :key="index"
-                    @click="goToPage(link.url)"
-                    v-html="link.label"
-                    :class="{
+            <div class="flex flex-wrap space-x-1 mt-2 sm:mt-0">
+                <button v-for="(link, index) in visiblePages" :key="index" @click="goToPage(link.url)"
+                    v-html="link.label" :class="{
                         'font-bold bg-blue-300 text-gray-900': link.active,
                         'text-gray-400 cursor-not-allowed pointer-events-none': !link.url,
-                    }"
-                    class="px-4 py-1 border border-gray-300 hover:bg-gray-200 transition"
-                    :disabled="!link.url"
-                ></button>
+                    }" class="px-2 border border-gray-300 hover:bg-gray-200 transition" :disabled="!link.url">
+                </button>
             </div>
+        </div>
+
+        <div v-if="charters.last_page > 1" class="flex justify-center mt-2">
+            <select
+                v-model="charters.current_page"
+                @change="goToPage(charters.path + '?page=' + charters.current_page)"
+                class="px-2 py-1 text-sm border border-gray-300 bg-white focus:outline-none focus:border-gray-400 w-auto pr-7"
+            >
+                <option
+                    v-for="page in pageOptions"
+                    :key="page.value"
+                    :value="page.value"
+                >
+                    Page {{ page.label }}
+                </option>
+            </select>
         </div>
     </div>
 </template>
