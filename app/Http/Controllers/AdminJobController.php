@@ -39,7 +39,7 @@ class AdminJobController extends Controller
 
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'hiring_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'hiring_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
             'position' => 'required|string',
             'details' => 'required|string',
             'link' => 'required|string',

@@ -27,7 +27,6 @@ class JointCircularService
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             ],
-            'verify' => storage_path('cacert.pem'),
         ]);
 
         $uniqueCirculars = [];
@@ -225,6 +224,7 @@ class JointCircularService
         Log::info('Sending joint circulars to Tangkaraw:', ['payload' => $jointCircularsData]);
 
         $response = Http::post('https://issuances.dilgbohol.com/webhook/joint-circular', [
+            // $response = Http::post('http://127.0.0.1:8000/webhook/joint-circular', [
             'joint_circulars' => $jointCircularsData,
         ]);
 
