@@ -57,9 +57,12 @@
                             </p>
                         </div>
                     </div>
-                    <p class="text-xs font-bold text-gray-700 w-40 text-right">
+                    <p class="text-xs font-bold text-gray-700 min-w-0 flex-shrink pl-2 text-right">
                         <span class="text-red-600">Reference No:</span> {{ opinion.reference || 'None' }}
                     </p>
+                    <!-- <p class="text-xs font-bold text-gray-700 w-40 text-right">
+                        <span class="text-red-600">Reference No:</span> {{ opinion.reference || 'None' }}
+                    </p> -->
                 </div>
 
                 <div class="mt-2">
