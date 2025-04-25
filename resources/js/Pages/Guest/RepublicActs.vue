@@ -88,7 +88,7 @@
                             </div>
 
                             <iframe
-                                :src="act.file ? act.download_link + '#toolbar=0' : ''"
+                                :src="act.file ? '/republic_acts/' + act.file + '#toolbar=0' : ''"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"

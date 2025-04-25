@@ -102,7 +102,7 @@
                             </div>
 
                             <iframe
-                                :src="opinion.file ? opinion.download_link + '#toolbar=0' : ''"
+                                :src="opinion.file ? '/legal_opinions/' + opinion.file + '#toolbar=0' : ''"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"

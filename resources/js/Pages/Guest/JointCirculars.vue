@@ -88,7 +88,7 @@
                             </div>
 
                             <iframe
-                                :src="circular.file ? circular.download_link + '#toolbar=0' : ''"
+                                :src="circular.file ? '/joint_circulars/' + circular.file + '#toolbar=0' : ''"
                                 class="w-full h-[500px] border border-gray-300"
                                 frameborder="0"
                                 @load="iframeLoaded"
