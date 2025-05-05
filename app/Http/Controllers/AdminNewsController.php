@@ -23,8 +23,12 @@ class AdminNewsController extends Controller
             });
         }
 
-        if ($request->has('status') && in_array($request->status, ['approved', 'pending'])) {
-            $status = $request->status === 'approved' ? 1 : 0;
+        if ($request->has('status') && in_array($request->status, ['approved', 'pending', 'declined'])) {
+            $status = match($request->status) {
+                'approved' => 1,
+                'declined' => 2,
+                default => 0
+            };
             $query->where('status', $status);
         }
 
@@ -143,14 +147,18 @@ class AdminNewsController extends Controller
         return redirect()->route('AdminNews')->with('success', 'News deleted successfully.');
     }
 
-    public function toggleStatus(News $news)
+    public function toggleStatus(News $news, Request $request)
     {
         if (!Auth::user()->hasRole('Super-Admin')) {
             abort(403, 'Access denied: Only super administrators can toggle news status.');
         }
 
+        $validated = $request->validate([
+            'status' => 'required|integer|in:0,1,2'
+        ]);
+
         $news->timestamps = false;
-        $news->update(['status' => !$news->status]);
+        $news->update(['status' => $validated['status']]);
 
         return redirect()->route('AdminNews')->with('success', 'Status updated.');
     }

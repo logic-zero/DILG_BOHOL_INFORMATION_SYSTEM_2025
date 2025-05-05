@@ -42,6 +42,18 @@ const paginationInfo = computed(() => {
         : "No results found";
 });
 
+const formatDate = (dateString) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(dateString));
+};
+
 const previewImages = computed(() => {
   if (form.images.length > 0) {
     return Array.from(form.images).map(image => URL.createObjectURL(image));
@@ -267,22 +279,32 @@ const closeStatusModal = () => {
     isStatusModalOpen.value = false;
 };
 
-const toggleStatus = async () => {
+const statusChoices = ref([
+    { value: 0, label: 'Pending', class: 'bg-orange-400' },
+    { value: 1, label: 'Approved', class: 'bg-green-500' },
+    { value: 2, label: 'Declined', class: 'bg-red-500' }
+]);
+
+const toggleStatus = async (status) => {
     if (!newsToToggle.value || !isSuperAdmin.value) return;
 
     try {
         await router.patch(
             `/admin/news/${newsToToggle.value.id}/toggle-status`,
-            {},
+            { status },
             { preserveState: true, preserveScroll: true }
         );
         const newsItem = newsList.value.find((n) => n.id === newsToToggle.value.id);
-        if (newsItem) newsItem.status = !newsItem.status;
+        if (newsItem) newsItem.status = status;
         showSuccessMessage("Status updated successfully!");
         closeStatusModal();
     } catch (error) {
         errorMessage.value = "Failed to update status.";
     }
+};
+
+const getStatusInfo = (status) => {
+    return statusChoices.value.find(choice => choice.value === status) || statusChoices.value[0];
 };
 </script>
 
@@ -315,6 +337,7 @@ const toggleStatus = async () => {
                 <option value="">All</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
+                <option value="declined">Declined</option>
             </select>
         </div>
 
@@ -322,7 +345,7 @@ const toggleStatus = async () => {
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-sm uppercase tracking-wider">
-                        <th class="p-3 text-left w-[20%]">Title</th>
+                        <th class="p-3 text-left w-[20%]">Title & Date</th>
                         <th class="p-3 text-left w-[25%]">Caption</th>
                         <th class="p-3 text-left w-[10%]">Author</th>
                         <th class="p-3 text-center w-[15%]">Images</th>
@@ -335,6 +358,9 @@ const toggleStatus = async () => {
                         <td class="p-3 text-gray-900 font-extrabold break-words">
                             <span v-if="news.is_modified" class="inline-block bg-yellow-100 text-yellow-900 text-xs px-2 py-0.5 rounded-full mt-1">Modified</span>
                             <div class="line-clamp-3">{{ news.title }}</div>
+                            <span class="text-xs uppercase font-black text-blue-900 mb-8">
+                                {{ formatDate(news.created_at) }}
+                            </span>
                         </td>
                         <td class="p-3 text-gray-600 break-words" :title="news.caption">
                             <div class="line-clamp-6">{{ news.caption }}</div>
@@ -348,9 +374,18 @@ const toggleStatus = async () => {
                             </div>
                         </td>
                         <td class="p-3 text-center">
-                            <button @click="isSuperAdmin && openStatusModal(news)" :class="news.status ? 'bg-green-500' : 'bg-orange-400'" class="px-3 py-1 text-white rounded text-sm transition">
-                                {{ news.status ? "Approved" : "Pending" }}
-                            </button>
+                            <div class="flex flex-col items-center">
+                                <button 
+                                    @click="isSuperAdmin && openStatusModal(news)" 
+                                    :class="getStatusInfo(news.status).class" 
+                                    class="px-3 py-1 text-white rounded text-sm transition mb-1"
+                                >
+                                    {{ getStatusInfo(news.status).label }}
+                                </button>
+                                <span v-if="isSuperAdmin" class="text-xs text-gray-500">
+                                    Click to change status
+                                </span>
+                            </div>
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-1">
@@ -380,10 +415,14 @@ const toggleStatus = async () => {
                         </p>
                         <p class="text-xs font-bold text-gray-500 mt-1">By: {{ news.user.name }}</p>
                     </div>
-                    <button @click="isSuperAdmin && openStatusModal(news)" :class="news.status ? 'bg-green-500 text-white' : 'bg-orange-400 text-white'" class="px-3 py-1 rounded text-xs whitespace-nowrap">
-                        <i :class="news.status ? 'fas fa-check-circle' : 'fas fa-hourglass'"></i>
-                        {{ news.status ? "Approved" : "Pending" }}
-                    </button>
+                    <div class="flex flex-col items-end">
+                        <button @click="isSuperAdmin && openStatusModal(news)" :class="getStatusInfo(news.status).class" class="px-3 py-1 rounded text-xs whitespace-nowrap text-white mb-1">
+                            {{ getStatusInfo(news.status).label }}
+                        </button>
+                        <span v-if="isSuperAdmin" class="text-xs text-gray-500">
+                            Click to change
+                        </span>
+                    </div>
                 </div>
 
                 <div v-if="news.images.length" class="flex flex-wrap gap-2 mt-3">
@@ -507,21 +546,27 @@ const toggleStatus = async () => {
 
         <div v-if="isStatusModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center px-2 py-4">
             <div class="bg-white p-2 lg:p-6 rounded shadow-lg w-full max-w-lg">
-                <h2 class="text-xl mb-4 text-center">Confirm Status Change</h2>
+                <h2 class="text-xl mb-4 text-center">Change Status</h2>
                 <p class="text-center mb-4">
-                    Are you sure you want to change the status of
-                    <strong>{{ newsToToggle?.title }}</strong> to
-                    <strong>{{ newsToToggle?.status ? 'Pending' : 'Approved' }}</strong>?
+                    Current status: <span :class="getStatusInfo(newsToToggle?.status).class" class="px-2 py-1 text-sm text-white">{{ getStatusInfo(newsToToggle?.status).label }}</span>
                 </p>
-
-                <div class="flex justify-center gap-2">
-                    <button @click="toggleStatus" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
-                        Yes, Change
-                    </button>
-                    <button @click="closeStatusModal" class="px-2 py-1 bg-gray-400 rounded hover:bg-gray-500">
-                        Cancel
+                
+                <div class="space-y-2 mb-4">
+                    <button 
+                        v-for="choice in statusChoices" 
+                        :key="choice.value"
+                        @click="toggleStatus(choice.value)"
+                        :class="choice.class"
+                        class="w-full text-white px-4 py-2 rounded transition flex items-center justify-between"
+                    >
+                        <span>{{ choice.label }}</span>
+                        <i v-if="newsToToggle?.status === choice.value" class="fas fa-check"></i>
                     </button>
                 </div>
+
+                <button @click="closeStatusModal" class="w-full px-4 py-2 bg-gray-400 rounded hover:bg-gray-500 transition">
+                    Cancel
+                </button>
             </div>
         </div>
 

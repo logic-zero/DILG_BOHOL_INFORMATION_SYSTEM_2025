@@ -17,7 +17,7 @@ return new class extends Migration
             $table->longText('title');
             $table->longText('caption');
             $table->longText('images');
-            $table->boolean('status')->default(false);
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });
